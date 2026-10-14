@@ -89,10 +89,12 @@
     this.dot = opt.dot || 1;
     this.lights = opt.lights !== false;
     this.size = 0;
+    this.hd = !!opt.hd;
     if (opt.ocean) {
       var oc = [], RR = Math.PI / 180, landSet = {};
-      for (var la0 = -80; la0 <= 80; la0 += 6) {
-        var ls0 = 6 / Math.max(0.25, Math.cos(la0 * RR));
+      var os = opt.hd ? 4 : 6;
+      for (var la0 = -80; la0 <= 80; la0 += os) {
+        var ls0 = os / Math.max(0.25, Math.cos(la0 * RR));
         for (var lo0 = -180; lo0 < 180; lo0 += ls0) {
           var onLand = false;
           for (var k0 = 0; k0 < LAND.length && !onLand; k0++) { var b0 = BOX[k0]; if (lo0 >= b0[0] && lo0 <= b0[2] && la0 >= b0[1] && la0 <= b0[3] && inPoly(lo0, la0, LAND[k0])) onLand = true; }
@@ -102,10 +104,16 @@
       this.ocean = oc;
     }
     var hot = [];
-    for (var i = 0; i < this.pts.length; i += Math.max(1, Math.round(this.pts.length / 52))) {
+    for (var i = 0; i < this.pts.length; i += Math.max(1, Math.round(this.pts.length / (opt.hd ? 130 : 52)))) {
       hot.push({ p: this.pts[i], ph: Math.random() * 6.28, f: 0.8 + Math.random() * 1.8, red: Math.random() < 0.55 });
     }
     this.hot = hot;
+    // Leuchtende Handelsrouten zwischen Städten (Längengrad, Breitengrad)
+    var C = { ber: [13, 52], lon: [0, 51], par: [2, 49], mad: [-4, 40], rom: [12, 42], mos: [37, 56], ist: [29, 41], cai: [31, 30], lag: [3, 6], dub: [55, 25], del: [77, 28], nyc: [-74, 41], sao: [-46, -23], jnb: [28, -26], tok: [140, 36], sto: [18, 59] };
+    var R2 = Math.PI / 180;
+    this.routes = opt.hd ? [['ber', 'nyc'], ['lon', 'dub'], ['par', 'lag'], ['rom', 'cai'], ['mad', 'sao'], ['mos', 'del'], ['ist', 'jnb'], ['sto', 'tok'], ['ber', 'mos'], ['lon', 'mad']].map(function (r, k) {
+      return { a: [C[r[0]][0] * R2, C[r[0]][1] * R2], b: [C[r[1]][0] * R2, C[r[1]][1] * R2], off: k * 0.37, sp: 0.18 + (k % 3) * 0.06, red: k % 3 !== 1 };
+    }) : [];
   }
   Earth.prototype.resize = function () {
     var r = this.c.getBoundingClientRect();
@@ -136,9 +144,10 @@
         ctx.fillRect(cx + ox * R - od / 2, cy - oy2 * R - od / 2, od, od);
       }
     }
-    ctx.lineWidth = Math.max(0.6, s / 520); ctx.strokeStyle = 'rgba(255,140,60,0.17)';
+    ctx.lineWidth = Math.max(0.6, s / 520); ctx.strokeStyle = this.hd ? 'rgba(255,140,60,0.12)' : 'rgba(255,140,60,0.17)';
     var la, lo, x, y, z, y2, z2, first;
-    for (la = -60; la <= 60; la += 30) {
+    var gstep = this.hd ? 15 : 30;
+    for (la = this.hd ? -75 : -60; la <= (this.hd ? 75 : 60); la += gstep) {
       ctx.beginPath(); first = true;
       for (lo = 0; lo <= 360; lo += 6) {
         var L = la * Math.PI / 180, dl = lo * Math.PI / 180 - lc;
@@ -149,7 +158,7 @@
       }
       ctx.stroke();
     }
-    for (lo = 0; lo < 360; lo += 30) {
+    for (lo = 0; lo < 360; lo += gstep) {
       ctx.beginPath(); first = true;
       for (la = -88; la <= 88; la += 4) {
         var L2 = la * Math.PI / 180, dl2 = lo * Math.PI / 180 - lc;
@@ -167,12 +176,12 @@
       x = cl * Math.sin(d); y = Math.sin(p[1]); z = cl * Math.cos(d);
       y2 = y * ct - z * st; z2 = y * st + z * ct;
       if (z2 <= 0.02) continue;
-      var light = z2 * 0.62 + Math.max(0, -x * 0.25 + y2 * 0.35) + 0.45;
+      var light = this.hd ? Math.max(0, x * -0.08 + y2 * 0.5 + z2 * 0.86) * 0.95 + 0.12 : z2 * 0.62 + Math.max(0, -x * 0.25 + y2 * 0.35) + 0.45;
       var bi = Math.min(4, Math.max(0, Math.floor(light * 5)));
       buckets[bi].push(cx + x * R, cy - y2 * R);
     }
     var cols = ['rgba(205,112,44,0.55)', 'rgba(236,146,60,0.74)', 'rgba(255,182,92,0.88)', 'rgba(255,212,134,0.96)', 'rgba(255,238,184,1)'];
-    var dsz = Math.max(1.2, s / 250) * this.dot, gsz = dsz * 2.6;
+    var dsz = Math.max(1.1, s / (this.hd ? 300 : 250)) * this.dot, gsz = dsz * 2.6;
     ctx.globalCompositeOperation = 'lighter';
     for (var b = 2; b < 5; b++) {
       var ga = buckets[b]; if (!ga.length) continue;
@@ -200,6 +209,7 @@
       }
       ctx.globalAlpha = 1;
     }
+    if (this.hd) this.drawHd(t, ctx, s, cx, cy, R, lc, ct, st);
     // Lichtrand und Glanz
     var rim = ctx.createRadialGradient(cx, cy, R * 0.72, cx, cy, R);
     rim.addColorStop(0, 'rgba(255,110,30,0)'); rim.addColorStop(0.75, 'rgba(255,110,30,0.06)'); rim.addColorStop(0.93, 'rgba(255,140,50,0.38)'); rim.addColorStop(1, 'rgba(255,225,160,0.9)');
@@ -207,6 +217,68 @@
     var sh = ctx.createRadialGradient(cx - R * 0.42, cy - R * 0.48, 0, cx - R * 0.42, cy - R * 0.48, R * 0.75);
     sh.addColorStop(0, 'rgba(255,220,170,0.16)'); sh.addColorStop(1, 'rgba(255,220,170,0)');
     ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fill();
+  };
+
+  // Zusatzdetails des großen Globus: Lichtquelle, Routen, Reflexe, Lichtkante
+  Earth.prototype.drawHd = function (t, ctx, s, cx, cy, R, lc, ct, st) {
+    function proj(lon, lat, alt) {
+      var cl = Math.cos(lat), d = lon - lc, x = cl * Math.sin(d), y = Math.sin(lat), z = cl * Math.cos(d);
+      return [x * alt, (y * ct - z * st) * alt, (y * st + z * ct) * alt];
+    }
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    // Warmer Lichtkern hinter Europa (oben Mitte)
+    var hx = cx, hy = cy - R * 0.42, hg = ctx.createRadialGradient(hx, hy, 0, hx, hy, R * 0.75);
+    hg.addColorStop(0, 'rgba(255,214,150,0.30)'); hg.addColorStop(0.35, 'rgba(255,150,60,0.12)'); hg.addColorStop(1, 'rgba(255,120,40,0)');
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fillStyle = hg; ctx.fill();
+    // Routen als leuchtende Bögen mit wanderndem Lichtpunkt
+    ctx.lineCap = 'round';
+    for (var r = 0; r < this.routes.length; r++) {
+      var ro = this.routes[r], a = ro.a, b = ro.b;
+      var va = [Math.cos(a[1]) * Math.cos(a[0]), Math.cos(a[1]) * Math.sin(a[0]), Math.sin(a[1])];
+      var vb = [Math.cos(b[1]) * Math.cos(b[0]), Math.cos(b[1]) * Math.sin(b[0]), Math.sin(b[1])];
+      var om = Math.acos(Math.max(-1, Math.min(1, va[0] * vb[0] + va[1] * vb[1] + va[2] * vb[2]))), so = Math.sin(om) || 1;
+      var N = 28, pts = [];
+      for (var k = 0; k <= N; k++) {
+        var f = k / N, A = Math.sin((1 - f) * om) / so, B = Math.sin(f * om) / so;
+        var vx = A * va[0] + B * vb[0], vy = A * va[1] + B * vb[1], vz = A * va[2] + B * vb[2];
+        var lon = Math.atan2(vy, vx), lat = Math.asin(Math.max(-1, Math.min(1, vz)));
+        pts.push(proj(lon, lat, 1 + 0.16 * om / 3 * Math.sin(Math.PI * f)));
+      }
+      var col = ro.red ? '255,70,40' : '255,190,100';
+      ctx.lineWidth = Math.max(0.8, s / 340);
+      ctx.strokeStyle = 'rgba(' + col + ',0.42)';
+      ctx.beginPath(); var on = false;
+      for (k = 0; k <= N; k++) {
+        var q = pts[k];
+        if (q[2] < 0 && q[0] * q[0] + q[1] * q[1] < 1) { on = false; continue; }
+        if (!on) { ctx.moveTo(cx + q[0] * R, cy - q[1] * R); on = true; } else ctx.lineTo(cx + q[0] * R, cy - q[1] * R);
+      }
+      ctx.stroke();
+      var ph = ((t * ro.sp + ro.off) % 1 + 1) % 1, idx = Math.floor(ph * N), pq = pts[idx];
+      if (!(pq[2] < 0 && pq[0] * pq[0] + pq[1] * pq[1] < 1)) {
+        var px = cx + pq[0] * R, py = cy - pq[1] * R, gs = s * 0.05;
+        ctx.drawImage(ro.red ? SPRITE_RED : SPRITE_GOLD, px - gs / 2, py - gs / 2, gs, gs);
+      }
+    }
+    // Reflexe/Sterne am Rand (wie die hellen Lichtpunkte im Referenzbild)
+    var fl = [[-1.45, 0.9], [-0.5, 1.7], [0.55, 2.3], [2.2, 1.3], [3.4, 2.9]];
+    for (var i = 0; i < fl.length; i++) {
+      var ang = fl[i][0], tw = 0.4 + 0.6 * Math.max(0, Math.sin(t * fl[i][1] + i * 1.7));
+      var fx = cx + Math.cos(ang) * R * 0.985, fy = cy + Math.sin(ang) * R * 0.985, L = s * 0.06 * tw;
+      ctx.globalAlpha = tw;
+      ctx.drawImage(i % 2 ? SPRITE_RED : SPRITE_GOLD, fx - L / 2, fy - L / 2, L, L);
+      ctx.strokeStyle = 'rgba(255,230,190,0.75)'; ctx.lineWidth = Math.max(0.6, s / 700);
+      ctx.beginPath(); ctx.moveTo(fx - L * 0.9, fy); ctx.lineTo(fx + L * 0.9, fy); ctx.moveTo(fx, fy - L * 0.6); ctx.lineTo(fx, fy + L * 0.6); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    // Scharfe, glühende Lichtkante
+    ctx.shadowColor = 'rgba(255,140,50,0.9)'; ctx.shadowBlur = s / 40;
+    ctx.strokeStyle = 'rgba(255,200,130,0.85)'; ctx.lineWidth = Math.max(1, s / 260);
+    ctx.beginPath(); ctx.arc(cx, cy, R * 0.992, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,90,40,0.6)';
+    ctx.beginPath(); ctx.arc(cx, cy, R * 0.992, Math.PI * 0.1, Math.PI * 0.9); ctx.stroke();
+    ctx.restore();
   };
 
   /* ---------- 4) Bühne: Globus, Avatar, Roboter, Lichtkanten, Glut ---------- */
@@ -217,7 +289,7 @@
     var wrap = doc.querySelector('.v15-globe-wrap'); if (!wrap || wrap.querySelector('.cc-earth')) return;
     var c = doc.createElement('canvas'); c.className = 'cc-earth'; c.setAttribute('aria-hidden', 'true');
     wrap.appendChild(c);
-    var e = new Earth(c, { step: 1.9, lon0: 14, tilt: 38, speed: 0.11, ocean: true });
+    var e = new Earth(c, { step: 1.35, lon0: 14, tilt: 38, speed: 0.11, ocean: true, hd: true });
     // Hintergrund nach Referenz: Halo, Ringe, Fadenkreuz und Funken, die ins Panel auslaufen
     var bg = svgEl('svg', { viewBox: '-50 -50 200 200', class: 'cc-globe-bg', 'aria-hidden': 'true' });
     var bd = svgEl('defs', {});
@@ -249,6 +321,32 @@
     swC.appendChild(svgEl('circle', { cx: '60', cy: '98', r: '.9', fill: '#fff0c8', class: 'cc-orbit-dot' }));
     var swD = turn(svgEl('g', {}), '360 43 50;0 43 50', '19s', false);
     swD.appendChild(svgEl('path', { d: 'M-3 22 A60 60 0 0 1 22 -6', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.55', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.65', 'stroke-dasharray': '5 1.5 1 1.5' }));
+    // Weitere HUD-Details: Speichen, Datenbögen, Knoten, Lichtstreifen, drehender Segmentring
+    var spokes = '';
+    for (var sa = 0; sa < 360; sa += 15) { var sr = sa * Math.PI / 180; spokes += 'M' + (43 + Math.cos(sr) * 50).toFixed(2) + ' ' + (50 + Math.sin(sr) * 50).toFixed(2) + ' L' + (43 + Math.cos(sr) * 78).toFixed(2) + ' ' + (50 + Math.sin(sr) * 78).toFixed(2) + ' '; }
+    bg.appendChild(svgEl('path', { d: spokes, stroke: '#ff8a4a', 'stroke-opacity': '.09', 'stroke-width': '.22', fill: 'none' }));
+    function arcD(r, a0, a1) { var p0 = a0 * Math.PI / 180, p1 = a1 * Math.PI / 180; return 'M' + (43 + Math.cos(p0) * r).toFixed(2) + ' ' + (50 + Math.sin(p0) * r).toFixed(2) + ' A' + r + ' ' + r + ' 0 0 1 ' + (43 + Math.cos(p1) * r).toFixed(2) + ' ' + (50 + Math.sin(p1) * r).toFixed(2); }
+    [[58, 200, 228, '#ffc070', 1.4, '.55'], [58, 300, 312, '#ffc070', 1.4, '.5'], [58, 20, 34, '#ff4a2c', 1.4, '.6'], [58, 118, 150, '#ffc070', 1.1, '.4'],
+     [66, 250, 290, '#ff4a2c', .5, '.55'], [66, 60, 95, '#ffb070', .45, '.45'], [74, 160, 205, '#ffb070', .35, '.35'], [74, 330, 352, '#ff4a2c', .6, '.5'],
+     [47.5, 95, 140, '#ffe0a0', .9, '.55'], [47.5, 250, 268, '#ff4a2c', 1.1, '.7']].forEach(function (q) {
+      bg.appendChild(svgEl('path', { d: arcD(q[0], q[1], q[2]), fill: 'none', stroke: q[3], 'stroke-width': String(q[4]), 'stroke-opacity': q[5], 'stroke-linecap': 'butt', class: q[3] === '#ff4a2c' ? 'cc-glowline' : '' }));
+    });
+    [[50, 40], [50, 175], [50, 290], [58, 228], [66, 95], [74, 352], [56, 330]].forEach(function (q, k) {
+      var na = q[1] * Math.PI / 180;
+      bg.appendChild(svgEl('circle', { cx: (43 + Math.cos(na) * q[0]).toFixed(2), cy: (50 + Math.sin(na) * q[0]).toFixed(2), r: '.7', fill: k % 2 ? '#ffd9a0' : '#ff5a3a', class: 'cc-orbit-dot cc-spark cc-spark-' + (k % 4) }));
+    });
+    var lgS = svgEl('linearGradient', { id: 'ccStreak', x1: '0', y1: '0', x2: '1', y2: '0' });
+    [['0', '0'], ['.5', '.9'], ['1', '0']].forEach(function (q) { lgS.appendChild(svgEl('stop', { offset: q[0], 'stop-color': '#ff5a30', 'stop-opacity': q[1] })); });
+    bd.appendChild(lgS);
+    [['M-10 18 L60 -2', '.35'], ['M30 104 L104 74', '.3'], ['M-14 92 L36 112', '.25'], ['M70 -8 L118 30', '.3']].forEach(function (q) {
+      bg.appendChild(svgEl('path', { d: q[0], stroke: 'url(#ccStreak)', 'stroke-width': q[1], fill: 'none', class: 'cc-glowline' }));
+    });
+    var segRing = turn(svgEl('g', {}), '0 43 50;360 43 50', '40s', false);
+    segRing.appendChild(svgEl('circle', { cx: '43', cy: '50', r: '61', fill: 'none', stroke: '#ffb070', 'stroke-opacity': '.3', 'stroke-width': '.7', 'stroke-dasharray': '4 1.4 .8 1.4' }));
+    bg.appendChild(segRing);
+    var segRing2 = turn(svgEl('g', {}), '360 43 50;0 43 50', '28s', false);
+    segRing2.appendChild(svgEl('circle', { cx: '43', cy: '50', r: '69', fill: 'none', stroke: '#ff4a2c', 'stroke-opacity': '.28', 'stroke-width': '.4', 'stroke-dasharray': '10 4 2 4' }));
+    bg.appendChild(segRing2);
     bg.appendChild(swA); bg.appendChild(swB); bg.appendChild(swC); bg.appendChild(swD);
     var sparks = turn(svgEl('g', {}), '0 43 50;360 43 50', '60s', false);
     bg.appendChild(sparks);
