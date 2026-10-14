@@ -221,23 +221,23 @@
     // Hintergrund nach Referenz: Halo, Ringe, Fadenkreuz und Funken, die ins Panel auslaufen
     var bg = svgEl('svg', { viewBox: '-50 -50 200 200', class: 'cc-globe-bg', 'aria-hidden': 'true' });
     var bd = svgEl('defs', {});
-    var rg = svgEl('radialGradient', { id: 'ccHalo', cx: '47', cy: '49.7', r: '62', gradientUnits: 'userSpaceOnUse' });
+    var rg = svgEl('radialGradient', { id: 'ccHalo', cx: '43', cy: '50', r: '62', gradientUnits: 'userSpaceOnUse' });
     [['0', '#ff4a20', '.30'], ['.42', '#c8250f', '.20'], ['.7', '#5a0c05', '.10'], ['1', '#000', '0']].forEach(function (q) { rg.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
     bd.appendChild(rg); bg.appendChild(bd);
-    bg.appendChild(svgEl('circle', { cx: '47', cy: '49.7', r: '62', fill: 'url(#ccHalo)' }));
+    bg.appendChild(svgEl('circle', { cx: '43', cy: '50', r: '62', fill: 'url(#ccHalo)' }));
     [[50, '.22', '.25', ''], [56, '.16', '.2', '.6 1.8'], [63, '.12', '.18', ''], [71, '.08', '.15', '2 3']].forEach(function (q) {
-      bg.appendChild(svgEl('circle', { cx: '47', cy: '49.7', r: String(q[0]), fill: 'none', stroke: '#ff9a50', 'stroke-opacity': q[1], 'stroke-width': q[2], 'stroke-dasharray': q[3] }));
+      bg.appendChild(svgEl('circle', { cx: '43', cy: '50', r: String(q[0]), fill: 'none', stroke: '#ff9a50', 'stroke-opacity': q[1], 'stroke-width': q[2], 'stroke-dasharray': q[3] }));
     });
-    bg.appendChild(svgEl('path', { d: 'M-40 49.7 H134 M47 -36 V136 M-15 -12 L109 112 M109 -12 L-15 112', stroke: '#ff7a3a', 'stroke-opacity': '.10', 'stroke-width': '.25', fill: 'none' }));
+    bg.appendChild(svgEl('path', { d: 'M-40 50 H134 M43 -36 V136 M-19 -12 L105 112 M105 -12 L-19 112', stroke: '#ff7a3a', 'stroke-opacity': '.10', 'stroke-width': '.25', fill: 'none' }));
     var ticks = '';
-    for (var a = 0; a < 360; a += 6) { var rad = a * Math.PI / 180, r1 = a % 30 ? 52 : 50.5; ticks += 'M' + (47 + Math.cos(rad) * r1).toFixed(2) + ' ' + (49.7 + Math.sin(rad) * r1).toFixed(2) + ' L' + (47 + Math.cos(rad) * 53.5).toFixed(2) + ' ' + (49.7 + Math.sin(rad) * 53.5).toFixed(2) + ' '; }
+    for (var a = 0; a < 360; a += 6) { var rad = a * Math.PI / 180, r1 = a % 30 ? 52 : 50.5; ticks += 'M' + (43 + Math.cos(rad) * r1).toFixed(2) + ' ' + (50 + Math.sin(rad) * r1).toFixed(2) + ' L' + (43 + Math.cos(rad) * 53.5).toFixed(2) + ' ' + (50 + Math.sin(rad) * 53.5).toFixed(2) + ' '; }
     bg.appendChild(svgEl('path', { d: ticks, stroke: '#ffb070', 'stroke-opacity': '.28', 'stroke-width': '.3', fill: 'none' }));
-    bg.appendChild(svgEl('path', { d: 'M47 -6.3 A56 56 0 0 1 95.5 21.7', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.8', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.75' }));
-    bg.appendChild(svgEl('path', { d: 'M-1.5 77.7 A56 56 0 0 1 -8.6 42', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.6', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.6' }));
+    bg.appendChild(svgEl('path', { d: 'M43 -6 A56 56 0 0 1 91.5 22', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.8', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.75' }));
+    bg.appendChild(svgEl('path', { d: 'M-5.5 78 A56 56 0 0 1 -12.6 42.3', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.6', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.6' }));
     var seed = 7; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
     for (var sp = 0; sp < 70; sp++) {
       var ang = rnd() * 6.2832, dist = 36 + rnd() * 50;
-      var sx = 47 + Math.cos(ang) * dist * 1.25, sy = 49.7 + Math.sin(ang) * dist * 0.95;
+      var sx = 43 + Math.cos(ang) * dist * 1.25, sy = 50 + Math.sin(ang) * dist * 0.95;
       bg.appendChild(svgEl('circle', { cx: sx.toFixed(2), cy: sy.toFixed(2), r: (0.35 + rnd() * 0.7).toFixed(2), fill: rnd() < 0.7 ? '#ff4a30' : '#ffc27a', class: 'cc-spark cc-spark-' + (sp % 4) }));
     }
     wrap.insertBefore(bg, wrap.firstChild);
@@ -251,24 +251,24 @@
     lg.appendChild(svgEl('stop', { offset: '1', 'stop-color': '#ffb070', 'stop-opacity': '.55' }));
     defs.appendChild(lg); svg.appendChild(defs);
     var g1 = svgEl('g', { class: 'cc-spin-a' });
-    g1.appendChild(svgEl('circle', { cx: '47', cy: '49.7', r: '38.5', fill: 'none', stroke: '#ffb070', 'stroke-opacity': '.45', 'stroke-width': '.35', 'stroke-dasharray': '1.2 2.4' }));
-    g1.appendChild(svgEl('path', { d: 'M47 8.2 A41.5 41.5 0 0 1 82.9 28.9', fill: 'none', stroke: '#ff4a2c', 'stroke-width': '.9', 'stroke-linecap': 'round', class: 'cc-glowline' }));
-    g1.appendChild(svgEl('path', { d: 'M11.1 70.5 A41.5 41.5 0 0 1 6.2 44.4', fill: 'none', stroke: '#ffb070', 'stroke-width': '.6', 'stroke-linecap': 'round' }));
+    g1.appendChild(svgEl('circle', { cx: '43', cy: '50', r: '38.5', fill: 'none', stroke: '#ffb070', 'stroke-opacity': '.45', 'stroke-width': '.35', 'stroke-dasharray': '1.2 2.4' }));
+    g1.appendChild(svgEl('path', { d: 'M43 8.5 A41.5 41.5 0 0 1 78.9 29.2', fill: 'none', stroke: '#ff4a2c', 'stroke-width': '.9', 'stroke-linecap': 'round', class: 'cc-glowline' }));
+    g1.appendChild(svgEl('path', { d: 'M7.1 70.8 A41.5 41.5 0 0 1 2.2 44.7', fill: 'none', stroke: '#ffb070', 'stroke-width': '.6', 'stroke-linecap': 'round' }));
     var g2 = svgEl('g', { class: 'cc-spin-b' });
-    g2.appendChild(svgEl('path', { d: 'M86.5 49.7 A39.5 39.5 0 0 1 61 86.6', fill: 'none', stroke: '#ff6a3a', 'stroke-width': '.7', 'stroke-linecap': 'round', 'stroke-dasharray': '6 2 1 2' }));
-    g2.appendChild(svgEl('path', { d: 'M20 21 A39.5 39.5 0 0 1 35 12', fill: 'none', stroke: '#ffd08a', 'stroke-width': '.5' }));
+    g2.appendChild(svgEl('path', { d: 'M82.5 50 A39.5 39.5 0 0 1 57 86.9', fill: 'none', stroke: '#ff6a3a', 'stroke-width': '.7', 'stroke-linecap': 'round', 'stroke-dasharray': '6 2 1 2' }));
+    g2.appendChild(svgEl('path', { d: 'M16 21.3 A39.5 39.5 0 0 1 31 12.3', fill: 'none', stroke: '#ffd08a', 'stroke-width': '.5' }));
     var sweep = svgEl('g', { class: 'cc-sweep' });
-    sweep.appendChild(svgEl('path', { d: 'M47 49.7 L47 16.2 A33.5 33.5 0 0 1 70.7 26 Z', fill: 'url(#ccSweepG)', opacity: '.33' }));
-    var orbitPath = 'M2 53 A45 10.5 0 1 0 92 53 A45 10.5 0 1 0 2 53';
-    var orbit = svgEl('g', { transform: 'rotate(-14 47 53)' });
-    orbit.appendChild(svgEl('path', { d: 'M2 53 A45 10.5 0 0 1 92 53', fill: 'none', stroke: '#ff3a25', 'stroke-opacity': '.35', 'stroke-width': '.4' }));
-    orbit.appendChild(svgEl('path', { d: 'M92 53 A45 10.5 0 0 1 2 53', fill: 'none', stroke: '#ff5a30', 'stroke-width': '.95', 'stroke-linecap': 'round', class: 'cc-glowline' }));
-    orbit.appendChild(svgEl('path', { d: 'M80 59.5 A45 10.5 0 0 1 30 63', fill: 'none', stroke: '#ffd9a0', 'stroke-width': '.35', 'stroke-linecap': 'round', opacity: '.85' }));
+    sweep.appendChild(svgEl('path', { d: 'M43 50 L43 16.5 A33.5 33.5 0 0 1 66.7 26.3 Z', fill: 'url(#ccSweepG)', opacity: '.33' }));
+    var orbitPath = 'M-2 53 A45 10.5 0 1 0 88 53 A45 10.5 0 1 0 -2 53';
+    var orbit = svgEl('g', { transform: 'rotate(-14 43 53)' });
+    orbit.appendChild(svgEl('path', { d: 'M-2 53 A45 10.5 0 0 1 88 53', fill: 'none', stroke: '#ff3a25', 'stroke-opacity': '.35', 'stroke-width': '.4' }));
+    orbit.appendChild(svgEl('path', { d: 'M88 53 A45 10.5 0 0 1 -2 53', fill: 'none', stroke: '#ff5a30', 'stroke-width': '.95', 'stroke-linecap': 'round', class: 'cc-glowline' }));
+    orbit.appendChild(svgEl('path', { d: 'M76 59.5 A45 10.5 0 0 1 26 63', fill: 'none', stroke: '#ffd9a0', 'stroke-width': '.35', 'stroke-linecap': 'round', opacity: '.85' }));
     var dot = svgEl('circle', { r: '1.15', fill: '#fff0c8', class: 'cc-orbit-dot' });
     if (!reduce) {
       var am = svgEl('animateMotion', { dur: '7.5s', repeatCount: 'indefinite', path: orbitPath });
       dot.appendChild(am);
-    } else { dot.setAttribute('cx', '92'); dot.setAttribute('cy', '53'); }
+    } else { dot.setAttribute('cx', '88'); dot.setAttribute('cy', '53'); }
     orbit.appendChild(dot);
     svg.appendChild(sweep); svg.appendChild(g1); svg.appendChild(g2); svg.appendChild(orbit);
     wrap.appendChild(svg);
