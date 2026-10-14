@@ -1,0 +1,6 @@
+# Nur lokal in .dev.vars kopieren. Produktive Secrets im Cloudflare-Dashboard.
+RV_SYNC_PASSWORD=replace-with-your-existing-rv-password
+# Optional: mindestens ein Provider-Key für echte KI-Anfragen.
+# OPENAI_API_KEY=
+# ANTHROPIC_API_KEY=
+AI_PROVIDER=openai

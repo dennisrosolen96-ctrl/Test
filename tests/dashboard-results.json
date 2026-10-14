@@ -1,0 +1,47 @@
+{
+  "scope": "Tatsächliche Dashboard-Berechnungsfunktionen aus public/dashboard.js. Kein Browsernachweis.",
+  "passed": 10,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Leerzustand liefert ausschließlich Nullwerte",
+      "result": "passed"
+    },
+    {
+      "name": "Umsatz, Gewinn, Gebühren, Versand und Durchschnitt aus vorhandenen Datensätzen",
+      "result": "passed"
+    },
+    {
+      "name": "Datum-only entspricht lokalem Mitternacht statt UTC",
+      "result": "passed"
+    },
+    {
+      "name": "Fehlendes Verkaufsdatum zählt nur im Zeitraum Alle",
+      "result": "passed"
+    },
+    {
+      "name": "7 und 30 Tage beginnen am lokalen Tagesanfang und überschneiden Vorperiode nicht",
+      "result": "passed"
+    },
+    {
+      "name": "Zeitraumgrenzen schließen Vorperiode und zukünftige Verkäufe korrekt aus",
+      "result": "passed"
+    },
+    {
+      "name": "Kein Prozenttrend bei Null- oder fehlendem Vergleich; echte Änderung berechnet",
+      "result": "passed"
+    },
+    {
+      "name": "Ein Verkauf erzeugt keine vorgetäuschte Trendlinie",
+      "result": "passed"
+    },
+    {
+      "name": "Zwei Verkäufe am identischen Datum erzeugen keinen zeitlichen Trend",
+      "result": "passed"
+    },
+    {
+      "name": "Realer Verlauf bewahrt Umsatz und Gewinn in Zeit-Buckets",
+      "result": "passed"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "rv-studio-v17-animated-reference",
+  "version": "17.0.0",
+  "private": true,
+  "description": "RV Studio V17 — bestehende Cloudflare-App mit animiertem Reference Command Center",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node tests/backend-contract.mjs && node tests/chat-and-sync.mjs && node tests/dashboard.mjs",
+    "test:browser": "node tests/browser.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "dom_errors": [],
+  "unclosed": [],
+  "duplicate_ids": [],
+  "missing_resources": [],
+  "api_unchanged": true,
+  "schema_unchanged": true,
+  "browser_qa": "Blocked: Chromium setsockopt Operation not permitted; requested execution approvals were interrupted."
+}

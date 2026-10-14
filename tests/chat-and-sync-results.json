@@ -1,0 +1,59 @@
+{
+  "scope": "Tatsächliche Chat-/Sync-Funktionen aus app.js, ausgeführt mit isolierten DOM/IndexedDB/API-Doubles. Kein Browser- oder Live-Cloudnachweis.",
+  "passed": 13,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Remote-Aktion ohne Kennwort zeigt Setup und keinen stillen lokalen Ersatz",
+      "result": "passed"
+    },
+    {
+      "name": "Alle sechs KI-Aktionen umgehen lokale Regex-Navigation und verwenden den API-Vertrag",
+      "result": "passed"
+    },
+    {
+      "name": "Providerantworten bleiben reiner Text statt ausführbarem HTML",
+      "result": "passed"
+    },
+    {
+      "name": "Fehlender API-Key wird mit Serverdetail und ohne erfundene Antwort angezeigt",
+      "result": "passed"
+    },
+    {
+      "name": "HTTP-, Netzwerk- und leere Providerantwortfehler entfernen die Wartemeldung",
+      "result": "passed"
+    },
+    {
+      "name": "Chat-Timeout bricht den Request ab und bereinigt die Wartemeldung",
+      "result": "passed"
+    },
+    {
+      "name": "Normaler lokaler Navigationsbefehl bleibt erhalten und ist als lokal markiert",
+      "result": "passed"
+    },
+    {
+      "name": "Dokumentevent rv:ai-request startet erzwungene Remote-Anfrage",
+      "result": "passed"
+    },
+    {
+      "name": "Aktives Cloudkennwort wird für KI genutzt, auch wenn das Kennwortfeld geleert wurde",
+      "result": "passed"
+    },
+    {
+      "name": "Parallele Remote-Klicks starten nur einen laufenden Request",
+      "result": "passed"
+    },
+    {
+      "name": "Cloud-Sync verwendet den bestehenden X-RV-Password-Vertrag",
+      "result": "passed"
+    },
+    {
+      "name": "Erfolgreicher Artikel-Sync leert die Queue ohne uploadModified-Scopefehler",
+      "result": "passed"
+    },
+    {
+      "name": "Während eines Uploads geänderter Artikel bleibt für nächsten Sync in der Queue",
+      "result": "passed"
+    }
+  ]
+}

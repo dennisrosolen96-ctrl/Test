@@ -1,0 +1,12 @@
+name = "rv-studio-cloud"
+pages_build_output_dir = "./public"
+compatibility_date = "2026-10-13"
+
+[[d1_databases]]
+binding = "RV_DB"
+database_name = "rv-studio-db"
+database_id = "626bb97d-dbbf-41cb-b1e4-93c7dac425d3"
+
+[[r2_buckets]]
+binding = "RV_PHOTOS"
+bucket_name = "rv-studio-photos"

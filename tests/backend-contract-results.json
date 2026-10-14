@@ -1,0 +1,75 @@
+{
+  "scope": "Isolierte API-Vertragstests mit in-memory D1/R2 und gemocktem KI-fetch. Keine echten Cloudflare- oder Provider-Zugriffe.",
+  "passed": 16,
+  "failed": 0,
+  "knownLimits": [
+    "Ungültiges vom Provider erzeugtes Listing-JSON liefert aktuell HTTP 200 mit leeren Listings; der Test dokumentiert diesen bestehenden API-Vertrag.",
+    "D1/R2-Doubles prüfen den API-Vertrag, nicht echte Cloudflare-SQL-/Storage-Ausführung oder Parallelzugriffe."
+  ],
+  "tests": [
+    {
+      "name": "Authentifizierung: fehlendes Serverkennwort (503), falsches Kennwort (401)",
+      "result": "passed"
+    },
+    {
+      "name": "Vertrag: X-RV-Sync-Password allein ist nicht das akzeptierte Auth-Headerfeld",
+      "result": "passed"
+    },
+    {
+      "name": "Ping funktioniert ohne Speicherbindings; Artikeldaten benötigen D1/R2 (503)",
+      "result": "passed"
+    },
+    {
+      "name": "Artikel: Anlegen, Auflisten und Laden mit Revision 1",
+      "result": "passed"
+    },
+    {
+      "name": "Artikel: ID-/Foto-Validierung und Größenlimit",
+      "result": "passed"
+    },
+    {
+      "name": "Artikel: Optimistische Revision verhindert Überschreiben, Update erhöht Revision",
+      "result": "passed"
+    },
+    {
+      "name": "Artikel: Löschen mit Revision, Tombstone und explizite Wiederherstellung",
+      "result": "passed"
+    },
+    {
+      "name": "Einkaufschargen: Meta lesen, schreiben, Versionskonflikt und Validierung",
+      "result": "passed"
+    },
+    {
+      "name": "Fotos: R2 Upload/Download mit geschütztem no-store-Vertrag",
+      "result": "passed"
+    },
+    {
+      "name": "Fotos: Ungültige ID, MIME, leere Datei und ungültiger Schlüssel",
+      "result": "passed"
+    },
+    {
+      "name": "KI: Fehlende Nachricht/Bilder und fehlende Provider-Secrets werden gemeldet",
+      "result": "passed"
+    },
+    {
+      "name": "KI-Chat: OpenAI Responses und Claude Messages werden weiter angebunden",
+      "result": "passed"
+    },
+    {
+      "name": "Listing: Fotodaten, Nutzerfelder und JSON-Listings für alle drei Plattformen",
+      "result": "passed"
+    },
+    {
+      "name": "Listing: Claude erhält Fotos als Base64-Bildblöcke und Nutzerfelder",
+      "result": "passed"
+    },
+    {
+      "name": "KI: Providerfehler bleiben bei Chat und Listing verständliche 502-Antworten",
+      "result": "passed"
+    },
+    {
+      "name": "Bekannte Grenze: Ungültiges Listing-JSON liefert den bestehenden leeren 200-Fallback",
+      "result": "passed"
+    }
+  ]
+}
