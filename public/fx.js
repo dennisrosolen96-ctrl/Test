@@ -232,13 +232,31 @@
     var ticks = '';
     for (var a = 0; a < 360; a += 6) { var rad = a * Math.PI / 180, r1 = a % 30 ? 52 : 50.5; ticks += 'M' + (43 + Math.cos(rad) * r1).toFixed(2) + ' ' + (50 + Math.sin(rad) * r1).toFixed(2) + ' L' + (43 + Math.cos(rad) * 53.5).toFixed(2) + ' ' + (50 + Math.sin(rad) * 53.5).toFixed(2) + ' '; }
     bg.appendChild(svgEl('path', { d: ticks, stroke: '#ffb070', 'stroke-opacity': '.28', 'stroke-width': '.3', fill: 'none' }));
-    bg.appendChild(svgEl('path', { d: 'M43 -6 A56 56 0 0 1 91.5 22', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.8', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.75' }));
-    bg.appendChild(svgEl('path', { d: 'M-5.5 78 A56 56 0 0 1 -12.6 42.3', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.6', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.6' }));
+    // Rote Lichtbögen schwingen um die Erde (Drehung um die Globusmitte im SVG-Raum)
+    function turn(g, values, dur, spline) {
+      if (reduce) return g;
+      var at = svgEl('animateTransform', { attributeName: 'transform', type: 'rotate', values: values, dur: dur, repeatCount: 'indefinite' });
+      if (spline) { at.setAttribute('calcMode', 'spline'); at.setAttribute('keyTimes', '0;0.5;1'); at.setAttribute('keySplines', '.45 0 .55 1;.45 0 .55 1'); }
+      g.appendChild(at); return g;
+    }
+    var swA = turn(svgEl('g', {}), '-35 43 50;55 43 50;-35 43 50', '7s', true);
+    swA.appendChild(svgEl('path', { d: 'M43 -6 A56 56 0 0 1 91.5 22', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.9', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.85' }));
+    swA.appendChild(svgEl('circle', { cx: '91.5', cy: '22', r: '1', fill: '#ffd9a0', class: 'cc-orbit-dot' }));
+    var swB = turn(svgEl('g', {}), '30 43 50;-60 43 50;30 43 50', '9s', true);
+    swB.appendChild(svgEl('path', { d: 'M-5.5 78 A56 56 0 0 1 -12.6 42.3', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.7', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.75' }));
+    var swC = turn(svgEl('g', {}), '0 43 50;360 43 50', '14s', false);
+    swC.appendChild(svgEl('path', { d: 'M90 70 A51 51 0 0 1 60 98', fill: 'none', stroke: '#ff5a30', 'stroke-width': '.7', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.8' }));
+    swC.appendChild(svgEl('circle', { cx: '60', cy: '98', r: '.9', fill: '#fff0c8', class: 'cc-orbit-dot' }));
+    var swD = turn(svgEl('g', {}), '360 43 50;0 43 50', '19s', false);
+    swD.appendChild(svgEl('path', { d: 'M-3 22 A60 60 0 0 1 22 -6', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.55', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.65', 'stroke-dasharray': '5 1.5 1 1.5' }));
+    bg.appendChild(swA); bg.appendChild(swB); bg.appendChild(swC); bg.appendChild(swD);
+    var sparks = turn(svgEl('g', {}), '0 43 50;360 43 50', '60s', false);
+    bg.appendChild(sparks);
     var seed = 7; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
     for (var sp = 0; sp < 70; sp++) {
       var ang = rnd() * 6.2832, dist = 36 + rnd() * 50;
       var sx = 43 + Math.cos(ang) * dist * 1.25, sy = 50 + Math.sin(ang) * dist * 0.95;
-      bg.appendChild(svgEl('circle', { cx: sx.toFixed(2), cy: sy.toFixed(2), r: (0.35 + rnd() * 0.7).toFixed(2), fill: rnd() < 0.7 ? '#ff4a30' : '#ffc27a', class: 'cc-spark cc-spark-' + (sp % 4) }));
+      sparks.appendChild(svgEl('circle', { cx: sx.toFixed(2), cy: sy.toFixed(2), r: (0.35 + rnd() * 0.7).toFixed(2), fill: rnd() < 0.7 ? '#ff4a30' : '#ffc27a', class: 'cc-spark cc-spark-' + (sp % 4) }));
     }
     wrap.insertBefore(bg, wrap.firstChild);
     earths.push(e);
@@ -271,6 +289,17 @@
     } else { dot.setAttribute('cx', '88'); dot.setAttribute('cy', '53'); }
     orbit.appendChild(dot);
     svg.appendChild(sweep); svg.appendChild(g1); svg.appendChild(g2); svg.appendChild(orbit);
+    [[36.5, '6s', false, '#ff4a2c'], [44, '8.5s', true, '#ff3a25'], [40, '11s', false, '#ff7a40']].forEach(function (q, i) {
+      var r = q[0], g = svgEl('g', {});
+      var a0 = -Math.PI / 2, a1 = a0 + 0.9;
+      g.appendChild(svgEl('path', { d: 'M' + (43 + Math.cos(a0) * r).toFixed(2) + ' ' + (50 + Math.sin(a0) * r).toFixed(2) + ' A' + r + ' ' + r + ' 0 0 1 ' + (43 + Math.cos(a1) * r).toFixed(2) + ' ' + (50 + Math.sin(a1) * r).toFixed(2), fill: 'none', stroke: q[3], 'stroke-width': '.75', 'stroke-linecap': 'round', class: 'cc-glowline cc-comet-tail' }));
+      g.appendChild(svgEl('circle', { cx: (43 + Math.cos(a1) * r).toFixed(2), cy: (50 + Math.sin(a1) * r).toFixed(2), r: '.95', fill: '#fff0d0', class: 'cc-orbit-dot' }));
+      if (!reduce) {
+        var from = q[2] ? 360 : 0, to = q[2] ? 0 : 360, off = i * 120;
+        g.appendChild(svgEl('animateTransform', { attributeName: 'transform', type: 'rotate', values: (from + off) + ' 43 50;' + (to + off) + ' 43 50', dur: q[1], repeatCount: 'indefinite' }));
+      } else g.setAttribute('transform', 'rotate(' + i * 120 + ' 43 50)');
+      svg.appendChild(g);
+    });
     wrap.appendChild(svg);
   }
 

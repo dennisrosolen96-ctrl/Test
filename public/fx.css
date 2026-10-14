@@ -30,8 +30,8 @@ body:has(#home:not(.hidden))::after { width: calc(17px * var(--cc-zoom, 1)); }
 .cc-globe-hud, .cc-bot-hud { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
 .cc-globe-hud .cc-spin-a, .cc-globe-hud .cc-spin-b, .cc-globe-hud .cc-sweep { transform-box: view-box; transform-origin: 43px 50px; }
 .cc-bot-hud .cc-spin-a, .cc-bot-hud .cc-spin-b { transform-box: view-box; transform-origin: 50px 51px; }
-.cc-spin-a { animation: cc-spin 48s linear infinite; }
-.cc-spin-b { animation: cc-spin 30s linear infinite reverse; }
+.cc-spin-a { animation: cc-spin 22s linear infinite; }
+.cc-spin-b { animation: cc-spin 13s linear infinite reverse; }
 .cc-sweep { animation: cc-spin 5.5s linear infinite; mix-blend-mode: screen; }
 .cc-glowline { filter: drop-shadow(0 0 1.2px #ff4a2c) drop-shadow(0 0 2.4px #ff4a2c); }
 .cc-orbit-dot { filter: drop-shadow(0 0 1.6px #ffd38a) drop-shadow(0 0 3px #ff4a2c); }
@@ -199,3 +199,6 @@ body:has(#home:not(.hidden)) .cc-embers { display: block; }
 .v11-q .lb { color: #fff6ea; }
 /* Globus-Mitte (43 % im Ringbild) mittig im Panel ausrichten */
 .v15-globe-wrap { transform: translate(-43%, -50%) !important; }
+.cc-comet-tail { opacity: .9; }
+.cc-bot-hud .cc-spin-a { animation-duration: 48s; }
+.cc-bot-hud .cc-spin-b { animation-duration: 30s; }
