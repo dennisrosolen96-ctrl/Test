@@ -83,3 +83,23 @@ body:has(#home:not(.hidden)) .v11-ai .rv-crafted-chat #homeAiSend svg { stroke:n
 .cc-edge-corner { animation: cc-strip 6s ease-in-out infinite reverse; }
 @keyframes cc-strip { 0%,100% { opacity:.7; } 50% { opacity:1; } }
 @media (prefers-reduced-motion: reduce) { .cc-edge-strip, .cc-edge-corner { animation:none; } }
+
+/* Äußerer Panzerrahmen (ersetzt die Bildstreifen und die Krone) */
+.cc-bezel { display:none; position:fixed; inset:0; z-index:18; pointer-events:none; overflow:visible; }
+body:has(#home:not(.hidden)) .cc-bezel { display:block; }
+body:has(#home:not(.hidden))::before, body:has(#home:not(.hidden))::after { display:none; }
+.v16-crown { visibility:hidden; }
+.cc-bz-light { animation: cc-strip 4.5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .cc-bz-light { animation:none; } }
+
+/* Menü unten wie in der Referenz */
+.lux-bottomnav { background:transparent !important; box-shadow:none !important; padding-top:20px !important; }
+.lux-bottomnav button.selected { background:none !important; color:#ff6a4a !important; }
+.lux-bottomnav button.selected svg { color:#ff5a3a !important; filter:drop-shadow(0 0 4px #ff302b) drop-shadow(0 0 9px #ff302b88) !important; }
+.lux-bottomnav button.selected span { color:#ff7a5a; text-shadow:0 0 8px #ff302b; font-weight:600 !important; }
+.lux-bottomnav button.selected::after { display:none !important; }
+.lux-bottomnav button span { color:#e8e2da; }
+.lux-bottomnav button svg { color:#f2ece4; }
+.lux-bottomnav .orb { margin-top:-24px !important; }
+.lux-bottomnav .orb img { width:96px !important; filter:drop-shadow(0 0 10px #ff3a2588); }
+body:has(#home:not(.hidden)) main.wrap { padding-top:30px; }

@@ -50,7 +50,7 @@ body:has(#home:not(.hidden))::after { width: calc(17px * var(--cc-zoom, 1)); }
 
 /* ---------- Lebendiger KI-Roboter im Gravitationsfeld ---------- */
 .cc-bot { --gx: 0; --gy: 0; }
-.cc-bot-field { position: absolute; inset: -14%; width: 128%; height: 128%; z-index: 0; overflow: visible; pointer-events: none; }
+.cc-bot-field { position: absolute; left: -9%; top: -9%; width: 118%; height: 118%; z-index: 0; overflow: visible; pointer-events: none; }
 .cc-field-halo { animation: cc-fieldpulse 5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .cc-wave { opacity: 0; transform-box: fill-box; transform-origin: center; animation: cc-wave 4.5s ease-out infinite; filter: drop-shadow(0 0 1px #ff4a2c); }
 .cc-wave-1 { animation-delay: -1.5s; } .cc-wave-2 { animation-delay: -3s; }
@@ -92,7 +92,6 @@ body:has(#home:not(.hidden))::after { width: calc(17px * var(--cc-zoom, 1)); }
   filter: blur(2px); animation: cc-shadow 5.2s ease-in-out infinite; }
 .cc-bot.cc-busy .cc-bot-ring { animation-duration: 5s; }
 .cc-bot.cc-busy .cc-pupil { animation-duration: .6s; }
-.cc-bot.cc-busy .cc-wave { animation-duration: 1.8s; }
 .cc-bot.cc-busy .cc-bot-hud .cc-spin-b { animation-duration: 3.5s; }
 @keyframes cc-float { 0%, 100% { translate: 0 1.6%; } 50% { translate: 0 -3.4%; } }
 @keyframes cc-shadow { 0%, 100% { scale: 1.08 1; opacity: .95; } 50% { scale: .78 .8; opacity: .5; } }

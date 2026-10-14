@@ -291,6 +291,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const outline=(p,cut)=>`M ${p+cut} ${p} H ${w-p-cut} L ${w-p} ${p+cut} V ${h-p-cut} L ${w-p-cut} ${h-p} H ${p+cut} L ${p} ${h-p-cut} V ${p+cut} Z`;
     const path=(d,stroke,sw=1,extra='')=>`<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="miter" ${extra}/>`;
     if(glass){svg.innerHTML=glassFrame(el,w,h,id);return}
+    if(nav){svg.innerHTML=navFrame(w,h,id);return}
     let markup=`<defs>
       <linearGradient id="${id}m" x1="0" y1="0" x2=".75" y2="1" gradientUnits="objectBoundingBox">
         <stop stop-color="#4c463c"/><stop offset=".12" stop-color="#0e100f"/><stop offset=".26" stop-color="#70543a"/><stop offset=".4" stop-color="#181817"/><stop offset=".55" stop-color="#4b4031"/><stop offset=".7" stop-color="#11110f"/><stop offset=".87" stop-color="#5d492e"/><stop offset="1" stop-color="#1b1b18"/>
@@ -353,6 +354,38 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       markup+=path(`M 3 ${h-17} L 10 ${h-10} M ${w-3} 17 L ${w-10} 10`,'#927656',.8);
     }
     svg.innerHTML=markup;
+  }
+  // Menü unten wie in der Referenz: zwei Panzerfelder, schräg zur Mitte, Orb in runder Fassung.
+  function navFrame(w,h,id){
+    const t=16,b=h-3,L=w*.405,L2=w*.445,R=w-L,R2=w-L2,c=14,mx=w/2,cy=h*.47,rr=Math.min(h*.5,46);
+    const left=`M 3 ${b} V ${t+c} L ${3+c} ${t} H ${L} L ${L2} ${b} Z`;
+    const right=`M ${w-3} ${b} V ${t+c} L ${w-3-c} ${t} H ${R} L ${R2} ${b} Z`;
+    let m=`<defs>
+      <linearGradient id="${id}nf" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1f1914"/><stop offset=".35" stop-color="#0c0a08"/><stop offset="1" stop-color="#050404"/></linearGradient>
+      <linearGradient id="${id}ne" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#ff7a4a"/><stop offset=".12" stop-color="#e3a85e"/><stop offset=".5" stop-color="#fff0c8"/><stop offset=".88" stop-color="#e3a85e"/><stop offset="1" stop-color="#ff7a4a"/></linearGradient>
+      <radialGradient id="${id}ns" cx=".5" cy=".5" r=".5"><stop offset=".6" stop-color="#140806"/><stop offset=".85" stop-color="#2a0c06"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+      <filter id="${id}nb" filterUnits="userSpaceOnUse" x="-20" y="-40" width="${w+40}" height="${h+80}"><feGaussianBlur stdDeviation="2.4"/></filter></defs>`;
+    m+=`<path d="M 0 0 H ${w} V ${h} H 0 Z" fill="#030303"/><path d="M 0 0 H ${w}" stroke="#2a221a" stroke-width="1"/>`;
+    // Chevron-Platten über der Mitte und Verbindungslinien
+    m+=`<path d="M ${w*.36} 0 L ${w*.40} ${t-2} H ${w*.60} L ${w*.64} 0 Z" fill="url(#${id}nf)" stroke="#6b5338" stroke-width=".8"/>`;
+    m+=`<path d="M ${w*.39} 3 L ${w*.415} ${t-6} H ${w*.585} L ${w*.61} 3" fill="none" stroke="#e6b06a" stroke-width="1" opacity=".8"/>`;
+    for(const d of [left,right]){
+      m+=`<path d="${d}" fill="url(#${id}nf)"/>`;
+      m+=`<path d="${d}" fill="none" stroke="#ffa54a" stroke-width="3.5" opacity=".35" filter="url(#${id}nb)"/>`;
+      m+=`<path d="${d}" fill="none" stroke="url(#${id}ne)" stroke-width="1.1"/>`;
+    }
+    m+=`<path d="M 9 ${b-4} V ${t+c+4} L ${9+c-2} ${t+6} H ${L-6} M ${w-9} ${b-4} V ${t+c+4} L ${w-9-c+2} ${t+6} H ${R+6}" fill="none" stroke="#3a3026" stroke-width=".8"/>`;
+    // Glühende Oberkanten und Ecken
+    const glow=`M ${3+c} ${t} H ${L*.62} M ${w-3-c} ${t} H ${w-L*.62}`;
+    m+=`<path d="${glow}" stroke="#ffc46c" stroke-width="4" opacity=".55" filter="url(#${id}nb)"/><path d="${glow}" stroke="#fff3d6" stroke-width="1"/>`;
+    const red=`M 3 ${t+c+8} V ${b-6} M ${w-3} ${t+c+8} V ${b-6}`;
+    m+=`<path d="${red}" stroke="#ff2a1e" stroke-width="6" opacity=".75" filter="url(#${id}nb)"/><path d="${red}" stroke="#ff5a40" stroke-width="1.6"/>`;
+    // Runde Fassung des Orbs
+    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+8}" fill="url(#${id}ns)"/>`;
+    m+=`<circle cx="${mx}" cy="${cy}" r="${rr}" fill="none" stroke="#e6b06a" stroke-width="1" opacity=".75"/>`;
+    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+4}" fill="none" stroke="#ff4a2c" stroke-width="1.6" stroke-dasharray="10 5 3 5" opacity=".75" filter="url(#${id}nb)"/>`;
+    m+=`<path d="M ${L2} ${b} H ${R2}" stroke="#ff3a25" stroke-width="5" opacity=".6" filter="url(#${id}nb)"/><path d="M ${mx-w*.04} ${b} H ${mx+w*.04}" stroke="#ffe0b0" stroke-width="1.4"/>`;
+    return m;
   }
   // Glasfelder: feiner, leuchtender Goldrand statt Metallrahmen; Kennzahlen laufen nach rechts aus.
   function glassFrame(el,w,h,id){

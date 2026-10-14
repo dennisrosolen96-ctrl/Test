@@ -413,13 +413,50 @@
     var f = doc.querySelector('.v15-bot-frame'); if (!f || f.querySelector('.cc-bot-ring')) return;
     var img = f.querySelector('img'); if (!img) return;
     f.classList.add('cc-bot');
-    // Gravitationsfeld hinter dem Roboter: Halo und sich ausbreitende Wellen
+    // Kraftfeld im selben Stil wie beim Globus: Halo, Skalenring, Segmentringe,
+    // pendelnde rote Bögen, kreisende Lichtschweife und Funken (Mitte 50/51)
     var field = svgEl('svg', { viewBox: '0 0 100 100', class: 'cc-bot-field', 'aria-hidden': 'true' });
-    var fd = svgEl('defs', {}), fg = svgEl('radialGradient', { id: 'ccBotField' });
-    [['0', '#ff3a20', '.35'], ['.55', '#a01a0a', '.16'], ['1', '#000', '0']].forEach(function (q) { fg.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
+    var fd = svgEl('defs', {}), fg = svgEl('radialGradient', { id: 'ccBotField', cx: '50', cy: '51', r: '50', gradientUnits: 'userSpaceOnUse' });
+    [['0', '#ff4a20', '.30'], ['.45', '#c8250f', '.18'], ['.75', '#5a0c05', '.08'], ['1', '#000', '0']].forEach(function (q) { fg.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
     fd.appendChild(fg); field.appendChild(fd);
     field.appendChild(svgEl('circle', { cx: '50', cy: '51', r: '50', fill: 'url(#ccBotField)', class: 'cc-field-halo' }));
-    for (var w = 0; w < 3; w++) field.appendChild(svgEl('circle', { cx: '50', cy: '51', r: '36', fill: 'none', stroke: w === 1 ? '#ffc070' : '#ff4a2c', 'stroke-width': '.6', class: 'cc-wave cc-wave-' + w }));
+    function spin(g, values, dur, swing) {
+      if (reduce) return g;
+      var at = svgEl('animateTransform', { attributeName: 'transform', type: 'rotate', values: values, dur: dur, repeatCount: 'indefinite' });
+      if (swing) { at.setAttribute('calcMode', 'spline'); at.setAttribute('keyTimes', '0;0.5;1'); at.setAttribute('keySplines', '.45 0 .55 1;.45 0 .55 1'); }
+      g.appendChild(at); return g;
+    }
+    function arc(r, a0, a1) { var p0 = a0 * Math.PI / 180, p1 = a1 * Math.PI / 180; return 'M' + (50 + Math.cos(p0) * r).toFixed(2) + ' ' + (51 + Math.sin(p0) * r).toFixed(2) + ' A' + r + ' ' + r + ' 0 0 1 ' + (50 + Math.cos(p1) * r).toFixed(2) + ' ' + (51 + Math.sin(p1) * r).toFixed(2); }
+    var tk = '';
+    for (var ta = 0; ta < 360; ta += 6) { var tr = ta * Math.PI / 180, t1 = ta % 30 ? 44.5 : 43.5; tk += 'M' + (50 + Math.cos(tr) * t1).toFixed(2) + ' ' + (51 + Math.sin(tr) * t1).toFixed(2) + ' L' + (50 + Math.cos(tr) * 46).toFixed(2) + ' ' + (51 + Math.sin(tr) * 46).toFixed(2) + ' '; }
+    field.appendChild(svgEl('path', { d: tk, stroke: '#ffb070', 'stroke-opacity': '.28', 'stroke-width': '.3', fill: 'none' }));
+    var sr1 = spin(svgEl('g', {}), '0 50 51;360 50 51', '30s');
+    sr1.appendChild(svgEl('circle', { cx: '50', cy: '51', r: '48.5', fill: 'none', stroke: '#ffb070', 'stroke-opacity': '.3', 'stroke-width': '.6', 'stroke-dasharray': '4 1.4 .8 1.4' }));
+    var sr2 = spin(svgEl('g', {}), '360 50 51;0 50 51', '22s');
+    sr2.appendChild(svgEl('circle', { cx: '50', cy: '51', r: '41', fill: 'none', stroke: '#ff4a2c', 'stroke-opacity': '.3', 'stroke-width': '.4', 'stroke-dasharray': '9 4 2 4' }));
+    field.appendChild(sr1); field.appendChild(sr2);
+    var swa = spin(svgEl('g', {}), '-40 50 51;50 50 51;-40 50 51', '6.5s', true);
+    swa.appendChild(svgEl('path', { d: arc(47.5, 250, 300), fill: 'none', stroke: '#ff3a25', 'stroke-width': '.9', 'stroke-linecap': 'round', class: 'cc-glowline' }));
+    swa.appendChild(svgEl('circle', { cx: (50 + Math.cos(300 * Math.PI / 180) * 47.5).toFixed(2), cy: (51 + Math.sin(300 * Math.PI / 180) * 47.5).toFixed(2), r: '.9', fill: '#ffd9a0', class: 'cc-orbit-dot' }));
+    var swb = spin(svgEl('g', {}), '30 50 51;-55 50 51;30 50 51', '8.5s', true);
+    swb.appendChild(svgEl('path', { d: arc(47.5, 120, 160), fill: 'none', stroke: '#ff3a25', 'stroke-width': '.75', 'stroke-linecap': 'round', class: 'cc-glowline' }));
+    field.appendChild(swa); field.appendChild(swb);
+    [[42.5, '5.5s', false], [45, '8s', true]].forEach(function (q, k) {
+      var g = svgEl('g', {}), a0 = -Math.PI / 2, a1 = a0 + 0.9, r = q[0];
+      g.appendChild(svgEl('path', { d: 'M' + (50 + Math.cos(a0) * r).toFixed(2) + ' ' + (51 + Math.sin(a0) * r).toFixed(2) + ' A' + r + ' ' + r + ' 0 0 1 ' + (50 + Math.cos(a1) * r).toFixed(2) + ' ' + (51 + Math.sin(a1) * r).toFixed(2), fill: 'none', stroke: k ? '#ff3a25' : '#ff5a30', 'stroke-width': '.75', 'stroke-linecap': 'round', class: 'cc-glowline' }));
+      g.appendChild(svgEl('circle', { cx: (50 + Math.cos(a1) * r).toFixed(2), cy: (51 + Math.sin(a1) * r).toFixed(2), r: '.9', fill: '#fff0d0', class: 'cc-orbit-dot' }));
+      var off = k * 180;
+      if (!reduce) g.appendChild(svgEl('animateTransform', { attributeName: 'transform', type: 'rotate', values: (q[2] ? 360 + off : off) + ' 50 51;' + (q[2] ? off : 360 + off) + ' 50 51', dur: q[1], repeatCount: 'indefinite' }));
+      else g.setAttribute('transform', 'rotate(' + off + ' 50 51)');
+      field.appendChild(g);
+    });
+    var bsp = spin(svgEl('g', {}), '0 50 51;360 50 51', '50s'), bseed = 11;
+    function brnd() { bseed = (bseed * 9301 + 49297) % 233280; return bseed / 233280; }
+    for (var bs = 0; bs < 26; bs++) {
+      var ba = brnd() * 6.2832, bdist = 40 + brnd() * 12;
+      bsp.appendChild(svgEl('circle', { cx: (50 + Math.cos(ba) * bdist).toFixed(2), cy: (51 + Math.sin(ba) * bdist).toFixed(2), r: (0.3 + brnd() * 0.5).toFixed(2), fill: brnd() < 0.7 ? '#ff4a30' : '#ffc27a', class: 'cc-spark cc-spark-' + (bs % 4) }));
+    }
+    field.appendChild(bsp);
     f.insertBefore(field, img);
     var ring = img.cloneNode(false); ring.className = 'cc-bot-ring'; ring.removeAttribute('id'); ring.alt = ''; ring.setAttribute('aria-hidden', 'true');
     f.insertBefore(ring, img);
@@ -467,6 +504,71 @@
       setTimeout(look, 1300 + Math.random() * 2600);
     }
     setTimeout(blink, 1800); setTimeout(look, 1200);
+  }
+
+  /* Äußerer Panzerrahmen wie in der Referenz (fest am Bildschirmrand) */
+  function setupBezel() {
+    if (doc.querySelector('.cc-bezel')) return;
+    var svg = svgEl('svg', { class: 'cc-bezel', 'aria-hidden': 'true', focusable: 'false' });
+    doc.body.appendChild(svg);
+    function draw() {
+      var W = window.innerWidth, H = window.innerHeight;
+      var z = W < 720 ? Math.max(0.4, W / 720) : 1, rw = 17 * z, k = z;
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('width', W); svg.setAttribute('height', H);
+      function P(d, stroke, sw, extra) { return '<path d="' + d + '" fill="none" stroke="' + stroke + '" stroke-width="' + sw + '" ' + (extra || '') + '/>'; }
+      var m = '<defs>' +
+        '<linearGradient id="bzM" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#0b0a09"/><stop offset=".35" stop-color="#2a241d"/><stop offset=".55" stop-color="#0e0d0b"/><stop offset=".8" stop-color="#3a2f22"/><stop offset="1" stop-color="#0a0908"/></linearGradient>' +
+        '<linearGradient id="bzT" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#2e271f"/><stop offset=".5" stop-color="#0d0c0a"/><stop offset="1" stop-color="#1c1813"/></linearGradient>' +
+        '<linearGradient id="bzG" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffe3a8"/><stop offset=".3" stop-color="#b9813e"/><stop offset=".6" stop-color="#5e4026"/><stop offset="1" stop-color="#e9b66c"/></linearGradient>' +
+        '<filter id="bzB" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="' + (2.4 * k).toFixed(2) + '"/></filter></defs>';
+      // Seitenschienen mit Panzerplatten
+      [0, 1].forEach(function (side) {
+        var sx = function (x) { return side ? W - x : x; };
+        var plates = [[0.10, 0.27], [0.36, 0.55], [0.63, 0.82]];
+        var d = 'M' + sx(0) + ' 0 L' + sx(rw) + ' ' + (22 * k);
+        plates.forEach(function (pl) {
+          var y0 = H * pl[0], y1 = H * pl[1];
+          d += ' L' + sx(rw) + ' ' + y0 + ' L' + sx(rw + 5 * k) + ' ' + (y0 + 5 * k) + ' L' + sx(rw + 5 * k) + ' ' + (y1 - 5 * k) + ' L' + sx(rw) + ' ' + y1;
+        });
+        d += ' L' + sx(rw) + ' ' + (H - 22 * k) + ' L' + sx(0) + ' ' + H + ' Z';
+        m += '<path d="' + d + '" fill="url(#bzM)"' + (side ? ' transform="translate(0 0)"' : '') + '/>';
+        // Kantenlinien
+        var edge = d.replace(/ L[^L]* Z$/, '').replace(/^M[^L]*L/, 'M');
+        m += P(edge, '#ffb35c', 3 * k, 'opacity=".35" filter="url(#bzB)"') + P(edge, 'url(#bzG)', 1.1 * k);
+        m += P('M' + sx(rw * 0.42) + ' ' + (30 * k) + ' V' + (H - 30 * k), '#4a3a28', 0.8 * k);
+        // Rote Lichtbalken in den Platten
+        plates.forEach(function (pl, i) {
+          var y0 = H * pl[0] + 14 * k, y1 = H * pl[1] - 14 * k, x = sx(rw * 0.7);
+          var lb = 'M' + x + ' ' + y0 + ' V' + (i === 1 ? (y0 + (y1 - y0) * 0.55) : y1);
+          m += '<g class="cc-bz-light">' + P(lb, '#ff2a1e', 7 * k, 'opacity=".8" filter="url(#bzB)" stroke-linecap="round"') + P(lb, '#ff4a33', 2.4 * k, 'stroke-linecap="round"') + P(lb, '#ffe0c8', 0.8 * k, 'stroke-linecap="round"') + '</g>';
+          // Fasen-Chevrons zwischen den Platten
+          var cy = H * pl[1] + 0.04 * H;
+          m += P('M' + sx(0) + ' ' + (cy - 8 * k) + ' L' + sx(rw) + ' ' + (cy + 4 * k) + ' M' + sx(0) + ' ' + (cy + 2 * k) + ' L' + sx(rw * 0.7) + ' ' + (cy + 11 * k), '#d39a55', 0.9 * k, 'opacity=".85"');
+          m += '<circle cx="' + sx(rw * 0.42) + '" cy="' + (H * pl[0] - 0.02 * H) + '" r="' + (1.2 * k) + '" fill="#e0a868"/>';
+        });
+      });
+      // Krone oben: Metallband, Trapez mit rotem Lichtbalken, diagonale Eckplatten
+      var th = 8 * k, cw0 = W * 0.25, cw1 = W * 0.75, cd = 22 * k;
+      m += '<path d="M0 0 H' + W + ' V' + th + ' H0 Z" fill="url(#bzT)"/>';
+      m += '<path d="M' + cw0 + ' 0 H' + cw1 + ' L' + (cw1 - cd * 1.6) + ' ' + cd + ' H' + (cw0 + cd * 1.6) + ' Z" fill="url(#bzT)"/>';
+      var ce = 'M0 ' + th + ' H' + cw0 + ' L' + (cw0 + cd * 1.6) + ' ' + cd + ' H' + (cw1 - cd * 1.6) + ' L' + cw1 + ' ' + th + ' H' + W;
+      m += P(ce, '#ffb35c', 3 * k, 'opacity=".35" filter="url(#bzB)"') + P(ce, 'url(#bzG)', 1 * k);
+      var rb = 'M' + (W * 0.36) + ' ' + (cd * 0.5) + ' H' + (W * 0.64);
+      m += '<g class="cc-bz-light">' + P(rb, '#ff2a1e', 11 * k, 'opacity=".85" filter="url(#bzB)" stroke-linecap="round"') + P(rb, '#ff4a33', 3.4 * k, 'stroke-linecap="round"') + P(rb, '#fff0e0', 0.9 * k, 'stroke-linecap="round"') + '</g>';
+      m += P('M' + (W * 0.31) + ' ' + (th * 0.5) + ' H' + (W * 0.36) + ' M' + (W * 0.64) + ' ' + (th * 0.5) + ' H' + (W * 0.69), '#e0a868', 1 * k);
+      [0, 1].forEach(function (side) {
+        var sx = function (x) { return side ? W - x : x; };
+        var c = 'M' + sx(rw) + ' ' + (60 * k) + ' L' + sx(rw) + ' ' + (22 * k) + ' L' + sx(rw + 16 * k) + ' ' + th + ' H' + sx(W * 0.16);
+        m += '<path d="M' + sx(0) + ' 0 H' + sx(rw + 22 * k) + ' L' + sx(rw) + ' ' + (22 * k) + ' H' + sx(0) + ' Z" fill="url(#bzT)"/>';
+        m += P(c, '#ffc46c', 6 * k, 'opacity=".75" filter="url(#bzB)"') + P(c, '#fff0cc', 1.5 * k);
+        var rl = 'M' + sx(W * 0.2) + ' ' + (th * 0.55) + ' H' + sx(W * 0.24);
+        m += P(rl, '#ff3a25', 2 * k, 'filter="url(#bzB)"') + P(rl, '#ff6a50', 1 * k);
+      });
+      svg.innerHTML = m;
+    }
+    draw();
+    window.addEventListener('resize', draw);
+    window.addEventListener('orientationchange', draw);
   }
 
   function setupFills() {
@@ -556,7 +658,7 @@
   function drawStatic() { for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(0); } }
 
   function init() {
-    setupGlobe(); setupAvatar(); setupRobot(); setupFills(); setupGlints(); setupEmbers(); setupCounters();
+    setupGlobe(); setupAvatar(); setupRobot(); setupBezel(); setupFills(); setupGlints(); setupEmbers(); setupCounters();
     doc.documentElement.classList.add('cc-fx');
     if (reduce) { drawStatic(); window.addEventListener('resize', drawStatic); var nh = doc.getElementById('navHome'); if (nh) nh.addEventListener('click', function () { setTimeout(drawStatic, 60); }); }
     else requestAnimationFrame(frame);
