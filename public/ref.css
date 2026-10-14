@@ -54,3 +54,32 @@ body:has(#home:not(.hidden)) .v11-ai .rv-crafted-chat #homeAiSend svg { stroke:n
   .v11-prompts { gap:7px 8px; }
   .v11-prompts button { font-size:12px; min-height:32px; padding:5px 12px 5px 10px; gap:7px; }
 }
+
+/* Verkaufs-Übersicht: Glasfelder wie in der Referenz – durchscheinend, mit Leuchtrand */
+.v11-m.v11-hud, .v11-s2.v11-hud, .v11-cat.v11-hud { --cut:9px; }
+.v11-m { background:
+    radial-gradient(ellipse 60% 120% at 0% 0%, rgba(255,190,110,.10), transparent 70%),
+    linear-gradient(90deg, rgba(26,17,10,.78) 0%, rgba(16,10,6,.55) 55%, rgba(10,6,4,.12) 100%);
+  -webkit-backdrop-filter: blur(2.5px) saturate(1.2); backdrop-filter: blur(2.5px) saturate(1.2); }
+.v11-cat, .v11-s2 { background:
+    radial-gradient(ellipse 70% 90% at 0% 0%, rgba(255,190,110,.12), transparent 70%),
+    radial-gradient(ellipse 80% 60% at 100% 100%, rgba(255,90,40,.08), transparent 70%),
+    linear-gradient(140deg, rgba(28,18,10,.62), rgba(10,6,4,.48));
+  -webkit-backdrop-filter: blur(3px) saturate(1.2); backdrop-filter: blur(3px) saturate(1.2); }
+.v11-m .mi, .v11-s2 .mi { border:1px solid #c9964f; border-radius:8px;
+  background: radial-gradient(circle at 30% 20%, rgba(255,200,120,.18), rgba(20,12,6,.6) 70%);
+  box-shadow: 0 0 8px rgba(255,170,70,.28), inset 0 0 8px rgba(255,190,110,.18);
+  color:#ffd38a; }
+.v11-m .mi .v11-ico, .v11-s2 .mi .v11-ico { filter: drop-shadow(0 0 3px rgba(255,180,80,.85)); }
+.v11-m .val, .v11-s2 .val { text-shadow: 0 0 10px rgba(255,220,170,.22); }
+.v11-m .dl:not(.nil):not(.neg) { text-shadow: 0 0 6px rgba(86,231,155,.55); }
+.v11-cat .tr { background: rgba(60,48,32,.55); }
+/* Zeitraum-Umschalter mit Trennstrichen und Goldrand */
+.v11-seg { border-color:#9a7a48; background:rgba(8,6,5,.7); box-shadow: 0 0 8px rgba(255,170,70,.15), inset 0 0 6px rgba(255,190,110,.08); }
+.v11-seg button + button { border-left:1px solid rgba(154,122,72,.45); border-radius:0; }
+.v11-seg button[aria-pressed='true'] + button, .v11-seg button[aria-pressed='true'] { border-left-color:transparent; border-radius:100px; }
+/* Abschnittsrand: Lichtstreifen pulsieren sanft */
+.cc-edge-strip { animation: cc-strip 4.5s ease-in-out infinite; }
+.cc-edge-corner { animation: cc-strip 6s ease-in-out infinite reverse; }
+@keyframes cc-strip { 0%,100% { opacity:.7; } 50% { opacity:1; } }
+@media (prefers-reduced-motion: reduce) { .cc-edge-strip, .cc-edge-corner { animation:none; } }

@@ -282,13 +282,15 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const gold=el.classList.contains('gold')||el.classList.contains('v11-m')||el.classList.contains('v11-cat')||el.classList.contains('v11-s2')||el.classList.contains('v11-card')||el.parentElement.classList.contains('v11-prompts');
     const red=el.classList.contains('red')||el.classList.contains('v11-ai')||el.classList.contains('v11-ins');
     const id=svg.dataset.uid||(svg.dataset.uid='cc'+(++serial));
-    const signature=[width,height,panel,nav,gold,red].join(':');
+    const glass=el.classList.contains('v11-m')||el.classList.contains('v11-cat')||el.classList.contains('v11-s2');
+    const signature=[width,height,panel,nav,gold,red,glass].join(':');
     if(svg.dataset.size===signature)return;
     svg.dataset.size=signature;svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
     const w=width,h=height,c=panel?18:nav?22:10;
     const color=gold?'#ffd795':red?'#ff5140':panel?'#ffce85':'#ff7650';
     const outline=(p,cut)=>`M ${p+cut} ${p} H ${w-p-cut} L ${w-p} ${p+cut} V ${h-p-cut} L ${w-p-cut} ${h-p} H ${p+cut} L ${p} ${h-p-cut} V ${p+cut} Z`;
     const path=(d,stroke,sw=1,extra='')=>`<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="miter" ${extra}/>`;
+    if(glass){svg.innerHTML=glassFrame(el,w,h,id);return}
     let markup=`<defs>
       <linearGradient id="${id}m" x1="0" y1="0" x2=".75" y2="1" gradientUnits="objectBoundingBox">
         <stop stop-color="#4c463c"/><stop offset=".12" stop-color="#0e100f"/><stop offset=".26" stop-color="#70543a"/><stop offset=".4" stop-color="#181817"/><stop offset=".55" stop-color="#4b4031"/><stop offset=".7" stop-color="#11110f"/><stop offset=".87" stop-color="#5d492e"/><stop offset="1" stop-color="#1b1b18"/>
@@ -334,6 +336,15 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       markup+=path(`M ${mid-n*.58} 3 H ${mid+n*.58}`,`url(#${id}l)`,1.8);
       markup+=path(`M ${mid-n-9} ${h-2} L ${mid-n} ${h-11} H ${mid+n} L ${mid+n+9} ${h-2}`,'#635440',.7);
       markup+=path(`M 4 ${h*.26} V ${h*.42} M ${w-4} ${h*.60} V ${h*.77}`,red?'#ff342a':'#e09b4c',1.5);
+      // Rote Lichtstreifen an den Seiten, glühende Ecken und feine Skalen wie in der Referenz
+      const strips=`M 4 ${h*.14} V ${h*.6} M ${w-4} ${h*.4} V ${h*.88}`;
+      markup+=`<g class="cc-edge-strip">${path(strips,'#ff2a1e',12,`opacity=".85" filter="url(#${id}g)"`)}${path(strips,'#ff3b28',3.4)}${path(strips,'#ffe2cc',1.1)}</g>`;
+      const cg=`M 3 ${Math.min(70,h*.3)} V 22 L 22 3 H ${Math.min(120,w*.18)} M ${w-3} ${h-Math.min(70,h*.3)} V ${h-22} L ${w-22} ${h-3} H ${w-Math.min(120,w*.18)}`;
+      markup+=`<g class="cc-edge-corner">${path(cg,'#ffb04a',5,`opacity=".55" filter="url(#${id}g)"`)}${path(cg,'#ffe2a8',1.2)}</g>`;
+      let ticks='';for(let i=0;i<9;i++){const x=w*.22+i*7;ticks+=`M ${x} 6 V ${i%4?9:11} `;const x2=w*.78-i*7;ticks+=`M ${x2} ${h-6} V ${h-(i%4?9:11)} `}
+      for(let i=0;i<6;i++){const y=h*.64+i*6;ticks+=`M 7 ${y} H ${i%3?10:13} `;const y2=h*.36-i*6;ticks+=`M ${w-7} ${y2} H ${w-(i%3?10:13)} `}
+      markup+=path(ticks,'#c99a5c',.7,'opacity=".7"');
+      markup+=`<circle cx="4" cy="${h*.6}" r="2" fill="#ffd2b0" filter="url(#${id}g)"/><circle cx="${w-4}" cy="${h*.4}" r="2" fill="#ffd2b0" filter="url(#${id}g)"/>`;
       for(const x of [15,w-15])for(const y of [30,h-30])markup+=`<circle cx="${x}" cy="${y}" r="1.25" fill="#c49c64" opacity=".55"/>`;
       // Small circuitry marks carry depth without competing with the content.
       markup+=path(`M 17 ${h-15} H 48 L 54 ${h-21} M ${w-54} 20 L ${w-48} 14 H ${w-18}`,'#785b38',.6);
@@ -342,6 +353,25 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       markup+=path(`M 3 ${h-17} L 10 ${h-10} M ${w-3} 17 L ${w-10} 10`,'#927656',.8);
     }
     svg.innerHTML=markup;
+  }
+  // Glasfelder: feiner, leuchtender Goldrand statt Metallrahmen; Kennzahlen laufen nach rechts aus.
+  function glassFrame(el,w,h,id){
+    const fade=el.classList.contains('v11-m'),c=9;
+    const o=`M ${c} .75 H ${w-c} L ${w-.75} ${c} V ${h-c} L ${w-c} ${h-.75} H ${c} L .75 ${h-c} V ${c} Z`;
+    let m=`<defs>
+      <linearGradient id="${id}ge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe7b0"/><stop offset=".3" stop-color="#c8904a"/><stop offset=".65" stop-color="#7a5430"/><stop offset="1" stop-color="#e8b26a"/></linearGradient>
+      <filter id="${id}gg" filterUnits="userSpaceOnUse" x="-20" y="-20" width="${w+40}" height="${h+40}"><feGaussianBlur stdDeviation="2.4"/></filter>`;
+    if(fade)m+=`<linearGradient id="${id}fm" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#fff"/><stop offset=".62" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity=".08"/></linearGradient><mask id="${id}mk" maskUnits="userSpaceOnUse" x="-20" y="-20" width="${w+40}" height="${h+40}"><rect x="-20" y="-20" width="${w+40}" height="${h+40}" fill="url(#${id}fm)"/></mask>`;
+    m+=`</defs><g ${fade?`mask="url(#${id}mk)"`:''}>`;
+    m+=`<path d="${o}" fill="none" stroke="#ffae4a" stroke-width="3.5" opacity=".28" filter="url(#${id}gg)"/>`;
+    m+=`<path d="${o}" fill="none" stroke="url(#${id}ge)" stroke-width="1.1"/>`;
+    m+=`<path d="M 3.5 ${c+3} V ${c} L ${c} 3.5" fill="none" stroke="#3a2a1a" stroke-width=".6"/>`;
+    const tl=`M .75 ${Math.min(h*.6,34)} V ${c} L ${c} .75 H ${Math.min(w*.4,90)}`;
+    m+=`<path d="${tl}" fill="none" stroke="#ffcf7a" stroke-width="3" opacity=".7" filter="url(#${id}gg)"/><path d="${tl}" fill="none" stroke="#fff3d2" stroke-width="1.1"/>`;
+    const bt=`M ${w*.12} ${h-.75} H ${w*.55}`;
+    m+=`<path d="${bt}" fill="none" stroke="#ffb04a" stroke-width="3" opacity=".55" filter="url(#${id}gg)"/><path d="${bt}" fill="none" stroke="#ffe0a0" stroke-width=".9" opacity=".9"/>`;
+    if(!fade){const br=`M ${w-.75} ${h-Math.min(h*.5,30)} V ${h-c} L ${w-c} ${h-.75} H ${w-Math.min(w*.3,60)}`;m+=`<path d="${br}" fill="none" stroke="#ffcf7a" stroke-width="3" opacity=".5" filter="url(#${id}gg)"/><path d="${br}" fill="none" stroke="#ffe7b8" stroke-width=".9"/>`}
+    return m+`</g>`;
   }
   const resize='ResizeObserver' in window?new ResizeObserver(entries=>entries.forEach(e=>draw(e.target))):null;
   function refresh(){
