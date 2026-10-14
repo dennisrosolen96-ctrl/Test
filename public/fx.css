@@ -48,35 +48,56 @@ body:has(#home:not(.hidden))::after { width: calc(17px * var(--cc-zoom, 1)); }
   box-shadow: 0 0 10px 1px rgba(255, 120, 40, .45);
 }
 
-/* ---------- Lebendiger KI-Roboter ---------- */
+/* ---------- Lebendiger KI-Roboter im Gravitationsfeld ---------- */
+.cc-bot { --gx: 0; --gy: 0; }
+.cc-bot-field { position: absolute; inset: -14%; width: 128%; height: 128%; z-index: 0; overflow: visible; pointer-events: none; }
+.cc-field-halo { animation: cc-fieldpulse 5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.cc-wave { opacity: 0; transform-box: fill-box; transform-origin: center; animation: cc-wave 4.5s ease-out infinite; filter: drop-shadow(0 0 1px #ff4a2c); }
+.cc-wave-1 { animation-delay: -1.5s; } .cc-wave-2 { animation-delay: -3s; }
 .cc-bot .cc-bot-ring {
-  position: absolute; inset: 0; transform-origin: 50% 51%;
+  position: absolute; inset: 0; z-index: 1; transform-origin: 50% 51%;
   -webkit-mask-image: radial-gradient(circle at 50% 51%, transparent 0 33%, #000 35%);
           mask-image: radial-gradient(circle at 50% 51%, transparent 0 33%, #000 35%);
   animation: cc-spin 28s linear infinite;
 }
-.cc-bot .cc-bot-head {
-  position: relative; z-index: 1;
+.cc-bot-float { position: absolute; inset: 0; z-index: 2; display: block; pointer-events: none;
+  animation: cc-float 5.2s ease-in-out infinite;
+  transform: translate(calc(var(--gx) * 1.2%), calc(var(--gy) * 0.8%)) rotate(calc(var(--gx) * 3deg));
+  transition: transform .9s cubic-bezier(.4,.1,.3,1); }
+.cc-bot .cc-bot-head { width: 100%; height: 100%;
   -webkit-mask-image: radial-gradient(circle at 50% 51%, #000 0 33.5%, transparent 35%);
-          mask-image: radial-gradient(circle at 50% 51%, #000 0 33.5%, transparent 35%);
-  animation: cc-bob 4.2s ease-in-out infinite;
-}
-.cc-eye {
-  position: absolute; z-index: 2; width: 15%; height: 15%; top: 48.4%;
-  transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
-  background: radial-gradient(circle, #fff 0 13%, #ffd8c4 21%, #ff3b25 40%, rgba(255, 40, 20, .38) 60%, transparent 72%);
-  animation: cc-bob 4.2s ease-in-out infinite, cc-blink 5.6s ease-in-out infinite, cc-eyepulse 2.4s ease-in-out infinite, cc-look 9s ease-in-out infinite;
-}
-.cc-eye-l { left: 40%; }
-.cc-eye-r { left: 69.3%; animation-delay: 0s, .04s, .35s, 0s; }
+          mask-image: radial-gradient(circle at 50% 51%, #000 0 33.5%, transparent 35%); }
+/* Eingebrannte Augen abdecken, eigene Augen darüber */
+.cc-socket { position: absolute; width: 21%; height: 21%; top: 48.9%; transform: translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(circle, #1a0705 0 46%, #2a0b07 56%, rgba(60,12,6,.85) 64%, rgba(30,6,3,0) 74%); }
+.cc-socket-l { left: 39.8%; } .cc-socket-r { left: 69.3%; }
+.cc-eye { position: absolute; width: 14%; height: 14%; top: 48.9%; border-radius: 50%; pointer-events: none;
+  transform: translate(-50%, -50%) scaleY(1); transition: transform .07s ease-in;
+  box-shadow: 0 0 0 1.2px rgba(255,80,50,.75), 0 0 8px 1px rgba(255,40,20,.55), inset 0 0 5px rgba(255,40,20,.5);
+  background: radial-gradient(circle at 50% 50%, #120303 0 60%, #2a0604 72%); }
+.cc-eye-l { left: 39.8%; } .cc-eye-r { left: 69.3%; }
+.cc-pupil { position: absolute; left: 50%; top: 50%; width: 62%; height: 62%; border-radius: 50%;
+  transform: translate(calc(-50% + var(--gx) * 26%), calc(-50% + var(--gy) * 26%));
+  transition: transform .35s cubic-bezier(.3,.1,.2,1);
+  background: radial-gradient(circle, #fff 0 20%, #ffe6d8 28%, #ff5a3a 44%, #ff2a18 56%, rgba(255,30,15,.35) 68%, transparent 72%);
+  box-shadow: 0 0 12px 4px rgba(255,40,20,.85), 0 0 22px 6px rgba(255,40,20,.35); mix-blend-mode: normal; animation: cc-eyepulse 2.4s ease-in-out infinite; }
+.cc-blinking .cc-eye { transform: translate(-50%, -50%) scaleY(.08); }
 .cc-mouth {
-  position: absolute; z-index: 2; left: 54%; top: 59%; width: 6%; height: 4%; transform: translate(-50%, -50%);
+  position: absolute; z-index: 2; left: 54.5%; top: 59.5%; width: 6%; height: 4%; transform: translate(-50%, -50%);
   border-radius: 50%; background: radial-gradient(circle, #ffe0b0 0 20%, #ff9a40 45%, transparent 72%);
-  mix-blend-mode: screen; pointer-events: none; animation: cc-bob 4.2s ease-in-out infinite, cc-eyepulse 1.8s ease-in-out infinite;
+  mix-blend-mode: screen; pointer-events: none; animation: cc-eyepulse 1.8s ease-in-out infinite;
 }
+.cc-bot-shadow { position: absolute; left: 50%; bottom: 3%; width: 46%; height: 7%; z-index: 0; border-radius: 50%; pointer-events: none;
+  transform: translateX(-50%); background: radial-gradient(ellipse, rgba(255,70,30,.55), rgba(255,40,20,.15) 55%, transparent 72%);
+  filter: blur(2px); animation: cc-shadow 5.2s ease-in-out infinite; }
 .cc-bot.cc-busy .cc-bot-ring { animation-duration: 5s; }
-.cc-bot.cc-busy .cc-eye { animation-duration: 4.2s, 5.6s, .6s, 2.4s; }
+.cc-bot.cc-busy .cc-pupil { animation-duration: .6s; }
+.cc-bot.cc-busy .cc-wave { animation-duration: 1.8s; }
 .cc-bot.cc-busy .cc-bot-hud .cc-spin-b { animation-duration: 3.5s; }
+@keyframes cc-float { 0%, 100% { translate: 0 1.6%; } 50% { translate: 0 -3.4%; } }
+@keyframes cc-shadow { 0%, 100% { scale: 1.08 1; opacity: .95; } 50% { scale: .78 .8; opacity: .5; } }
+@keyframes cc-wave { 0% { scale: .92; opacity: 0; } 15% { opacity: .75; } 100% { scale: 1.42; opacity: 0; } }
+@keyframes cc-fieldpulse { 0%, 100% { opacity: .75; scale: .96; } 50% { opacity: 1; scale: 1.04; } }
 
 /* ---------- Lichtkanten, die über die Rahmen laufen ---------- */
 .cc-glint { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 4; }
@@ -134,7 +155,7 @@ body:has(#home:not(.hidden)) .cc-embers { display: block; }
 
 @media (prefers-reduced-motion: reduce) {
   .cc-glint, .cc-embers { display: none !important; }
-  .cc-spin-a, .cc-spin-b, .cc-sweep, .cc-bot-ring, .cc-bot-head, .cc-eye, .cc-mouth,
+  .cc-spin-a, .cc-spin-b, .cc-sweep, .cc-bot-ring, .cc-bot-head, .cc-eye, .cc-mouth, .cc-bot-float, .cc-pupil, .cc-wave, .cc-field-halo, .cc-bot-shadow,
   .lux-bottomnav .orb img, #homeAiSend { animation: none !important; }
   .v11-m svg.spark polyline { stroke-dashoffset: 0; animation: none !important; }
 }

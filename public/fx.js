@@ -413,23 +413,60 @@
     var f = doc.querySelector('.v15-bot-frame'); if (!f || f.querySelector('.cc-bot-ring')) return;
     var img = f.querySelector('img'); if (!img) return;
     f.classList.add('cc-bot');
+    // Gravitationsfeld hinter dem Roboter: Halo und sich ausbreitende Wellen
+    var field = svgEl('svg', { viewBox: '0 0 100 100', class: 'cc-bot-field', 'aria-hidden': 'true' });
+    var fd = svgEl('defs', {}), fg = svgEl('radialGradient', { id: 'ccBotField' });
+    [['0', '#ff3a20', '.35'], ['.55', '#a01a0a', '.16'], ['1', '#000', '0']].forEach(function (q) { fg.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
+    fd.appendChild(fg); field.appendChild(fd);
+    field.appendChild(svgEl('circle', { cx: '50', cy: '51', r: '50', fill: 'url(#ccBotField)', class: 'cc-field-halo' }));
+    for (var w = 0; w < 3; w++) field.appendChild(svgEl('circle', { cx: '50', cy: '51', r: '36', fill: 'none', stroke: w === 1 ? '#ffc070' : '#ff4a2c', 'stroke-width': '.6', class: 'cc-wave cc-wave-' + w }));
+    f.insertBefore(field, img);
     var ring = img.cloneNode(false); ring.className = 'cc-bot-ring'; ring.removeAttribute('id'); ring.alt = ''; ring.setAttribute('aria-hidden', 'true');
     f.insertBefore(ring, img);
-    img.classList.add('cc-bot-head');
-    ['l', 'r'].forEach(function (k) { var e = doc.createElement('span'); e.className = 'cc-eye cc-eye-' + k; e.setAttribute('aria-hidden', 'true'); f.appendChild(e); });
-    var m = doc.createElement('span'); m.className = 'cc-mouth'; m.setAttribute('aria-hidden', 'true'); f.appendChild(m);
+    // Schwebender Körper: Kopf, Augenhöhlen, Augen, Mund bewegen sich gemeinsam
+    var body = doc.createElement('span'); body.className = 'cc-bot-float'; body.setAttribute('aria-hidden', 'true');
+    f.insertBefore(body, img);
+    img.classList.add('cc-bot-head'); body.appendChild(img);
+    var eyes = [];
+    ['l', 'r'].forEach(function (k) {
+      var so = doc.createElement('span'); so.className = 'cc-socket cc-socket-' + k;
+      var e = doc.createElement('span'); e.className = 'cc-eye cc-eye-' + k;
+      var pu = doc.createElement('i'); pu.className = 'cc-pupil'; e.appendChild(pu);
+      body.appendChild(so); body.appendChild(e); eyes.push(e);
+    });
+    var m = doc.createElement('span'); m.className = 'cc-mouth'; body.appendChild(m);
+    var shadow = doc.createElement('span'); shadow.className = 'cc-bot-shadow'; shadow.setAttribute('aria-hidden', 'true'); f.appendChild(shadow);
     var svg = svgEl('svg', { viewBox: '0 0 100 100', class: 'cc-bot-hud', 'aria-hidden': 'true' });
     var a = svgEl('g', { class: 'cc-spin-b' });
     a.appendChild(svgEl('path', { d: 'M50 4 A47 47 0 0 1 93.5 33', fill: 'none', stroke: '#ff4a2c', 'stroke-width': '1.1', 'stroke-linecap': 'round', class: 'cc-glowline' }));
     a.appendChild(svgEl('path', { d: 'M7 68 A47 47 0 0 1 4 46', fill: 'none', stroke: '#ffc070', 'stroke-width': '.7', 'stroke-linecap': 'round' }));
-    var b = svgEl('g', { class: 'cc-spin-a' });
-    b.appendChild(svgEl('circle', { cx: '50', cy: '51', r: '36', fill: 'none', stroke: '#ffb070', 'stroke-opacity': '.35', 'stroke-width': '.4', 'stroke-dasharray': '1 3' }));
-    svg.appendChild(a); svg.appendChild(b); f.appendChild(svg);
+    var bb = svgEl('g', { class: 'cc-spin-a' });
+    bb.appendChild(svgEl('circle', { cx: '50', cy: '51', r: '36', fill: 'none', stroke: '#ffb070', 'stroke-opacity': '.35', 'stroke-width': '.4', 'stroke-dasharray': '1 3' }));
+    svg.appendChild(a); svg.appendChild(bb); f.appendChild(svg);
     doc.addEventListener('rv:ai-state', function (e) {
       var st = e && e.detail && e.detail.state;
       f.classList.toggle('cc-busy', st === 'busy');
       f.classList.toggle('cc-ok', st === 'ready');
     });
+    if (reduce) return;
+    // Blinzeln in unregelmäßigen Abständen, manchmal doppelt
+    function blink() {
+      if (homeVisible() && !doc.hidden) {
+        f.classList.add('cc-blinking');
+        setTimeout(function () { f.classList.remove('cc-blinking'); }, 150);
+        if (Math.random() < 0.25) setTimeout(function () { f.classList.add('cc-blinking'); setTimeout(function () { f.classList.remove('cc-blinking'); }, 140); }, 330);
+      }
+      setTimeout(blink, 2200 + Math.random() * 4200);
+    }
+    // Umherschauen: Blickziel wechselt, Kopf neigt sich leicht mit
+    var looks = [[0, 0], [-1, 0], [1, 0], [-0.7, -0.6], [0.7, -0.6], [0.5, 0.5], [-0.5, 0.4], [0, -0.8]];
+    function look() {
+      var tgt = Math.random() < 0.35 ? [0, 0] : looks[1 + Math.floor(Math.random() * (looks.length - 1))];
+      f.style.setProperty('--gx', tgt[0].toFixed(2));
+      f.style.setProperty('--gy', tgt[1].toFixed(2));
+      setTimeout(look, 1300 + Math.random() * 2600);
+    }
+    setTimeout(blink, 1800); setTimeout(look, 1200);
   }
 
   function setupFills() {

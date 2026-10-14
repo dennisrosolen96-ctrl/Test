@@ -1,4 +1,4 @@
-const CACHE='rv-studio-v18-reference-6';
+const CACHE='rv-studio-v18-reference-7';
 const FILES=['/','/index.html','/app.css','/dashboard.css','/fx.css','/ref.css','/app.js','/dashboard.js','/fx.js',
   '/vendor/jszip.min.js','/fonts/command-sans-regular.otf','/fonts/command-sans-bold.otf',
   '/rv-logo.jpg','/rv-ai-mascot.png','/rv-robot-premium.png','/rv-white.png',
