@@ -81,12 +81,23 @@ function buckets(list,rg,n){
   });
   return out;
 }
+// Fallback trend like the reference: daily sales of the trailing days up to today.
+function trailing(list,days){
+  var today=new Date();today.setHours(0,0,0,0);
+  var from=today.getTime()-(days-1)*DAY,out=[],any=false;
+  for(var i=0;i<days;i++)out.push({rev:0,cnt:0,pro:0});
+  list.forEach(function(a){
+    if(!isSold(a))return;var t=saleTime(a);if(t===null||t<from)return;
+    var i=Math.min(days-1,Math.floor((t-from)/DAY));out[i].rev+=Number(a.sale.price)||0;out[i].cnt++;out[i].pro+=profitOf(a);any=true;
+  });
+  return any?out:null;
+}
 function sparkSvg(vals){
   if(!vals||vals.length<2)return '';
   var max=Math.max.apply(null,vals),min=Math.min.apply(null,vals);
   if(max===min){return '<svg class="spark" viewBox="0 0 44 22" aria-hidden="true"><path d="M1 16 H43" stroke="#ff5a44" stroke-width="1.2" stroke-dasharray="2 2" fill="none" opacity=".6"/></svg>'}
   var pts=vals.map(function(v,i){return (1+i*(42/(vals.length-1))).toFixed(1)+','+(20-((v-min)/(max-min))*17).toFixed(1)}).join(' ');
-  return '<svg class="spark" viewBox="0 0 44 22" aria-hidden="true"><polyline points="'+pts+'" fill="none" stroke="#ff4a36" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" style="filter:drop-shadow(0 0 3px rgba(255,59,47,.9))"/></svg>';
+  return '<svg class="spark" viewBox="0 0 44 22" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="spk" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ff3b2f" stop-opacity=".35"/><stop offset="1" stop-color="#ff3b2f" stop-opacity="0"/></linearGradient></defs><polygon points="1,22 '+pts+' 43,22" fill="url(#spk)"/><polyline points="'+pts+'" fill="none" stroke="#ff4a36" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" style="filter:drop-shadow(0 0 3px rgba(255,59,47,.9))"/></svg>';
 }
 function setMetric(key,val,d,spark){
   var v=$('v11-'+key+'-val'),dl=$('v11-'+key+'-dl'),sp=$('v11-'+key+'-sp');
@@ -105,7 +116,7 @@ function render(){
   var cur=soldIn(all,rg.from,rg.to,isAll),m=calc(cur);
   var pm=null;
   if(!isAll){pm=calc(soldIn(all,rg.pf,rg.pt,false))}
-  var bk=buckets(cur,rg,10);
+  var bk=buckets(cur,rg,10)||trailing(all,state.period==='30'?30:14);
   setMetric('rev',fmtEuro(m.rev),pm?delta(m.rev,pm.rev):null,bk&&sparkSvg(bk.map(function(b){return b.rev})));
   setMetric('cnt',String(m.cnt),pm?delta(m.cnt,pm.cnt):null,bk&&sparkSvg(bk.map(function(b){return b.cnt})));
   setMetric('pro',fmtEuro(m.pro),pm?delta(m.pro,pm.pro):null,bk&&sparkSvg(bk.map(function(b){return b.pro})));
@@ -335,8 +346,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const resize='ResizeObserver' in window?new ResizeObserver(entries=>entries.forEach(e=>draw(e.target))):null;
   function refresh(){
     for(const target of observed){if(!target.isConnected){if(resize)resize.unobserve(target);observed.delete(target)}}
-    document.querySelectorAll('#v11Root .v11-hud,#v11Root .v11-prompts button,#bottomnav').forEach(el=>{
-      if(el.parentElement.classList.contains('v11-prompts'))el.classList.add('v11-hud','gold');
+    document.querySelectorAll('#v11Root .v11-hud,#bottomnav').forEach(el=>{
       draw(el);if(!observed.has(el)){observed.add(el);if(resize)resize.observe(el)}
     });
   }

@@ -1,0 +1,56 @@
+/* RV Studio V18 — Feinschliff nach Referenzbild.
+   Ergänzt dashboard.css/fx.css; Inhalte und Logik bleiben unverändert. */
+
+/* Begrüßung und Abschnittstitel in warmem Gold wie in der Referenz */
+.v11-greet b {
+  background:linear-gradient(180deg,#fff1c4 0%,#f8c678 55%,#e08a3a 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:none; filter:drop-shadow(0 0 8px #f7a24a40);
+}
+.v11-title { color:#f6d39a; text-shadow:0 0 10px #ff9a3a2e; }
+
+/* KI-Pill oben: rot leuchtende Kapsel */
+.v11-pill { background:radial-gradient(ellipse 80% 90% at 20% 50%,#6a120c66,transparent 80%),#0a0403; }
+.v11-pill span { color:#f4ece2; }
+
+/* Abschnitts-Symbole: umrandetes Sechseck statt gefüllter Fläche */
+.v11-ph .hx { color:#ff6a50; background:radial-gradient(circle,#3a0b0699,#0b0403 75%);
+  border:0; box-shadow:inset 0 0 0 1.5px #ff3d2a; filter:drop-shadow(0 0 4px #ff382a99); }
+.v11-ai .v11-ph .hx { box-shadow:0 0 10px #ff2013aa,inset 0 0 0 1.5px #ffb38a,inset 0 0 6px #ffeba0; }
+
+/* Kennzahlen: Trendlinie rechts im Feld wie in der Referenz */
+.v11-m .tx { display:flex; flex-wrap:wrap; align-items:baseline; column-gap:8px; }
+.v11-m .lbl { flex:0 0 100%; }
+.v11-m .val { white-space:nowrap; overflow-wrap:normal; }
+.v11-m svg.spark { right:6px; bottom:6px; width:86px; height:38px; z-index:0; opacity:.95; }
+.v11-m.has-trend .tx { padding-right:52px; }
+
+/* Top-Kategorien: kräftigere Balken, rote Erstplatzierung */
+.v11-cat .tr { height:7px; border-radius:4px; }
+.v11-cat .tr s { border-radius:4px; background:linear-gradient(90deg,#e6a43a,#ffe08a); }
+.v11-cat .row:first-child .tr s { background:linear-gradient(90deg,#ff2f2a,#ff7a6a); box-shadow:0 0 8px #ff302b99; }
+.v11-cat .pc { color:#ffb07a; }
+.v11-cat .row:first-child .pc { color:#ff8a72; }
+
+/* KI-Vorschläge als runde Pillen mit Goldrand */
+.v11-prompts { display:flex; flex-wrap:wrap; gap:9px 10px; }
+.v11-prompts button { flex:0 1 auto; min-height:36px; padding:7px 16px 7px 13px; gap:9px;
+  border:1px solid #b88a4a; border-radius:999px; clip-path:none;
+  background:radial-gradient(ellipse 90% 120% at 50% 0%,#3a281466,transparent 70%),#0b0806;
+  box-shadow:inset 0 0 8px #ffc06b14,0 0 6px #ff9a3a1a; font-size:13px; white-space:nowrap; }
+.v11-prompts button > .hud-frame { display:none; }
+.v11-prompts .v11-ico { color:#f8c678; }
+
+/* Senden-Knopf: Play-Dreieck */
+body:has(#home:not(.hidden)) .v11-ai .rv-crafted-chat #homeAiSend svg { stroke:none; transform:translateX(1px); }
+
+/* Aktuelle Einblicke: Zahlen rot-orange hervorgehoben, goldene Symbole */
+.v11-card p em { color:#ff6a4a; font-weight:600; }
+.v11-card .ci { color:#f8c678; }
+
+@media(max-width:999px) {
+  .v11-m svg.spark { width:60px; height:30px; right:4px; bottom:5px; }
+  .v11-m.has-trend .tx { padding-right:30px; column-gap:5px; }
+  .v11-prompts { gap:7px 8px; }
+  .v11-prompts button { font-size:12px; min-height:32px; padding:5px 12px 5px 10px; gap:7px; }
+}
