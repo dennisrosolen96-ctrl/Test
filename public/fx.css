@@ -13,9 +13,20 @@ body:has(#home:not(.hidden))::after { width: calc(17px * var(--cc-zoom, 1)); }
   box-shadow: 0 0 34px 6px rgba(255, 110, 40, .28);
 }
 .v15-globe-wrap.cc-live .v11-globe {
-  -webkit-mask-image: radial-gradient(circle at 47% 49.7%, transparent 0 31.4%, #000 33.8%);
-          mask-image: radial-gradient(circle at 47% 49.7%, transparent 0 31.4%, #000 33.8%);
+  -webkit-mask-image: radial-gradient(circle at 47% 49.7%, transparent 0 31.4%, #000 33.8%, #000 56%, rgba(0,0,0,.6) 63%, transparent 69%);
+          mask-image: radial-gradient(circle at 47% 49.7%, transparent 0 31.4%, #000 33.8%, #000 56%, rgba(0,0,0,.6) 63%, transparent 69%);
 }
+/* Referenz-Hintergrund des Globus: läuft weich ins Panel aus */
+.v15-globe-wrap .cc-globe-bg { position: absolute; left: -50%; top: -50%; width: 200%; height: 200%; overflow: visible; pointer-events: none; z-index: 0;
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 48.5% 49.85%, #000 55%, transparent 100%);
+          mask-image: radial-gradient(ellipse 50% 50% at 48.5% 49.85%, #000 55%, transparent 100%); }
+.v15-globe-wrap .v11-globe { position: relative; z-index: 0; }
+.v11-sales .body > .v11-col { position: relative; z-index: 2; }
+.cc-spark { filter: drop-shadow(0 0 .8px #ff5a30); animation: cc-twinkle 3.2s ease-in-out infinite; }
+.cc-spark-1 { animation-delay: -.8s; animation-duration: 2.6s; }
+.cc-spark-2 { animation-delay: -1.7s; animation-duration: 4.1s; }
+.cc-spark-3 { animation-delay: -2.4s; animation-duration: 3.6s; }
+@keyframes cc-twinkle { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
 .cc-globe-hud, .cc-bot-hud { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
 .cc-globe-hud .cc-spin-a, .cc-globe-hud .cc-spin-b, .cc-globe-hud .cc-sweep { transform-box: view-box; transform-origin: 47px 49.7px; }
 .cc-bot-hud .cc-spin-a, .cc-bot-hud .cc-spin-b { transform-box: view-box; transform-origin: 50px 51px; }

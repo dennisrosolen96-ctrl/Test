@@ -89,6 +89,18 @@
     this.dot = opt.dot || 1;
     this.lights = opt.lights !== false;
     this.size = 0;
+    if (opt.ocean) {
+      var oc = [], RR = Math.PI / 180, landSet = {};
+      for (var la0 = -80; la0 <= 80; la0 += 6) {
+        var ls0 = 6 / Math.max(0.25, Math.cos(la0 * RR));
+        for (var lo0 = -180; lo0 < 180; lo0 += ls0) {
+          var onLand = false;
+          for (var k0 = 0; k0 < LAND.length && !onLand; k0++) { var b0 = BOX[k0]; if (lo0 >= b0[0] && lo0 <= b0[2] && la0 >= b0[1] && la0 <= b0[3] && inPoly(lo0, la0, LAND[k0])) onLand = true; }
+          if (!onLand) oc.push([lo0 * RR, la0 * RR]);
+        }
+      }
+      this.ocean = oc;
+    }
     var hot = [];
     for (var i = 0; i < this.pts.length; i += Math.max(1, Math.round(this.pts.length / 52))) {
       hot.push({ p: this.pts[i], ph: Math.random() * 6.28, f: 0.8 + Math.random() * 1.8, red: Math.random() < 0.55 });
@@ -108,11 +120,23 @@
     ctx.clearRect(0, 0, s, s);
     // Kugel
     var g = ctx.createRadialGradient(cx - R * 0.32, cy - R * 0.38, R * 0.05, cx, cy, R);
-    g.addColorStop(0, 'rgba(150,72,26,0.97)'); g.addColorStop(0.45, 'rgba(66,26,10,0.98)'); g.addColorStop(1, 'rgba(14,5,2,1)');
+    g.addColorStop(0, 'rgba(34,14,6,0.98)'); g.addColorStop(0.5, 'rgba(12,5,3,0.99)'); g.addColorStop(1, 'rgba(6,3,2,1)');
     ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fillStyle = g; ctx.fill();
     var lc = this.lon0 + t * this.speed, ct = Math.cos(this.tilt), st = Math.sin(this.tilt);
     // Gradnetz
-    ctx.lineWidth = Math.max(0.6, s / 520); ctx.strokeStyle = 'rgba(255,140,60,0.13)';
+    // Ozean als feines Punktraster wie in der Referenz
+    if (this.ocean) {
+      var oc = this.ocean, od = Math.max(0.8, s / 420);
+      ctx.fillStyle = 'rgba(255,150,70,0.11)';
+      for (var oi = 0; oi < oc.length; oi++) {
+        var op = oc[oi], ocl = Math.cos(op[1]), odl = op[0] - (this.lon0 + t * this.speed);
+        var ox = ocl * Math.sin(odl), oy = Math.sin(op[1]), oz = ocl * Math.cos(odl);
+        var oy2 = oy * Math.cos(this.tilt) - oz * Math.sin(this.tilt), oz2 = oy * Math.sin(this.tilt) + oz * Math.cos(this.tilt);
+        if (oz2 <= 0.05) continue;
+        ctx.fillRect(cx + ox * R - od / 2, cy - oy2 * R - od / 2, od, od);
+      }
+    }
+    ctx.lineWidth = Math.max(0.6, s / 520); ctx.strokeStyle = 'rgba(255,140,60,0.17)';
     var la, lo, x, y, z, y2, z2, first;
     for (la = -60; la <= 60; la += 30) {
       ctx.beginPath(); first = true;
@@ -148,11 +172,11 @@
       buckets[bi].push(cx + x * R, cy - y2 * R);
     }
     var cols = ['rgba(205,112,44,0.55)', 'rgba(236,146,60,0.74)', 'rgba(255,182,92,0.88)', 'rgba(255,212,134,0.96)', 'rgba(255,238,184,1)'];
-    var dsz = Math.max(1.2, s / 210) * this.dot, gsz = dsz * 2.6;
+    var dsz = Math.max(1.2, s / 250) * this.dot, gsz = dsz * 2.6;
     ctx.globalCompositeOperation = 'lighter';
     for (var b = 2; b < 5; b++) {
       var ga = buckets[b]; if (!ga.length) continue;
-      ctx.fillStyle = 'rgba(255,120,40,' + (0.05 + b * 0.025) + ')';
+      ctx.fillStyle = 'rgba(255,120,40,' + (0.02 + b * 0.015) + ')';
       for (i = 0; i < ga.length; i += 2) ctx.fillRect(ga[i] - gsz / 2, ga[i + 1] - gsz / 2, gsz, gsz);
     }
     for (var b2 = 0; b2 < 5; b2++) {
@@ -177,8 +201,8 @@
       ctx.globalAlpha = 1;
     }
     // Lichtrand und Glanz
-    var rim = ctx.createRadialGradient(cx, cy, R * 0.82, cx, cy, R);
-    rim.addColorStop(0, 'rgba(255,120,40,0)'); rim.addColorStop(0.85, 'rgba(255,120,40,0.22)'); rim.addColorStop(1, 'rgba(255,200,120,0.55)');
+    var rim = ctx.createRadialGradient(cx, cy, R * 0.72, cx, cy, R);
+    rim.addColorStop(0, 'rgba(255,110,30,0)'); rim.addColorStop(0.75, 'rgba(255,110,30,0.06)'); rim.addColorStop(0.93, 'rgba(255,140,50,0.38)'); rim.addColorStop(1, 'rgba(255,225,160,0.9)');
     ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fillStyle = rim; ctx.fill();
     var sh = ctx.createRadialGradient(cx - R * 0.42, cy - R * 0.48, 0, cx - R * 0.42, cy - R * 0.48, R * 0.75);
     sh.addColorStop(0, 'rgba(255,220,170,0.16)'); sh.addColorStop(1, 'rgba(255,220,170,0)');
@@ -193,7 +217,30 @@
     var wrap = doc.querySelector('.v15-globe-wrap'); if (!wrap || wrap.querySelector('.cc-earth')) return;
     var c = doc.createElement('canvas'); c.className = 'cc-earth'; c.setAttribute('aria-hidden', 'true');
     wrap.appendChild(c);
-    var e = new Earth(c, { step: 1.9, lon0: 14, tilt: 26, speed: 0.11 });
+    var e = new Earth(c, { step: 1.9, lon0: 14, tilt: 38, speed: 0.11, ocean: true });
+    // Hintergrund nach Referenz: Halo, Ringe, Fadenkreuz und Funken, die ins Panel auslaufen
+    var bg = svgEl('svg', { viewBox: '-50 -50 200 200', class: 'cc-globe-bg', 'aria-hidden': 'true' });
+    var bd = svgEl('defs', {});
+    var rg = svgEl('radialGradient', { id: 'ccHalo', cx: '47', cy: '49.7', r: '62', gradientUnits: 'userSpaceOnUse' });
+    [['0', '#ff4a20', '.30'], ['.42', '#c8250f', '.20'], ['.7', '#5a0c05', '.10'], ['1', '#000', '0']].forEach(function (q) { rg.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
+    bd.appendChild(rg); bg.appendChild(bd);
+    bg.appendChild(svgEl('circle', { cx: '47', cy: '49.7', r: '62', fill: 'url(#ccHalo)' }));
+    [[50, '.22', '.25', ''], [56, '.16', '.2', '.6 1.8'], [63, '.12', '.18', ''], [71, '.08', '.15', '2 3']].forEach(function (q) {
+      bg.appendChild(svgEl('circle', { cx: '47', cy: '49.7', r: String(q[0]), fill: 'none', stroke: '#ff9a50', 'stroke-opacity': q[1], 'stroke-width': q[2], 'stroke-dasharray': q[3] }));
+    });
+    bg.appendChild(svgEl('path', { d: 'M-40 49.7 H134 M47 -36 V136 M-15 -12 L109 112 M109 -12 L-15 112', stroke: '#ff7a3a', 'stroke-opacity': '.10', 'stroke-width': '.25', fill: 'none' }));
+    var ticks = '';
+    for (var a = 0; a < 360; a += 6) { var rad = a * Math.PI / 180, r1 = a % 30 ? 52 : 50.5; ticks += 'M' + (47 + Math.cos(rad) * r1).toFixed(2) + ' ' + (49.7 + Math.sin(rad) * r1).toFixed(2) + ' L' + (47 + Math.cos(rad) * 53.5).toFixed(2) + ' ' + (49.7 + Math.sin(rad) * 53.5).toFixed(2) + ' '; }
+    bg.appendChild(svgEl('path', { d: ticks, stroke: '#ffb070', 'stroke-opacity': '.28', 'stroke-width': '.3', fill: 'none' }));
+    bg.appendChild(svgEl('path', { d: 'M47 -6.3 A56 56 0 0 1 95.5 21.7', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.8', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.75' }));
+    bg.appendChild(svgEl('path', { d: 'M-1.5 77.7 A56 56 0 0 1 -8.6 42', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.6', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.6' }));
+    var seed = 7; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    for (var sp = 0; sp < 70; sp++) {
+      var ang = rnd() * 6.2832, dist = 36 + rnd() * 50;
+      var sx = 47 + Math.cos(ang) * dist * 1.25, sy = 49.7 + Math.sin(ang) * dist * 0.95;
+      bg.appendChild(svgEl('circle', { cx: sx.toFixed(2), cy: sy.toFixed(2), r: (0.35 + rnd() * 0.7).toFixed(2), fill: rnd() < 0.7 ? '#ff4a30' : '#ffc27a', class: 'cc-spark cc-spark-' + (sp % 4) }));
+    }
+    wrap.insertBefore(bg, wrap.firstChild);
     earths.push(e);
     wrap.classList.add('cc-live');
     // HUD-Ringe, Radar-Sweep und Umlaufbahn mit wanderndem Licht
@@ -214,7 +261,9 @@
     sweep.appendChild(svgEl('path', { d: 'M47 49.7 L47 16.2 A33.5 33.5 0 0 1 70.7 26 Z', fill: 'url(#ccSweepG)', opacity: '.33' }));
     var orbitPath = 'M2 53 A45 10.5 0 1 0 92 53 A45 10.5 0 1 0 2 53';
     var orbit = svgEl('g', { transform: 'rotate(-14 47 53)' });
-    orbit.appendChild(svgEl('path', { d: orbitPath, fill: 'none', stroke: '#ff3a25', 'stroke-opacity': '.55', 'stroke-width': '.45' }));
+    orbit.appendChild(svgEl('path', { d: 'M2 53 A45 10.5 0 0 1 92 53', fill: 'none', stroke: '#ff3a25', 'stroke-opacity': '.35', 'stroke-width': '.4' }));
+    orbit.appendChild(svgEl('path', { d: 'M92 53 A45 10.5 0 0 1 2 53', fill: 'none', stroke: '#ff5a30', 'stroke-width': '.95', 'stroke-linecap': 'round', class: 'cc-glowline' }));
+    orbit.appendChild(svgEl('path', { d: 'M80 59.5 A45 10.5 0 0 1 30 63', fill: 'none', stroke: '#ffd9a0', 'stroke-width': '.35', 'stroke-linecap': 'round', opacity: '.85' }));
     var dot = svgEl('circle', { r: '1.15', fill: '#fff0c8', class: 'cc-orbit-dot' });
     if (!reduce) {
       var am = svgEl('animateMotion', { dur: '7.5s', repeatCount: 'indefinite', path: orbitPath });
