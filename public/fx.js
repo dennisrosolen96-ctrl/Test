@@ -621,8 +621,8 @@
     function A(tag, at, p) { var e = svgEl(tag, at); (p || S).appendChild(e); return e; }
     function grad(type, gid, at, stops) { var g = svgEl(type, Object.assign({ id: id + gid }, at || {})); stops.forEach(function (q) { g.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] == null ? '1' : q[2] })); }); d.appendChild(g); }
     var f = svgEl('filter', { id: id + 'g', x: '-60%', y: '-60%', width: '220%', height: '220%' }); f.appendChild(svgEl('feGaussianBlur', { stdDeviation: '2.2' })); d.appendChild(f);
-    grad('radialGradient', 'h', {}, [['0', '#3d9bff', '.6'], ['.55', '#1f5fd0', '.25'], ['1', '#000', '0']]);
-    grad('radialGradient', 'k', { cx: '.5', cy: '.4', r: '.6' }, [['0', '#12306a'], ['.7', '#050c1e'], ['1', '#02050e']]);
+    grad('radialGradient', 'h', {}, [['0', '#8a7cff', '.75'], ['.55', '#4a5cf0', '.35'], ['1', '#000', '0']]);
+    grad('radialGradient', 'k', { cx: '.5', cy: '.48', r: '.55' }, [['0', '#c8d6ff'], ['.25', '#6a7cff'], ['.55', '#2a2fa0'], ['.85', '#0b0d38'], ['1', '#05061a']]);
     grad('linearGradient', 'l', { x1: '0', y1: '0', x2: '1', y2: '0' }, [['0', '#7cc4ff', '0'], ['.5', '#ffffff'], ['1', '#7cc4ff', '0']]);
     grad('linearGradient', 't', { x1: '0', y1: '0', x2: '0', y2: '1' }, [['0', '#e6f4ff'], ['.5', '#5fb4ff'], ['1', '#1f6fe0']]);
     A('circle', { cx: 50, cy: 50, r: 50, fill: 'url(#' + id + 'h)', class: 'cc-field-halo' });
@@ -646,7 +646,7 @@
   function setupRobot() {
     var f = doc.querySelector('.v15-bot-frame'); if (!f || f.querySelector('.cc-orb')) return;
     Array.prototype.slice.call(f.children).forEach(function (c) { c.remove(); });
-    buildOrb(f, { R: 54 });
+    buildOrb(f, { R: 60 });
     var chat = doc.getElementById('ccChatBot'); if (chat && !chat.querySelector('.cc-orb')) { chat.innerHTML = ''; buildOrb(chat, { R: 54, pedestal: true }); }
     var av = doc.getElementById('ccChatAvatar'); if (av && !av.querySelector('.cc-orb')) { av.innerHTML = ''; buildOrb(av, { R: 54 }); }
   }
