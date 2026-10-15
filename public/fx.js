@@ -104,7 +104,7 @@
       this.ocean = oc;
     }
     var hot = [];
-    for (var i = 0; i < this.pts.length; i += Math.max(1, Math.round(this.pts.length / (opt.hd ? 130 : 52)))) {
+    for (var i = 0; i < this.pts.length; i += Math.max(1, Math.round(this.pts.length / (opt.hd ? 240 : 52)))) {
       hot.push({ p: this.pts[i], ph: Math.random() * 6.28, f: 0.8 + Math.random() * 1.8, red: Math.random() < 0.55 });
     }
     this.hot = hot;
@@ -144,7 +144,7 @@
         ctx.fillRect(cx + ox * R - od / 2, cy - oy2 * R - od / 2, od, od);
       }
     }
-    ctx.lineWidth = Math.max(0.6, s / 520); ctx.strokeStyle = this.hd ? 'rgba(60,140,255,0.12)' : 'rgba(60,140,255,0.17)';
+    ctx.lineWidth = Math.max(0.6, s / 520); ctx.strokeStyle = this.hd ? 'rgba(150,200,255,0.16)' : 'rgba(60,140,255,0.17)';
     var la, lo, x, y, z, y2, z2, first;
     var gstep = this.hd ? 15 : 30;
     for (la = this.hd ? -75 : -60; la <= (this.hd ? 75 : 60); la += gstep) {
@@ -176,12 +176,12 @@
       x = cl * Math.sin(d); y = Math.sin(p[1]); z = cl * Math.cos(d);
       y2 = y * ct - z * st; z2 = y * st + z * ct;
       if (z2 <= 0.02) continue;
-      var light = this.hd ? Math.max(0, x * -0.08 + y2 * 0.5 + z2 * 0.86) * 0.95 + 0.12 : z2 * 0.62 + Math.max(0, -x * 0.25 + y2 * 0.35) + 0.45;
+      var light = this.hd ? Math.max(0, x * -0.15 + y2 * 0.35 + z2 * 0.8) * 1.05 + 0.32 : z2 * 0.62 + Math.max(0, -x * 0.25 + y2 * 0.35) + 0.45;
       var bi = Math.min(4, Math.max(0, Math.floor(light * 5)));
       buckets[bi].push(cx + x * R, cy - y2 * R);
     }
-    var cols = ['rgba(44,112,205,0.55)', 'rgba(60,146,236,0.74)', 'rgba(92,182,255,0.88)', 'rgba(134,212,255,0.96)', 'rgba(184,238,255,1)'];
-    var dsz = Math.max(1.1, s / (this.hd ? 300 : 250)) * this.dot, gsz = dsz * 2.6;
+    var cols = ['rgba(120,150,190,0.5)', 'rgba(165,190,225,0.72)', 'rgba(205,220,242,0.88)', 'rgba(230,238,252,0.96)', 'rgba(252,253,255,1)'];
+    var dsz = Math.max(1.2, s / (this.hd ? 260 : 250)) * this.dot, gsz = dsz * 2.6;
     ctx.globalCompositeOperation = 'lighter';
     for (var b = 2; b < 5; b++) {
       var ga = buckets[b]; if (!ga.length) continue;
@@ -203,7 +203,7 @@
         y2 = y * ct - z * st; z2 = y * st + z * ct;
         if (z2 <= 0.1) continue;
         var tw = 0.35 + 0.65 * Math.max(0, Math.sin(t * h.f + h.ph));
-        var sz = s * 0.045 * (0.6 + tw * 0.6);
+        var sz = s * (this.hd ? 0.055 : 0.045) * (0.6 + tw * 0.6);
         ctx.globalAlpha = Math.min(1, tw * z2 * 1.1);
         ctx.drawImage(h.red ? SPRITE_RED : SPRITE_GOLD, cx + x * R - sz / 2, cy - y2 * R - sz / 2, sz, sz);
       }
@@ -669,8 +669,8 @@
     var ctx = c.getContext('2d'), list = [];
     function size() { c.width = Math.round(innerWidth * 0.5); c.height = Math.round(innerHeight * 0.5); }
     size(); window.addEventListener('resize', size);
-    var cols = ['61,155,255', '80,190,255', '120,110,255', '255,160,80', '61,155,255', '40,120,255'];
-    for (var i = 0; i < 18; i++) list.push({ x: Math.random(), y: Math.random(), r: 0.08 + Math.random() * 0.18, a: 0.16 + Math.random() * 0.2, vx: (Math.random() - .5) * 0.006, vy: (Math.random() - .5) * 0.006, ph: Math.random() * 6.28, c: cols[i % cols.length] });
+    var cols = ['255,170,110', '255,200,150', '110,160,255', '255,150,90', '200,215,235', '255,185,130'];
+    for (var i = 0; i < 18; i++) list.push({ x: Math.random() < .5 ? Math.random() * .16 : .84 + Math.random() * .16, y: Math.random(), r: 0.08 + Math.random() * 0.18, a: 0.16 + Math.random() * 0.2, vx: (Math.random() - .5) * 0.0015, vy: (Math.random() - .5) * 0.004, ph: Math.random() * 6.28, c: cols[i % cols.length] });
     for (var j = 0; j < 26; j++) list.push({ x: Math.random(), y: Math.random(), r: 0.006 + Math.random() * 0.012, a: 0.35 + Math.random() * 0.4, vx: (Math.random() - .5) * 0.01, vy: -0.004 - Math.random() * 0.01, ph: Math.random() * 6.28, c: Math.random() < .7 ? '150,205,255' : '255,190,120', dot: true });
     embers = function (t, dt) {
       var w = c.width, h = c.height, m = Math.max(w, h);
