@@ -1,0 +1,36 @@
+/* RV Studio – zufälliger Glanz und schaltbare Animationen */
+/* Dauerhafter Glanz aus: nur noch einzelne, zufällige Glanzmomente */
+.cc-sheen, #s4 .stock-card::before, .v11-m .mi::after, .v11-s2 .mi::after, .cc-q .ic::after { display:none !important; animation:none !important; }
+.v11-tile, .v11-q, .v11-card, .v11-m, .v11-s2, #s4 .stock-card, #s4 .v5-kpi, #s4 .v6-tile, #ccChat .cc-q, #finance .stat, #finance .insight { position:relative; overflow:hidden; }
+.cc-gleam { position:absolute; top:0; bottom:0; left:0; width:55%; z-index:3; pointer-events:none; border-radius:inherit;
+  background:linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 30%, rgba(255,245,225,.22) 50%, rgba(255,255,255,0) 70%, transparent 100%);
+  transform:translateX(-130%); animation:cc-gleam 2.2s ease-in-out forwards; }
+@keyframes cc-gleam { to { transform:translateX(260%); } }
+/* Schalter */
+html.cc-no-glint .cc-glint { display:none !important; }
+html.cc-no-globefx .cc-globe-gold, html.cc-no-globefx .cc-globe-bg, html.cc-no-globefx .cc-globe-hud, html.cc-no-globefx .v15-globe-wrap::before { display:none !important; }
+html.cc-no-globefx .v15-globe-wrap .cc-earth { animation:none !important; }
+html.cc-no-shimmer .v11-m .mi .v11-ico, html.cc-no-shimmer .v11-s2 .mi .v11-ico, html.cc-no-shimmer .v11-card .ci, html.cc-no-shimmer .cc-q .ic .v11-ico,
+html.cc-no-shimmer .v11-card p em, html.cc-no-shimmer #s4 .lux-stock-hero h1 em, html.cc-no-shimmer #s4 .v6-tile b, html.cc-no-shimmer #s4 .lux-stock-mark svg,
+html.cc-no-shimmer #finance #financeProfitHero, html.cc-no-shimmer :is(#finance, #settingsPage) h1 em, html.cc-no-shimmer .finance-mark, html.cc-no-shimmer .settings-mark,
+html.cc-no-shimmer .v11-tile .ic, html.cc-no-shimmer .v11-q .ic { animation:none !important; }
+html.cc-no-pulse .v11-pill, html.cc-no-pulse .v11-seg button[aria-pressed='true'], html.cc-no-pulse .v11-tile .bd, html.cc-no-pulse #s4 .stock-filter.selected,
+html.cc-no-pulse #s4 #stockNewArticleQuick, html.cc-no-pulse #steps .step.active, html.cc-no-pulse .cc-gold-rim,
+html.cc-no-pulse :is(#rvCloudConnect, #settingsAiApply, #settingsBackup, #v7BackupNow, #aiBtn, #next) { animation:none !important; }
+/* Einstellungen-Karte */
+.rv-anim-card { grid-column:1 / -1; }
+.rv-anim-list { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; margin-top:12px; }
+@media(max-width:640px) { .rv-anim-list { grid-template-columns:1fr; } }
+.rv-anim-row { position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; border-radius:14px; cursor:pointer;
+  border:1px solid transparent; background:linear-gradient(180deg, rgba(185,205,230,.12), rgba(90,110,140,.06)) padding-box, linear-gradient(180deg, rgba(18,26,40,.7), rgba(14,20,32,.76)) padding-box,
+  linear-gradient(165deg, rgba(255,255,255,.45), rgba(255,255,255,.1) 40%, rgba(255,255,255,.22)) border-box; }
+.rv-anim-row span { display:grid; gap:2px; min-width:0; }
+.rv-anim-row b { color:#f3f5f9; font-weight:600; font-size:14px; }
+.rv-anim-row small { color:#aeb8c8 !important; font-size:12px; line-height:1.3; }
+.rv-anim-row input[type=checkbox] { position:absolute; opacity:0; pointer-events:none; }
+.rv-switch { flex:none; width:44px; height:24px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22); position:relative; transition:background .2s ease, box-shadow .2s ease; }
+.rv-switch::after { content:''; position:absolute; left:2px; top:2px; width:18px; height:18px; border-radius:50%; background:#d9e0ea; transition:transform .2s ease, background .2s ease; }
+.rv-anim-row input:checked + .rv-switch { background:radial-gradient(ellipse at 50% 0, rgba(255,170,80,.6), rgba(120,60,20,.6)); border-color:#ffd585; box-shadow:0 0 10px rgba(255,160,70,.5); }
+.rv-anim-row input:checked + .rv-switch::after { transform:translateX(20px); background:#fff4e0; }
+.rv-anim-row input:focus-visible + .rv-switch { outline:2px solid #fff0ba; outline-offset:2px; }
+.rv-anim-sub select { max-width:130px; }

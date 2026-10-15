@@ -907,15 +907,17 @@
     lastFrame = now;
     var t = (now - start) / 1000, dt = Math.min(0.1, t - lastT); lastT = t;
     // Sparmodus: wenn das Gerät dauerhaft unter ~15 Bildern/s bleibt, teure Effekte abschalten
-    if (!lite) { frames++; if (t > 3 && t < 9 && frames / t < 12) { lite = true; root.classList.add('cc-lite'); Array.prototype.forEach.call(doc.querySelectorAll('svg'), function (v) { if (v.pauseAnimations && !v.closest('#bottomnav, .v15-globe-wrap')) v.pauseAnimations(); }); } }
+    if (!lite && (window.RVAnim || {}).autoLite !== false) { frames++; if (t > 3 && t < 9 && frames / t < 12) { lite = true; root.classList.add('cc-lite'); Array.prototype.forEach.call(doc.querySelectorAll('svg'), function (v) { if (v.pauseAnimations && !v.closest('#bottomnav, .v15-globe-wrap')) v.pauseAnimations(); }); } }
     if (lite && (frames++ % 2)) return;
     tick++;
-    if (hv && tick % 2 === 0) for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(t); }
+    var A = window.RVAnim || {};
+    if (hv && tick % 2 === 0 && A.globeSpin !== false) for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(t); }
     if (embers) embers(t, dt);
-    if (tick % 2 === 1) for (var pi = 0; pi < plasmas.length; pi++) { if (plasmas[pi].resize()) plasmas[pi].draw(t); }
+    if (tick % 2 === 1 && A.orb !== false) for (var pi = 0; pi < plasmas.length; pi++) { if (plasmas[pi].resize()) plasmas[pi].draw(t); }
   }
   function drawStatic() { for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(0); } for (var j = 0; j < plasmas.length; j++) { if (plasmas[j].resize()) plasmas[j].draw(2); } }
 
+  window.RVFx = { redraw: function () { drawStatic(); } };
   function init() {
     setupGlobe(); setupGlobeGold(); setupAvatar(); setupRobot(); setupNavCore(); setupNavTap(); setupPress(); setupGoldElsewhere(); setupFills(); setupGlints(); if (window.MutationObserver) { var ins = doc.getElementById('v11-insights'); if (ins) new MutationObserver(setupGlints).observe(ins, { childList: true }); var ci = doc.getElementById('ccChatIns'); if (ci) new MutationObserver(setupGlints).observe(ci, { childList: true }); } setupEmbers(); setupCounters();
     doc.documentElement.classList.add('cc-fx');
