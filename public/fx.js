@@ -469,7 +469,7 @@
   function setupGoldElsewhere() {
     var bot = doc.querySelector('.v15-bot-frame'); if (bot && !bot.querySelector('.cc-globe-gold')) goldField(bot, { R: 18.5, rays: 32, len0: 2.5, len1: 6, w0: .35, w1: .55, sparks: 14, sparkR: .8, arcW: .7, rim: true, cls: 'cc-gold-soft', seed: 21 });
     var chat = doc.getElementById('ccChatBot'); if (chat && !chat.querySelector('.cc-globe-gold')) goldField(chat, { R: 18.5, rays: 32, len0: 2.5, len1: 6, w0: .35, w1: .55, sparks: 14, sparkR: .8, arcW: .7, rim: true, cls: 'cc-gold-soft', seed: 27 });
-    var nav = doc.querySelector('#bottomnav .orb'); if (nav && !nav.querySelector('.cc-globe-gold')) goldField(nav, { R: 34, rays: 30, len0: 4, len1: 9, w0: .5, w1: .8, sparks: 14, sparkR: 1.6, arcW: 1.6, cls: 'cc-gold-nav', seed: 31 });
+    var nav = doc.querySelector('#bottomnav .orb'); if (nav && !nav.querySelector('.cc-globe-gold')) goldField(nav, { R: 18.5, rays: 28, len0: 2.5, len1: 6, w0: .45, w1: .7, sparks: 10, sparkR: 1.2, arcW: .9, rim: true, cls: 'cc-gold-nav', seed: 31 });
   }
 
   function setupAvatar() {
@@ -833,7 +833,7 @@
 
   function setupNavCore() {
     var btn = doc.querySelector('#bottomnav .orb'); if (!btn || btn.querySelector('.cc-navorb')) return;
-    btn.innerHTML = ''; var pl = plasmaInto(btn, { seed: 19, scale: .95 }); pl.c.classList.add('cc-nav-plasma'); buildNavOrb(btn);
+    btn.innerHTML = ''; var pl = plasmaInto(btn, { seed: 19, scale: 1 }); pl.c.classList.add('cc-nav-plasma'); buildNavOrb(btn);
   }
 
   /* Farbige Lichter hinter dem Glas: weiche, langsam treibende Lichtflecken */
