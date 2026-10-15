@@ -672,3 +672,53 @@ body:has(#home:not(.hidden)) main.wrap { padding-bottom:104px !important; }
     linear-gradient(170deg, rgba(255,255,255,.42), rgba(255,255,255,.10) 35%, rgba(255,255,255,.06) 70%, rgba(255,215,175,.55)) border-box !important; }
 #bottomnav.lux-bottomnav #navHome::before { inset:1px 2px 1px 1px !important; border-radius:999px 30px 30px 999px !important; }
 #bottomnav.lux-bottomnav .orb svg.cc-navorb { width:126px !important; height:126px !important; }
+
+/* ================= Animierte Lichteffekte auf Knöpfen und Karten ================= */
+@property --cc-a { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+.v11-tile, .v11-q, .v11-card, .v11-pill, .v11-m, .v11-s2, .v11-cat, .v11-prompts button, .v11-bell, .cc-q, .cc-side, .cc-pills .chat-chip, .v11-panel { position:relative; }
+/* 1) Lichtpunkt, der den Rand entlangläuft */
+.cc-glint { display:block !important; position:absolute !important; inset:-1px !important; z-index:3 !important; pointer-events:none; overflow:visible !important;
+  border-radius:inherit; padding:1.5px; box-sizing:border-box;
+  background:conic-gradient(from var(--cc-a), transparent 0 62%, rgba(90,160,255,.0) 64%, rgba(110,180,255,.9) 74%, #ffffff 78%, rgba(255,200,140,.85) 82%, transparent 90%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; filter:drop-shadow(0 0 4px rgba(110,180,255,.9));
+  animation:cc-orbitlight 7s linear infinite; animation-delay:var(--d,0s); opacity:.9; }
+.v11-panel > .cc-glint { animation-duration:14s; opacity:.6; padding:1px; }
+.cc-glint::after { display:none !important; }
+/* 2) Glanzstreifen, der über die Fläche gleitet */
+.cc-glint::before { display:none !important; }
+.cc-sheen { position:absolute; top:0; bottom:0; left:0; width:45%; z-index:2; pointer-events:none;
+  background:linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,.14) 50%, rgba(255,255,255,0) 70%, transparent 100%);
+  transform:translateX(-120%); animation:cc-sheen 7s ease-in-out infinite; animation-delay:calc(var(--d,0s) - 2s); }
+.v11-tile, .v11-q, .v11-card, .v11-m, .v11-s2, .cc-q, .v11-prompts button, .cc-pills .chat-chip { overflow:hidden; }
+@keyframes cc-orbitlight { to { --cc-a:360deg; } }
+@keyframes cc-sheen { 0%, 55% { transform:translateX(-120%); } 85%, 100% { transform:translateX(260%); } }
+/* 3) Symbole glühen sanft */
+.v11-tile .ic, .v11-q .ic, .v11-m .mi .v11-ico, .v11-s2 .mi .v11-ico, .v11-card .ci, .cc-q .ic .v11-ico, .lux-bottomnav button:not(.orb) svg {
+  animation:cc-iconglow 3.6s ease-in-out infinite; }
+.v11-tile:nth-child(2n) .ic, .v11-q:nth-child(2n) .ic, .v11-m:nth-child(2n) .mi .v11-ico { animation-delay:-1.2s; }
+.v11-tile:nth-child(3n) .ic, .v11-q:nth-child(3n) .ic, .v11-m:nth-child(3n) .mi .v11-ico { animation-delay:-2.4s; }
+@keyframes cc-iconglow { 0%,100% { filter:drop-shadow(0 0 2px rgba(255,255,255,.35)); } 50% { filter:drop-shadow(0 0 5px rgba(160,210,255,.95)) drop-shadow(0 0 12px rgba(80,160,255,.55)); } }
+.v11-m:first-child .mi .v11-ico, .v11-s2 .mi .v11-ico { animation-name:cc-iconglow-warm; }
+@keyframes cc-iconglow-warm { 0%,100% { filter:drop-shadow(0 0 2px rgba(255,200,140,.4)); } 50% { filter:drop-shadow(0 0 6px rgba(255,190,120,.95)) drop-shadow(0 0 12px rgba(255,160,90,.5)); } }
+/* 4) Antippen/Darüberfahren: Fläche leuchtet auf, hebt sich leicht */
+.v11-tile, .v11-q, .v11-card, .v11-prompts button, .cc-q, .cc-pills .chat-chip { transition:transform .2s ease, box-shadow .25s ease, filter .25s ease !important; }
+@media(hover:hover) {
+  .v11-tile:hover, .v11-q:hover, .v11-card:hover, .v11-prompts button:hover, .cc-q:hover, .cc-pills .chat-chip:hover {
+    transform:translateY(-2px); filter:brightness(1.15);
+    box-shadow:0 0 0 1px rgba(140,200,255,.55), 0 0 18px rgba(70,150,255,.45), 0 10px 22px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.25) !important; }
+  .v11-tile:hover > .cc-glint, .v11-q:hover > .cc-glint { animation-duration:2.2s; }
+}
+.v11-tile:active, .v11-q:active, .v11-card:active, .v11-prompts button:active, .cc-q:active, .cc-pills .chat-chip:active {
+  transform:scale(.96); box-shadow:0 0 0 1px rgba(160,210,255,.8), 0 0 24px rgba(70,150,255,.7), inset 0 0 18px rgba(90,170,255,.35) !important; }
+/* Badge pulsiert, Zeitraum-Knopf atmet */
+.v11-tile .bd { animation:cc-badge 2.2s ease-in-out infinite; }
+@keyframes cc-badge { 0%,100% { box-shadow:0 0 6px rgba(30,155,255,.8); transform:scale(1); } 50% { box-shadow:0 0 14px rgba(30,155,255,1), 0 0 24px rgba(30,155,255,.5); transform:scale(1.08); } }
+.v11-seg button[aria-pressed='true'] { animation:cc-segbreathe 3s ease-in-out infinite !important; }
+@keyframes cc-segbreathe { 0%,100% { box-shadow:inset 0 0 0 1.5px #5fb4ff, 0 0 8px rgba(61,155,255,.4); } 50% { box-shadow:inset 0 0 0 1.5px #9fd2ff, 0 0 16px rgba(61,155,255,.8); } }
+@media (prefers-reduced-motion: reduce) {
+  .cc-glint, .cc-sheen, .v11-tile .ic, .v11-q .ic, .v11-m .mi .v11-ico, .v11-s2 .mi .v11-ico, .v11-card .ci, .cc-q .ic .v11-ico, .lux-bottomnav button:not(.orb) svg, .v11-tile .bd, .v11-seg button[aria-pressed='true'] { animation:none !important; }
+}
+.cc-glint { padding:2px !important; filter:drop-shadow(0 0 5px rgba(110,180,255,1)) drop-shadow(0 0 10px rgba(80,150,255,.6)) !important; opacity:1 !important; }
+.v11-panel > .cc-glint { padding:1.5px !important; opacity:.75 !important; }
+.cc-sheen { background:linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 28%, rgba(255,255,255,.2) 50%, rgba(255,255,255,0) 72%, transparent 100%) !important; }

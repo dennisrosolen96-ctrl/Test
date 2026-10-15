@@ -553,12 +553,13 @@
     });
   }
   function setupGlints() {
-    var els = doc.querySelectorAll('#v11Root .v11-panel, #v11Root .v11-tile, #v11Root .v11-q, #v11Root .v11-card, #v11Root .v11-pill');
+    var els = doc.querySelectorAll('#ccChatIns .v11-card, #v11Root .v11-panel, #v11Root .v11-tile, #v11Root .v11-q, #v11Root .v11-card, #v11Root .v11-pill, #v11Root .v11-m, #v11Root .v11-s2, #v11Root .v11-cat, #v11Root .v11-prompts button, #v11Root .v11-bell, #ccChat .cc-q, #ccChat .chat-chip, #ccChat .cc-side');
     Array.prototype.forEach.call(els, function (el, i) {
       if (el.querySelector(':scope > .cc-glint')) return;
       var g = doc.createElement('i'); g.className = 'cc-glint'; g.setAttribute('aria-hidden', 'true');
       g.style.setProperty('--d', (-(i * 1.37) % 9).toFixed(2) + 's');
       el.appendChild(g);
+      if (!el.classList.contains('v11-panel') && !el.classList.contains('v11-cat') && !el.classList.contains('cc-side')) { var sh = doc.createElement('i'); sh.className = 'cc-sheen'; sh.setAttribute('aria-hidden', 'true'); sh.style.setProperty('--d', g.style.getPropertyValue('--d')); el.appendChild(sh); }
     });
   }
 
@@ -852,7 +853,7 @@
   function drawStatic() { for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(0); } for (var j = 0; j < plasmas.length; j++) { if (plasmas[j].resize()) plasmas[j].draw(2); } }
 
   function init() {
-    setupGlobe(); setupAvatar(); setupRobot(); setupNavCore(); setupNavTap(); setupFills(); setupGlints(); setupEmbers(); setupCounters();
+    setupGlobe(); setupAvatar(); setupRobot(); setupNavCore(); setupNavTap(); setupFills(); setupGlints(); if (window.MutationObserver) { var ins = doc.getElementById('v11-insights'); if (ins) new MutationObserver(setupGlints).observe(ins, { childList: true }); var ci = doc.getElementById('ccChatIns'); if (ci) new MutationObserver(setupGlints).observe(ci, { childList: true }); } setupEmbers(); setupCounters();
     doc.documentElement.classList.add('cc-fx');
     if (reduce) { drawStatic(); window.addEventListener('resize', drawStatic); var nh = doc.getElementById('navHome'); if (nh) nh.addEventListener('click', function () { setTimeout(drawStatic, 60); }); }
     else requestAnimationFrame(frame);
