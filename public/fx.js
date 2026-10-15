@@ -104,14 +104,14 @@
       this.ocean = oc;
     }
     var hot = [];
-    for (var i = 0; i < this.pts.length; i += Math.max(1, Math.round(this.pts.length / (opt.hd ? 240 : 52)))) {
+    for (var i = 0; i < this.pts.length; i += Math.max(1, Math.round(this.pts.length / (opt.hd ? 70 : 40)))) {
       hot.push({ p: this.pts[i], ph: Math.random() * 6.28, f: 0.8 + Math.random() * 1.8, red: Math.random() < 0.55 });
     }
     this.hot = hot;
     // Leuchtende Handelsrouten zwischen Städten (Längengrad, Breitengrad)
     var C = { ber: [13, 52], lon: [0, 51], par: [2, 49], mad: [-4, 40], rom: [12, 42], mos: [37, 56], ist: [29, 41], cai: [31, 30], lag: [3, 6], dub: [55, 25], del: [77, 28], nyc: [-74, 41], sao: [-46, -23], jnb: [28, -26], tok: [140, 36], sto: [18, 59] };
     var R2 = Math.PI / 180;
-    this.routes = opt.hd ? [['ber', 'nyc'], ['lon', 'dub'], ['par', 'lag'], ['rom', 'cai'], ['mad', 'sao'], ['mos', 'del'], ['ist', 'jnb'], ['sto', 'tok'], ['ber', 'mos'], ['lon', 'mad']].map(function (r, k) {
+    this.routes = opt.hd ? [['ber', 'nyc'], ['lon', 'dub'], ['rom', 'cai'], ['mos', 'del'], ['mad', 'sao']].map(function (r, k) {
       return { a: [C[r[0]][0] * R2, C[r[0]][1] * R2], b: [C[r[1]][0] * R2, C[r[1]][1] * R2], off: k * 0.37, sp: 0.18 + (k % 3) * 0.06, red: k % 3 !== 1 };
     }) : [];
   }
@@ -204,7 +204,7 @@
         y2 = y * ct - z * st; z2 = y * st + z * ct;
         if (z2 <= 0.1) continue;
         var tw = 0.35 + 0.65 * Math.max(0, Math.sin(t * h.f + h.ph));
-        var sz = s * (this.hd ? 0.055 : 0.045) * (0.6 + tw * 0.6);
+        var sz = s * (this.hd ? 0.04 : 0.04) * (0.6 + tw * 0.5);
         ctx.globalAlpha = Math.min(1, tw * z2 * 1.1);
         ctx.drawImage(h.red ? SPRITE_RED : SPRITE_GOLD, cx + x * R - sz / 2, cy - y2 * R - sz / 2, sz, sz);
       }
@@ -464,7 +464,7 @@
   }
   function setupGlobeGold() {
     var wrap = doc.querySelector('.v15-globe-wrap'); if (!wrap || wrap.querySelector('.cc-globe-gold')) return;
-    goldField(wrap, { C: 43, Y: 50, R: 33.7, sparks: 72, len0: 10, len1: 21, w0: .55, w1: .9 });
+    goldField(wrap, { C: 43, Y: 50, R: 33.7, sparks: 20, len0: 10, len1: 21, w0: .55, w1: .9 });
   }
   function setupGoldElsewhere() {
     var bot = doc.querySelector('.v15-bot-frame'); if (bot && !bot.querySelector('.cc-globe-gold')) goldField(bot, { R: 18.5, rays: 32, len0: 2.5, len1: 6, w0: .35, w1: .55, sparks: 14, sparkR: .8, arcW: .7, rim: true, cls: 'cc-gold-soft', seed: 21 });

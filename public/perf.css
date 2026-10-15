@@ -49,3 +49,5 @@ html.cc-lite .v15-globe-wrap .cc-gold-rays { animation:cc-spin 90s linear infini
 .v15-globe-wrap .cc-globe-gold { animation:cc-goldfield2 4.2s ease-in-out infinite !important; }
 @keyframes cc-goldfield2 { 0%,100% { opacity:.85; } 55% { opacity:1; } }
 .v15-globe-wrap .cc-ray { opacity:1; }
+/* Globus: Funken dezenter */
+.v15-globe-wrap .cc-gold-spark { filter:none !important; opacity:.7; }
