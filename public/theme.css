@@ -620,3 +620,55 @@ body:has(#home:not(.hidden)) main.wrap { padding-bottom:120px !important; }
 .lux-bottomnav .orb { margin-top:-30px !important; }
 .lux-bottomnav .orb { align-self:center !important; margin-top:-14px !important; min-height:0 !important; height:96px; display:grid !important; place-items:center !important; }
 .lux-bottomnav .orb .cc-nav-plasma { transform:translate(-50%,-50%) !important; }
+
+/* ================= Menüleiste exakt nach Vorlage ================= */
+#bottomnav.lux-bottomnav { left:50% !important; transform:translateX(-50%) !important; width:min(calc(100% - 16px), 900px) !important; bottom:8px !important;
+  height:auto !important; padding:0 2.2% calc(env(safe-area-inset-bottom,0px)) !important; border:0 !important; background:none !important; box-shadow:none !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important; overflow:visible !important;
+  display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) 11.4% repeat(3,minmax(0,1fr)) !important; align-items:center !important; }
+/* zwei getrennte Glasflügel */
+#bottomnav.lux-bottomnav::before, #bottomnav.lux-bottomnav::after { content:'' !important; display:block !important; position:absolute !important; top:0 !important; bottom:0 !important;
+  width:42.3% !important; height:auto !important; z-index:-1 !important; border-radius:999px !important; border:1px solid transparent !important; pointer-events:none;
+  -webkit-mask-image:none !important; mask-image:none !important; -webkit-backdrop-filter:blur(14px) !important; backdrop-filter:blur(14px) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14), 0 8px 24px rgba(0,0,0,.55) !important; }
+#bottomnav.lux-bottomnav::before { left:2.1% !important; right:auto !important;
+  background:linear-gradient(180deg, rgba(40,50,66,.62), rgba(14,18,26,.86)) padding-box,
+    linear-gradient(170deg, rgba(255,255,255,.42), rgba(255,255,255,.10) 35%, rgba(255,255,255,.06) 70%, rgba(255,255,255,.22)) border-box !important; }
+#bottomnav.lux-bottomnav::after { right:2.1% !important; left:auto !important;
+  background:radial-gradient(ellipse 22% 120% at 100% 50%, rgba(255,180,120,.30), transparent 75%) padding-box,
+    linear-gradient(180deg, rgba(40,50,66,.62), rgba(14,18,26,.86)) padding-box,
+    linear-gradient(170deg, rgba(255,255,255,.42), rgba(255,255,255,.10) 35%, rgba(255,255,255,.06) 70%, rgba(255,215,175,.55)) border-box !important; }
+/* Einträge */
+#bottomnav.lux-bottomnav button:not(.orb) { position:relative; min-height:70px !important; height:70px; padding:0 !important; gap:6px !important;
+  display:flex !important; flex-direction:column; align-items:center; justify-content:center; color:#f2f4f8 !important; background:none !important; border-radius:0 !important; }
+#bottomnav.lux-bottomnav button:not(.orb) svg { width:27px !important; height:27px !important; stroke-width:1.5 !important; color:#f2f4f8 !important; fill:none !important; filter:none !important; }
+#bottomnav.lux-bottomnav button span { font:400 12.5px/1 var(--cc-font) !important; color:#eef1f6 !important; text-shadow:none !important; letter-spacing:0 !important; }
+#bottomnav.lux-bottomnav button:not(.orb)::before { content:'' !important; display:block !important; position:absolute !important; inset:2px 4px !important; opacity:0;
+  border-radius:999px 26px 26px 999px !important; clip-path:none !important;
+  background:radial-gradient(ellipse 70% 80% at 45% 45%, rgba(40,110,255,.38), rgba(20,60,170,.18) 65%, rgba(20,60,170,.06)) !important;
+  box-shadow:inset 0 0 0 1px rgba(90,160,255,.35), inset 0 -6px 14px -6px rgba(70,150,255,.7) !important; transition:opacity .2s ease; }
+#bottomnav.lux-bottomnav button:not(.orb):not(:first-child)::before { border-radius:26px !important; }
+#bottomnav.lux-bottomnav button.selected::before, #bottomnav.lux-bottomnav button.cc-tap::before { opacity:1 !important; }
+#bottomnav.lux-bottomnav button:not(.orb).selected::after { content:'' !important; display:block !important; position:absolute !important; left:26% !important; right:26% !important;
+  bottom:0 !important; top:auto !important; height:3px !important; width:auto !important; border-radius:3px; background:#5fb4ff !important;
+  box-shadow:0 0 6px #3a9cff, 0 0 16px #2f8cff, 0 0 26px rgba(47,140,255,.7) !important; }
+#bottomnav.lux-bottomnav button.selected svg { color:#3aa0ff !important; fill:#3aa0ff !important; stroke:#7cc4ff !important; filter:drop-shadow(0 0 6px #2f8cff) drop-shadow(0 0 12px rgba(47,140,255,.6)) !important; }
+#bottomnav.lux-bottomnav button.selected span { color:#4aa8ff !important; text-shadow:0 0 8px rgba(47,140,255,.8) !important; font-weight:500 !important; }
+/* Mitte */
+#bottomnav.lux-bottomnav .orb { position:relative !important; height:70px !important; min-height:0 !important; margin:0 !important; padding:0 !important; overflow:visible !important;
+  display:block !important; background:none !important; }
+#bottomnav.lux-bottomnav .orb::before, #bottomnav.lux-bottomnav .orb::after { display:none !important; }
+#bottomnav.lux-bottomnav .orb svg.cc-navorb { position:absolute !important; left:50% !important; top:50% !important; width:118px !important; height:118px !important;
+  transform:translate(-50%,-50%) !important; filter:drop-shadow(0 0 10px rgba(90,110,255,.8)) !important; }
+#bottomnav.lux-bottomnav .orb .cc-nav-plasma { position:absolute !important; left:50% !important; top:50% !important; width:150px !important; height:150px !important;
+  transform:translate(-50%,-50%) !important; opacity:.85; }
+#bottomnav.lux-bottomnav .orb.cc-tap svg.cc-navorb { filter:drop-shadow(0 0 14px #6f86ff) drop-shadow(0 0 28px #4a5cff) !important; }
+body:has(#home:not(.hidden)) main.wrap { padding-bottom:104px !important; }
+#bottomnav.lux-bottomnav button.cc-nav-hidden:not(.orb) { display:none !important; }
+#bottomnav.lux-bottomnav::before { background:linear-gradient(180deg, rgba(30,38,52,.94), rgba(10,13,20,.97)) padding-box,
+    linear-gradient(170deg, rgba(255,255,255,.42), rgba(255,255,255,.10) 35%, rgba(255,255,255,.06) 70%, rgba(255,255,255,.22)) border-box !important; }
+#bottomnav.lux-bottomnav::after { background:radial-gradient(ellipse 22% 120% at 100% 50%, rgba(255,180,120,.30), transparent 75%) padding-box,
+    linear-gradient(180deg, rgba(30,38,52,.94), rgba(10,13,20,.97)) padding-box,
+    linear-gradient(170deg, rgba(255,255,255,.42), rgba(255,255,255,.10) 35%, rgba(255,255,255,.06) 70%, rgba(255,215,175,.55)) border-box !important; }
+#bottomnav.lux-bottomnav #navHome::before { inset:1px 2px 1px 1px !important; border-radius:999px 30px 30px 999px !important; }
+#bottomnav.lux-bottomnav .orb svg.cc-navorb { width:126px !important; height:126px !important; }

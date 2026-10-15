@@ -614,31 +614,34 @@
     return S;
   }
 
-  /* Menümitte: leuchtender Ring mit Lichtreflex und Dreieck (KI-Chat) */
+  /* Menümitte wie in der Vorlage: Glaskugel, leuchtender Ring, Pfeil, Lichtstrahl */
   function buildNavOrb(host) {
     var id = 'no' + (++orbSerial), S = svgEl('svg', { viewBox: '0 0 100 100', class: 'cc-navorb', 'aria-hidden': 'true' });
     var d = svgEl('defs', {}); S.appendChild(d);
     function A(tag, at, p) { var e = svgEl(tag, at); (p || S).appendChild(e); return e; }
     function grad(type, gid, at, stops) { var g = svgEl(type, Object.assign({ id: id + gid }, at || {})); stops.forEach(function (q) { g.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] == null ? '1' : q[2] })); }); d.appendChild(g); }
-    var f = svgEl('filter', { id: id + 'g', x: '-60%', y: '-60%', width: '220%', height: '220%' }); f.appendChild(svgEl('feGaussianBlur', { stdDeviation: '2.2' })); d.appendChild(f);
-    grad('radialGradient', 'h', {}, [['0', '#8a7cff', '.75'], ['.55', '#4a5cf0', '.35'], ['1', '#000', '0']]);
-    grad('radialGradient', 'k', { cx: '.5', cy: '.48', r: '.55' }, [['0', '#c8d6ff'], ['.25', '#6a7cff'], ['.55', '#2a2fa0'], ['.85', '#0b0d38'], ['1', '#05061a']]);
-    grad('linearGradient', 'l', { x1: '0', y1: '0', x2: '1', y2: '0' }, [['0', '#7cc4ff', '0'], ['.5', '#ffffff'], ['1', '#7cc4ff', '0']]);
-    grad('linearGradient', 't', { x1: '0', y1: '0', x2: '0', y2: '1' }, [['0', '#e6f4ff'], ['.5', '#5fb4ff'], ['1', '#1f6fe0']]);
-    A('circle', { cx: 50, cy: 50, r: 50, fill: 'url(#' + id + 'h)', class: 'cc-field-halo' });
-    A('circle', { cx: 50, cy: 50, r: 36, fill: 'url(#' + id + 'k)' });
-    A('circle', { cx: 50, cy: 50, r: 37, fill: 'none', stroke: '#3d9bff', 'stroke-width': '5', opacity: '.7', filter: 'url(#' + id + 'g)', class: 'cc-orb-pulse' });
-    A('circle', { cx: 50, cy: 50, r: 37, fill: 'none', stroke: '#bfe3ff', 'stroke-width': '1.4' });
-    function rot(v, dur) { var g = A('g', {}); if (!reduce) g.appendChild(svgEl('animateTransform', { attributeName: 'transform', type: 'rotate', values: v, dur: dur, repeatCount: 'indefinite' })); return g; }
-    A('circle', { cx: 50, cy: 50, r: 43, fill: 'none', stroke: '#5fb4ff', 'stroke-width': '1', 'stroke-dasharray': '14 5 3 5', opacity: '.8' }, rot('0 50 50;360 50 50', '12s'));
-    A('circle', { cx: 50, cy: 50, r: 30, fill: 'none', stroke: '#9fd2ff', 'stroke-width': '.6', 'stroke-dasharray': '2 2.4', opacity: '.7' }, rot('360 50 50;0 50 50', '9s'));
-    var cm = rot('0 50 50;360 50 50', '3.8s');
-    A('path', { d: 'M50 7 A43 43 0 0 1 80.4 19.6', fill: 'none', stroke: '#ffffff', 'stroke-width': '1.6', 'stroke-linecap': 'round', filter: 'url(#' + id + 'g)' }, cm);
-    A('circle', { cx: 80.4, cy: 19.6, r: 1.8, fill: '#fff' }, cm);
-    A('path', { d: 'M4 50 H96', stroke: 'url(#' + id + 'l)', 'stroke-width': '1.2', opacity: '.85' });
-    A('path', { d: 'M36 39 H64 L50 63 Z', fill: '#3d9bff', opacity: '.8', filter: 'url(#' + id + 'g)', class: 'cc-orb-pulse' });
-    A('path', { d: 'M36 39 H64 L50 63 Z', fill: 'url(#' + id + 't)', stroke: '#e6f4ff', 'stroke-width': '1', 'stroke-linejoin': 'round' });
-    A('path', { d: 'M43 43 H57 L50 55 Z', fill: '#0a1a3a', opacity: '.75' });
+    function blur(fid, sd) { var f = svgEl('filter', { id: id + fid, x: '-80%', y: '-80%', width: '260%', height: '260%' }); f.appendChild(svgEl('feGaussianBlur', { stdDeviation: sd })); d.appendChild(f); }
+    blur('g', '1.6'); blur('G', '4');
+    grad('radialGradient', 'k', { cx: '.45', cy: '.42', r: '.6' }, [['0', '#1a2650'], ['.6', '#0a1030'], ['.92', '#141c4a'], ['1', '#2a3a90']]);
+    grad('linearGradient', 'v', { x1: '0', y1: '0', x2: '0', y2: '1' }, [['0', '#9ab8ff', '0'], ['.5', '#e8f0ff', '1'], ['1', '#9ab8ff', '0']]);
+    // Lichtstrahl senkrecht
+    A('rect', { x: 49.4, y: -14, width: 1.2, height: 128, fill: 'url(#' + id + 'v)', opacity: '.85' });
+    A('rect', { x: 48, y: -14, width: 4, height: 128, fill: 'url(#' + id + 'v)', opacity: '.35', filter: 'url(#' + id + 'g)' });
+    // Kugel
+    A('circle', { cx: 50, cy: 50, r: 33, fill: 'url(#' + id + 'k)' });
+    A('path', { d: 'M26 40 A26 26 0 0 1 58 24', fill: 'none', stroke: '#ffffff', 'stroke-width': '2.2', 'stroke-linecap': 'round', opacity: '.55', filter: 'url(#' + id + 'g)' });
+    A('path', { d: 'M28 38 A24 24 0 0 1 52 26', fill: 'none', stroke: '#ffffff', 'stroke-width': '.8', 'stroke-linecap': 'round', opacity: '.7' });
+    [[73, 30, '#ffb070'], [76, 62, '#ffb070'], [30, 70, '#9ab8ff'], [68, 76, '#ffffff'], [22, 52, '#9ab8ff']].forEach(function (q) { A('circle', { cx: q[0], cy: q[1], r: '.9', fill: q[2], opacity: '.8' }); });
+    // Leuchtring
+    A('circle', { cx: 50, cy: 50, r: 34.5, fill: 'none', stroke: '#5a72ff', 'stroke-width': '6', opacity: '.75', filter: 'url(#' + id + 'G)', class: 'cc-orb-pulse' });
+    A('circle', { cx: 50, cy: 50, r: 34.5, fill: 'none', stroke: '#8ea6ff', 'stroke-width': '2.4', filter: 'url(#' + id + 'g)' });
+    A('circle', { cx: 50, cy: 50, r: 34.5, fill: 'none', stroke: '#eef3ff', 'stroke-width': '.9' });
+    // Pfeil
+    var arrow = 'M34 38 L50 45 L66 38 L50 66 Z';
+    A('path', { d: arrow, fill: 'none', stroke: '#2fc8ff', 'stroke-width': '4', 'stroke-linejoin': 'round', opacity: '.8', filter: 'url(#' + id + 'g)' });
+    A('path', { d: arrow, fill: 'rgba(40,190,255,.08)', stroke: '#7fe2ff', 'stroke-width': '1.8', 'stroke-linejoin': 'round' });
+    // Funkeln oben/unten am Strahl
+    [[50, 15.5], [50, 84.5]].forEach(function (q) { A('path', { d: 'M' + q[0] + ' ' + (q[1] - 3) + ' Q' + q[0] + ' ' + q[1] + ' ' + (q[0] + 3) + ' ' + q[1] + ' Q' + q[0] + ' ' + q[1] + ' ' + q[0] + ' ' + (q[1] + 3) + ' Q' + q[0] + ' ' + q[1] + ' ' + (q[0] - 3) + ' ' + q[1] + ' Q' + q[0] + ' ' + q[1] + ' ' + q[0] + ' ' + (q[1] - 3) + 'Z', fill: '#ffffff', class: 'cc-spark' }); });
     host.appendChild(S);
     return S;
   }
@@ -769,7 +772,7 @@
 
   function setupNavCore() {
     var btn = doc.querySelector('#bottomnav .orb'); if (!btn || btn.querySelector('.cc-navorb')) return;
-    btn.innerHTML = ''; var pl = plasmaInto(btn, { seed: 19, scale: 1.05 }); pl.c.classList.add('cc-nav-plasma'); buildNavOrb(btn);
+    btn.innerHTML = ''; var pl = plasmaInto(btn, { seed: 19, scale: .95 }); pl.c.classList.add('cc-nav-plasma'); buildNavOrb(btn);
   }
 
   /* Farbige Lichter hinter dem Glas: weiche, langsam treibende Lichtflecken */
