@@ -433,6 +433,7 @@
     d.appendChild(rg);
     var bl = svgEl('filter', { id: id + 'b', x: '-50%', y: '-50%', width: '200%', height: '200%' }); bl.appendChild(svgEl('feGaussianBlur', { stdDeviation: '.6' })); d.appendChild(bl);
     var org = C + 'px ' + Y + 'px';
+    if (o.rim) { A('circle', { cx: C, cy: Y, r: R + .3, fill: 'none', stroke: '#ffb060', 'stroke-width': '2.2', opacity: '.55', filter: 'url(#' + id + 'b)', class: 'cc-gold-rim' }); A('circle', { cx: C, cy: Y, r: R + .2, fill: 'none', stroke: '#ffe2b0', 'stroke-width': '.45', opacity: '.8', class: 'cc-gold-rim' }); }
     var rays = A('g', { class: 'cc-gold-rays', style: 'transform-origin:' + org });
     var seed = o.seed || 13; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
     for (var i = 0; i < N; i++) {
@@ -465,8 +466,8 @@
     goldField(wrap, { C: 43, Y: 50, R: 33.7 });
   }
   function setupGoldElsewhere() {
-    var bot = doc.querySelector('.v15-bot-frame'); if (bot && !bot.querySelector('.cc-globe-gold')) goldField(bot, { R: 33, rays: 36, len0: 6, len1: 13, w0: .35, w1: .6, sparks: 22, cls: 'cc-gold-soft', seed: 21 });
-    var chat = doc.getElementById('ccChatBot'); if (chat && !chat.querySelector('.cc-globe-gold')) goldField(chat, { Y: 44, R: 30, rays: 36, len0: 6, len1: 13, w0: .35, w1: .6, sparks: 22, cls: 'cc-gold-soft', seed: 27 });
+    var bot = doc.querySelector('.v15-bot-frame'); if (bot && !bot.querySelector('.cc-globe-gold')) goldField(bot, { R: 18.5, rays: 32, len0: 2.5, len1: 6, w0: .35, w1: .55, sparks: 14, sparkR: .8, arcW: .7, rim: true, cls: 'cc-gold-soft', seed: 21 });
+    var chat = doc.getElementById('ccChatBot'); if (chat && !chat.querySelector('.cc-globe-gold')) goldField(chat, { R: 18.5, rays: 32, len0: 2.5, len1: 6, w0: .35, w1: .55, sparks: 14, sparkR: .8, arcW: .7, rim: true, cls: 'cc-gold-soft', seed: 27 });
     var nav = doc.querySelector('#bottomnav .orb'); if (nav && !nav.querySelector('.cc-globe-gold')) goldField(nav, { R: 34, rays: 30, len0: 4, len1: 9, w0: .5, w1: .8, sparks: 14, sparkR: 1.6, arcW: 1.6, cls: 'cc-gold-nav', seed: 31 });
   }
 

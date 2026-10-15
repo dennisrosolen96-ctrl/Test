@@ -909,3 +909,11 @@ body:has(#home:not(.hidden))::before { background:none !important; display:none 
 #bottomnav.lux-bottomnav button:not(.orb) { height:62px; min-height:62px !important; }
 .v15-bot-frame .cc-gold-soft { width:120% !important; height:auto !important; aspect-ratio:1; z-index:2 !important; opacity:.75 !important; }
 #ccChatBot .cc-gold-soft { z-index:2 !important; opacity:.75 !important; }
+/* KI-Ball: Gold-Schein nur direkt um den Kern (gleiche Box wie die Plasma-Zeichenfläche) */
+.v15-bot-frame .cc-gold-soft { left:50% !important; top:50% !important; width:236px !important; height:236px !important; aspect-ratio:auto; transform:translate(-50%,-50%) !important; opacity:.85 !important; }
+@media(max-width:999px) { .v15-bot-frame .cc-gold-soft { width:200px !important; height:200px !important; } }
+#ccChatBot .cc-gold-soft { left:50% !important; top:0 !important; width:130% !important; height:auto !important; aspect-ratio:1; margin-top:-15%; transform:translateX(-50%) !important; opacity:.85 !important; }
+.v15-bot-frame .cc-gold-soft, #ccChatBot .cc-gold-soft { opacity:1 !important; }
+.cc-gold-rim { animation:cc-rimglow 4.2s ease-in-out infinite; }
+@keyframes cc-rimglow { 0%,100% { opacity:.45; } 55% { opacity:1; } }
+@media (prefers-reduced-motion: reduce) { .cc-gold-rim { animation:none; } }
