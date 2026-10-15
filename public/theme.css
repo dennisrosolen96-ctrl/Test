@@ -917,3 +917,4 @@ body:has(#home:not(.hidden))::before { background:none !important; display:none 
 .cc-gold-rim { animation:cc-rimglow 4.2s ease-in-out infinite; }
 @keyframes cc-rimglow { 0%,100% { opacity:.45; } 55% { opacity:1; } }
 @media (prefers-reduced-motion: reduce) { .cc-gold-rim { animation:none; } }
+#bottomnav.lux-bottomnav { zoom:var(--cc-zoom,1); }
