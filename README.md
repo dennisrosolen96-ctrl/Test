@@ -1,4 +1,6 @@
-# RV Studio V27 — Command Center
+# RV Studio V28 — Command Center
+
+Neu in V28 (Details: [UEBERGABE-V28.md](UEBERGABE-V28.md)): Animationen laufen wieder überall, auch bei Energiesparmodus; neuer Hauptschalter „Bewegung“, alle Animations-Schalter wirken auf allen Seiten.
 
 Neu in V27 (Details: [UEBERGABE-V27.md](UEBERGABE-V27.md)): Startseite responsiv im gleichen Design mit Übersicht, neuesten Artikeln, Verkaufsverlauf, Kategorien, Performance-Diagramm, KI-Assistent, Aufgaben und Trends.
 

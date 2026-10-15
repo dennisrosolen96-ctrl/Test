@@ -85,3 +85,26 @@ html.cc-no-shimmer #s4 .lux-stock-mark::before, html.cc-no-shimmer #finance .fin
 html.cc-no-shimmer .eyebrow::after { animation:none !important; }
 
 @media (prefers-reduced-motion: reduce) { .cc-ambient i, .cc-enter *, .eyebrow::after, .lux-stock-mark::before, .lux-stock-mark::after, .finance-mark::before, .finance-mark::after, .settings-mark::before, .settings-mark::after { animation:none !important; } }
+
+/* V28: Animations-Schalter wirken auch auf den neuen Seiten */
+#rvTop .rvt-tile, #hmRoot .st-m, #hmRoot .hm-q, #hmRoot .hm-row, #hmRoot .hm-cattile, #hmRoot .hm-s2, #hmRoot .hm-task, .sx-panel .st-m, .in-pf, .in-tipcard, .ch-q, .st-nav button, .st .st-action, #steps .step, .sx-pub, #s4 .bx-tab { position:relative; overflow:hidden; }
+#rvTop .rvt-tile .bd { z-index:4; }
+#rvTop .rvt-tile:has(.bd:not([hidden])) { overflow:visible; }
+html.cc-no-pulse :is(.bx-q .bd, .bx-cta-orb, .sx-cta, #nav.sx-nav #next, .rvt-pill .dot, .bx-st i, .ch-state::before, .ch-send, #homeAiSend, .sx-cta-orb) { animation:none !important; }
+html.cc-no-shimmer :is(#s4.bx .mi .bx-ico, .sx-orb::after, .bx-orb::after) { animation:none !important; }
+html.cc-no-globefx :is(.bx-ring .hud, .bx-ring .orbit, .ch-orb, .hm-globe::before) { animation:none !important; }
+/* Seitenauftritt für die neuen Seiten: Bereiche gleiten gestaffelt herein */
+:is(#home.cc-enter #hmRoot, #finance.cc-enter, #settingsPage.cc-enter, #aiChat.cc-enter .ch-root, #s4.cc-enter) > * { animation:cc-rise .55s cubic-bezier(.2,.7,.2,1) both; }
+:is(#home.cc-enter #hmRoot, #finance.cc-enter, #settingsPage.cc-enter, #aiChat.cc-enter .ch-root, #s4.cc-enter) > :nth-child(2) { animation-delay:.06s; }
+:is(#home.cc-enter #hmRoot, #finance.cc-enter, #settingsPage.cc-enter, #aiChat.cc-enter .ch-root, #s4.cc-enter) > :nth-child(3) { animation-delay:.12s; }
+:is(#home.cc-enter #hmRoot, #finance.cc-enter, #settingsPage.cc-enter, #aiChat.cc-enter .ch-root, #s4.cc-enter) > :nth-child(4) { animation-delay:.18s; }
+:is(#home.cc-enter #hmRoot, #finance.cc-enter, #settingsPage.cc-enter, #aiChat.cc-enter .ch-root, #s4.cc-enter) > :nth-child(n+5) { animation-delay:.24s; }
+html.cc-no-pagefx :is(#hmRoot, #finance, #settingsPage, .ch-root, #s4) > * { animation-name:none !important; }
+/* Randlicht auf den neuen Panels */
+html:not(.cc-no-glint) :is(.sx-panel, .bx-panel, #rvTop .rvt-tile.on)::after { content:''; position:absolute; inset:-1px; border-radius:inherit; pointer-events:none; padding:1px;
+  background:conic-gradient(from var(--rv-a,0deg), transparent 0 78%, rgba(120,190,255,.0) 80%, rgba(160,215,255,.9) 88%, #fff 90%, rgba(255,190,120,.8) 92%, transparent 96%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); -webkit-mask-composite:xor;
+  animation:rv-edge 9s linear infinite; opacity:.75; }
+@property --rv-a { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+@keyframes rv-edge { to { --rv-a:360deg; } }
+html.cc-lite :is(.sx-panel, .bx-panel)::after { display:none; }

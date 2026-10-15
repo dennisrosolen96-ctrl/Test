@@ -4,7 +4,8 @@
   'use strict';
   var doc = document, root = doc.documentElement;
   var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
-  var reduce = !!mq.matches;
+  // Bewegung folgt der App-Einstellung (Standard: immer an). Nur bei „Wie das System“ zählt die Systemvorgabe.
+  var reduce = (function () { try { var c = JSON.parse(localStorage.getItem('rv_anim_v1') || '{}') || {}; var m = c.motion || 'on'; return m === 'off' || (m === 'system' && !!mq.matches); } catch (e) { return false; } })();
   function homeVisible() { var h = doc.getElementById('home'); return !!h && !h.classList.contains('hidden'); }
 
   /* ---------- 1) Referenz-Layout auf Handybreite skalieren ---------- */
@@ -901,8 +902,8 @@
   var start = performance.now(), lastFrame = 0, lastT = 0, frames = 0, lite = false, tick = 0;
   function frame(now) {
     requestAnimationFrame(frame);
-    var hv = homeVisible(), ch = doc.getElementById('aiChat'), cv = !!ch && !ch.classList.contains('hidden');
-    if (doc.hidden || !(hv || cv)) return;
+    var hv = homeVisible();
+    if (doc.hidden) return;
     if (now - lastFrame < 33) return;
     lastFrame = now;
     var t = (now - start) / 1000, dt = Math.min(0.1, t - lastT); lastT = t;
@@ -911,9 +912,9 @@
     if (lite && (frames++ % 2)) return;
     tick++;
     var A = window.RVAnim || {};
-    if (hv && tick % 2 === 0 && A.globeSpin !== false) for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(t); }
+    if (tick % 2 === 0 && A.globeSpin !== false) for (var i = 0; i < earths.length; i++) { var ec = earths[i].c || earths[i].canvas; if (ec && !ec.offsetParent) continue; if (earths[i].resize()) earths[i].draw(t); }
     if (embers) embers(t, dt);
-    if (tick % 2 === 1 && A.orb !== false) for (var pi = 0; pi < plasmas.length; pi++) { if (plasmas[pi].resize()) plasmas[pi].draw(t); }
+    if (tick % 2 === 1 && A.orb !== false) for (var pi = 0; pi < plasmas.length; pi++) { var pc = plasmas[pi].c || plasmas[pi].canvas; if (pc && !pc.offsetParent) continue; if (plasmas[pi].resize()) plasmas[pi].draw(t); }
   }
   function drawStatic() { for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(0); } for (var j = 0; j < plasmas.length; j++) { if (plasmas[j].resize()) plasmas[j].draw(2); } }
 
