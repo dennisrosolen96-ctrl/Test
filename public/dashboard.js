@@ -355,36 +355,49 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     }
     svg.innerHTML=markup;
   }
-  // Menü unten wie in der Referenz: zwei Panzerfelder, schräg zur Mitte, Orb in runder Fassung.
+  // Menü unten wie in der Referenz: zwei massive Panzerfelder mit Fasen, Nieten, Goldkanten,
+  // roten Lichtbalken und wanderndem Reflex; in der Mitte eine runde Fassung für das Auge.
   function navFrame(w,h,id){
-    const t=16,b=h-3,L=w*.405,L2=w*.445,R=w-L,R2=w-L2,c=14,mx=w/2,cy=h*.47,rr=Math.min(h*.5,46);
-    const left=`M 3 ${b} V ${t+c} L ${3+c} ${t} H ${L} L ${L2} ${b} Z`;
-    const right=`M ${w-3} ${b} V ${t+c} L ${w-3-c} ${t} H ${R} L ${R2} ${b} Z`;
+    const t=14,b=h-2,L=w*.405,L2=w*.448,R=w-L,R2=w-L2,c=18,mx=w/2,cy=h*.44,rr=Math.min(h*.62,58),bv=6;
+    const panel=(s)=>{const X=x=>s?w-x:x;return `M ${X(2)} ${b} V ${t+c} L ${X(2+c)} ${t} H ${X(L)} L ${X(L2)} ${b} Z`};
+    const innerP=(s)=>{const X=x=>s?w-x:x;return `M ${X(2+bv)} ${b-bv} V ${t+c+bv*.4} L ${X(2+c+bv*.4)} ${t+bv} H ${X(L-bv*.3)} L ${X(L2-bv*1.2)} ${b-bv}`};
     let m=`<defs>
-      <linearGradient id="${id}nf" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1f1914"/><stop offset=".35" stop-color="#0c0a08"/><stop offset="1" stop-color="#050404"/></linearGradient>
-      <linearGradient id="${id}ne" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#ff7a4a"/><stop offset=".12" stop-color="#e3a85e"/><stop offset=".5" stop-color="#fff0c8"/><stop offset=".88" stop-color="#e3a85e"/><stop offset="1" stop-color="#ff7a4a"/></linearGradient>
-      <radialGradient id="${id}ns" cx=".5" cy=".5" r=".5"><stop offset=".6" stop-color="#140806"/><stop offset=".85" stop-color="#2a0c06"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
-      <filter id="${id}nb" filterUnits="userSpaceOnUse" x="-20" y="-40" width="${w+40}" height="${h+80}"><feGaussianBlur stdDeviation="2.4"/></filter></defs>`;
-    m+=`<path d="M 0 0 H ${w} V ${h} H 0 Z" fill="#030303"/><path d="M 0 0 H ${w}" stroke="#2a221a" stroke-width="1"/>`;
-    // Chevron-Platten über der Mitte und Verbindungslinien
-    m+=`<path d="M ${w*.36} 0 L ${w*.40} ${t-2} H ${w*.60} L ${w*.64} 0 Z" fill="url(#${id}nf)" stroke="#6b5338" stroke-width=".8"/>`;
-    m+=`<path d="M ${w*.39} 3 L ${w*.415} ${t-6} H ${w*.585} L ${w*.61} 3" fill="none" stroke="#e6b06a" stroke-width="1" opacity=".8"/>`;
-    for(const d of [left,right]){
-      m+=`<path d="${d}" fill="url(#${id}nf)"/>`;
-      m+=`<path d="${d}" fill="none" stroke="#ffa54a" stroke-width="3.5" opacity=".35" filter="url(#${id}nb)"/>`;
-      m+=`<path d="${d}" fill="none" stroke="url(#${id}ne)" stroke-width="1.1"/>`;
+      <linearGradient id="${id}nf" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#3a3127"/><stop offset=".12" stop-color="#1a1612"/><stop offset=".45" stop-color="#0c0a08"/><stop offset="1" stop-color="#040303"/></linearGradient>
+      <linearGradient id="${id}nb2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4c4134"/><stop offset=".3" stop-color="#15120f"/><stop offset=".6" stop-color="#2c251c"/><stop offset="1" stop-color="#090807"/></linearGradient>
+      <linearGradient id="${id}ne" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#ff6a3a"/><stop offset=".1" stop-color="#e3a85e"/><stop offset=".3" stop-color="#7a5430"/><stop offset=".5" stop-color="#fff0c8"/><stop offset=".7" stop-color="#7a5430"/><stop offset=".9" stop-color="#e3a85e"/><stop offset="1" stop-color="#ff6a3a"/></linearGradient>
+      <radialGradient id="${id}ns" cx=".5" cy=".5" r=".5"><stop offset=".55" stop-color="#0d0605"/><stop offset=".8" stop-color="#2a0c06"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+      <radialGradient id="${id}nr"><stop stop-color="#fff0c8"/><stop offset=".5" stop-color="#a77a44"/><stop offset="1" stop-color="#2a1e12"/></radialGradient>
+      <filter id="${id}nb" filterUnits="userSpaceOnUse" x="-30" y="-80" width="${w+60}" height="${h+120}"><feGaussianBlur stdDeviation="2.6"/></filter>
+      <filter id="${id}nb3" filterUnits="userSpaceOnUse" x="-30" y="-80" width="${w+60}" height="${h+120}"><feGaussianBlur stdDeviation="5"/></filter></defs>`;
+    m+=`<path d="M 0 0 H ${w} V ${h} H 0 Z" fill="#030303"/>`;
+    // Mittelbrücke mit Chevron-Platten über dem Auge
+    m+=`<path d="M ${w*.33} 0 L ${w*.38} ${t+4} H ${w*.62} L ${w*.67} 0 Z" fill="url(#${id}nb2)" stroke="#000" stroke-width="1"/>`;
+    m+=`<path d="M ${w*.345} 2 L ${w*.39} ${t+1} H ${w*.61} L ${w*.655} 2" fill="none" stroke="#ffc46c" stroke-width="4" opacity=".5" filter="url(#${id}nb)"/><path d="M ${w*.345} 2 L ${w*.39} ${t+1} H ${w*.61} L ${w*.655} 2" fill="none" stroke="#fff0cc" stroke-width="1.1"/>`;
+    for(const sd of [0,1]){
+      const X=x=>sd?w-x:x, d=panel(sd);
+      m+=`<path d="${d}" fill="url(#${id}nf)" stroke="#000" stroke-width="1.2"/>`;
+      // Fasenband oben
+      m+=`<path d="M ${X(2+c)} ${t} H ${X(L)} L ${X(L+1.2)} ${t+bv} H ${X(2+c+bv*.4)} Z" fill="url(#${id}nb2)" opacity=".9"/>`;
+      m+=`<path d="${innerP(sd)}" fill="none" stroke="#3d3226" stroke-width="1"/>`;
+      m+=`<path d="${d}" fill="none" stroke="#ffa54a" stroke-width="5" opacity=".38" filter="url(#${id}nb)"/>`;
+      m+=`<path d="${d}" fill="none" stroke="url(#${id}ne)" stroke-width="1.4"/>`;
+      // glühende Oberkante und Reflex, der entlang läuft
+      const top=`M ${X(2+c)} ${t} H ${X(L)}`;
+      m+=`<path d="${top}" stroke="#ffc46c" stroke-width="6" opacity=".55" filter="url(#${id}nb)"/><path d="${top}" stroke="#fff3d6" stroke-width="1.2"/>`;
+      m+=`<path d="${top}" stroke="#fff8e6" stroke-width="2.4" pathLength="1000" stroke-dasharray="120 880" class="cc-bz-sweep" style="animation-duration:${sd?5.5:4.5}s" filter="url(#${id}nb)"/>`;
+      // rote Lichtbalken: außen senkrecht, an der Schräge, unten
+      const red=`M ${X(2)} ${t+c+10} V ${b-8}`, slant=`M ${X(L+(L2-L)*.25)} ${t+(b-t)*.25} L ${X(L+(L2-L)*.8)} ${t+(b-t)*.8}`, low=`M ${X(w*.08)} ${b-1} H ${X(w*.2)}`;
+      for(const q of [red,slant,low])m+=`<g class="cc-bz-light"><path d="${q}" stroke="#ff2414" stroke-width="9" opacity=".7" filter="url(#${id}nb3)" stroke-linecap="round"/><path d="${q}" stroke="#ff3a26" stroke-width="2.6" stroke-linecap="round"/><path d="${q}" stroke="#ffe4d2" stroke-width=".8" stroke-linecap="round"/></g>`;
+      for(const [x,y] of [[2+c+8,t+bv+6],[L-14,t+bv+6]])m+=`<circle cx="${X(x)}" cy="${y}" r="1.8" fill="url(#${id}nr)"/>`;
     }
-    m+=`<path d="M 9 ${b-4} V ${t+c+4} L ${9+c-2} ${t+6} H ${L-6} M ${w-9} ${b-4} V ${t+c+4} L ${w-9-c+2} ${t+6} H ${R+6}" fill="none" stroke="#3a3026" stroke-width=".8"/>`;
-    // Glühende Oberkanten und Ecken
-    const glow=`M ${3+c} ${t} H ${L*.62} M ${w-3-c} ${t} H ${w-L*.62}`;
-    m+=`<path d="${glow}" stroke="#ffc46c" stroke-width="4" opacity=".55" filter="url(#${id}nb)"/><path d="${glow}" stroke="#fff3d6" stroke-width="1"/>`;
-    const red=`M 3 ${t+c+8} V ${b-6} M ${w-3} ${t+c+8} V ${b-6}`;
-    m+=`<path d="${red}" stroke="#ff2a1e" stroke-width="6" opacity=".75" filter="url(#${id}nb)"/><path d="${red}" stroke="#ff5a40" stroke-width="1.6"/>`;
-    // Runde Fassung des Orbs
-    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+8}" fill="url(#${id}ns)"/>`;
-    m+=`<circle cx="${mx}" cy="${cy}" r="${rr}" fill="none" stroke="#e6b06a" stroke-width="1" opacity=".75"/>`;
-    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+4}" fill="none" stroke="#ff4a2c" stroke-width="1.6" stroke-dasharray="10 5 3 5" opacity=".75" filter="url(#${id}nb)"/>`;
-    m+=`<path d="M ${L2} ${b} H ${R2}" stroke="#ff3a25" stroke-width="5" opacity=".6" filter="url(#${id}nb)"/><path d="M ${mx-w*.04} ${b} H ${mx+w*.04}" stroke="#ffe0b0" stroke-width="1.4"/>`;
+    // Runde Fassung des Auges: dunkle Mulde, Goldring, roter Segmentring, Skalenstriche
+    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+12}" fill="url(#${id}ns)"/>`;
+    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+3}" fill="#070404" stroke="#000" stroke-width="2"/>`;
+    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+3}" fill="none" stroke="#ffb35c" stroke-width="4" opacity=".45" filter="url(#${id}nb)"/><circle cx="${mx}" cy="${cy}" r="${rr+3}" fill="none" stroke="url(#${id}ne)" stroke-width="1.4"/>`;
+    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+8}" fill="none" stroke="#ff3a25" stroke-width="2" stroke-dasharray="14 6 4 6" opacity=".85" filter="url(#${id}nb)"/>`;
+    let tk='';for(let i=0;i<48;i++){const a=i*Math.PI/24,r0=rr+12,r1=rr+(i%4?15:18);tk+=`M ${(mx+Math.cos(a)*r0).toFixed(1)} ${(cy+Math.sin(a)*r0).toFixed(1)} L ${(mx+Math.cos(a)*r1).toFixed(1)} ${(cy+Math.sin(a)*r1).toFixed(1)} `}
+    m+=`<path d="${tk}" stroke="#c99a5c" stroke-width=".8" opacity=".6"/>`;
+    m+=`<path d="M ${L2} ${b} H ${R2}" stroke="#ff3a25" stroke-width="6" opacity=".65" filter="url(#${id}nb)"/><path d="M ${mx-w*.05} ${b} H ${mx+w*.05}" stroke="#ffe0b0" stroke-width="1.4"/>`;
     return m;
   }
   // Glasfelder: feiner, leuchtender Goldrand statt Metallrahmen; Kennzahlen laufen nach rechts aus.
