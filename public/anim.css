@@ -34,3 +34,54 @@ html.cc-no-pulse :is(#rvCloudConnect, #settingsAiApply, #settingsBackup, #v7Back
 .rv-anim-row input:checked + .rv-switch::after { transform:translateX(20px); background:#fff4e0; }
 .rv-anim-row input:focus-visible + .rv-switch { outline:2px solid #fff0ba; outline-offset:2px; }
 .rv-anim-sub select { max-width:130px; }
+
+/* ===== Lebendige Unterseiten ===== */
+/* 1) Wandernde Hintergrundlichter (nur Transform/Opacity, sehr günstig) */
+.cc-ambient { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+.cc-ambient i { position:absolute; width:46vmax; height:46vmax; border-radius:50%; opacity:.55; will-change:transform; }
+.cc-ambient i:nth-child(1) { left:-18vmax; top:30%; background:radial-gradient(circle, rgba(255,160,80,.22), transparent 62%); animation:cc-drift1 34s ease-in-out infinite alternate; }
+.cc-ambient i:nth-child(2) { right:-20vmax; top:55%; background:radial-gradient(circle, rgba(255,175,110,.18), transparent 62%); animation:cc-drift2 41s ease-in-out infinite alternate; }
+.cc-ambient i:nth-child(3) { right:-10vmax; top:-14vmax; background:radial-gradient(circle, rgba(80,140,255,.20), transparent 62%); animation:cc-drift3 38s ease-in-out infinite alternate; }
+.cc-ambient i:nth-child(4) { left:20%; bottom:-24vmax; background:radial-gradient(circle, rgba(60,120,240,.14), transparent 62%); animation:cc-drift1 46s ease-in-out infinite alternate-reverse; }
+@keyframes cc-drift1 { from { transform:translate(0,0) scale(1); } to { transform:translate(14vmax,-10vmax) scale(1.15); } }
+@keyframes cc-drift2 { from { transform:translate(0,0) scale(1.1); } to { transform:translate(-16vmax,-8vmax) scale(.95); } }
+@keyframes cc-drift3 { from { transform:translate(0,0) scale(1); } to { transform:translate(-12vmax,12vmax) scale(1.2); } }
+html.cc-no-ambient .cc-ambient { display:none; }
+main.wrap, #finance, #settingsPage, #aiChat { position:relative; z-index:1; }
+
+/* 2) Seitenauftritt: Bereiche gleiten nacheinander herein */
+.cc-enter > *, #s4.cc-enter .stock-grid > *, #finance.cc-enter .finance-hero > *, #finance.cc-enter .finance-split > *, #settingsPage.cc-enter .settings-grid > * {
+  animation:cc-rise .7s cubic-bezier(.2,.7,.2,1) both; }
+.cc-enter > :nth-child(2), #s4.cc-enter .stock-grid > :nth-child(2), #finance.cc-enter .finance-hero > :nth-child(2), #settingsPage.cc-enter .settings-grid > :nth-child(2) { animation-delay:.07s; }
+.cc-enter > :nth-child(3), #s4.cc-enter .stock-grid > :nth-child(3), #finance.cc-enter .finance-split > :nth-child(2), #settingsPage.cc-enter .settings-grid > :nth-child(3) { animation-delay:.14s; }
+.cc-enter > :nth-child(4), #s4.cc-enter .stock-grid > :nth-child(4), #settingsPage.cc-enter .settings-grid > :nth-child(4) { animation-delay:.21s; }
+.cc-enter > :nth-child(5), #s4.cc-enter .stock-grid > :nth-child(5) { animation-delay:.28s; }
+.cc-enter > :nth-child(6), #s4.cc-enter .stock-grid > :nth-child(6) { animation-delay:.35s; }
+.cc-enter > :nth-child(7), #s4.cc-enter .stock-grid > :nth-child(n+7) { animation-delay:.42s; }
+.cc-enter > :nth-child(n+8) { animation-delay:.48s; }
+@keyframes cc-rise { from { opacity:0; transform:translateY(18px) scale(.985); } to { opacity:1; transform:none; } }
+html.cc-no-pagefx .cc-enter > *, html.cc-no-pagefx .cc-enter * { animation-name:none !important; }
+
+/* 3) Seitensymbole mit drehendem Lichtring und Puls */
+#finance .finance-mark, #settingsPage .settings-mark { position:relative; overflow:visible !important; }
+#s4 .lux-stock-mark { overflow:visible !important; }
+#s4 .lux-stock-mark::before, #finance .finance-mark::before, #settingsPage .settings-mark::before {
+  content:''; position:absolute; inset:-7px; border-radius:18px; pointer-events:none;
+  background:conic-gradient(from 0deg, transparent 0 55%, rgba(255,200,130,.0) 60%, rgba(255,210,150,.9) 72%, #fff3dc 76%, rgba(95,180,255,.7) 82%, transparent 92%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; padding:1.5px; animation:cc-spin 6s linear infinite; }
+#s4 .lux-stock-mark::after, #finance .finance-mark::after, #settingsPage .settings-mark::after {
+  content:''; position:absolute; inset:-16px; border-radius:24px; pointer-events:none; z-index:-1;
+  background:radial-gradient(circle, rgba(255,170,80,.35), transparent 70%); animation:cc-markpulse 4.2s ease-in-out infinite; }
+@keyframes cc-markpulse { 0%,100% { opacity:.4; transform:scale(.92); } 55% { opacity:1; transform:scale(1.06); } }
+html.cc-no-pulse #s4 .lux-stock-mark::after, html.cc-no-pulse #finance .finance-mark::after, html.cc-no-pulse #settingsPage .settings-mark::after,
+html.cc-no-shimmer #s4 .lux-stock-mark::before, html.cc-no-shimmer #finance .finance-mark::before, html.cc-no-shimmer #settingsPage .settings-mark::before { animation:none !important; }
+
+/* 4) Überschriften: feine Goldlinie, die langsam aufleuchtet */
+:is(#s4 .lux-stock-hero, #finance .page-head, #settingsPage .page-head, #s0, #s1, #s2, #s3) .eyebrow { position:relative; display:inline-block; }
+:is(#s4 .lux-stock-hero, #finance .page-head, #settingsPage .page-head, #s0, #s1, #s2, #s3) .eyebrow::after { content:''; position:absolute; left:0; right:-30%; bottom:-4px; height:1.5px; border-radius:2px;
+  background:linear-gradient(90deg, rgba(255,200,130,0), #ffd585 30%, #fff0c8 50%, rgba(255,200,130,0)); background-size:200% 100%; animation:cc-lineflow 5s ease-in-out infinite; }
+@keyframes cc-lineflow { 0%,100% { background-position:100% 0; opacity:.5; } 50% { background-position:0 0; opacity:1; } }
+html.cc-no-shimmer .eyebrow::after { animation:none !important; }
+
+@media (prefers-reduced-motion: reduce) { .cc-ambient i, .cc-enter *, .eyebrow::after, .lux-stock-mark::before, .lux-stock-mark::after, .finance-mark::before, .finance-mark::after, .settings-mark::before, .settings-mark::after { animation:none !important; } }

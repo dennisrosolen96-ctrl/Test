@@ -3,7 +3,7 @@
 (function () {
   'use strict';
   var KEY = 'rv_anim_v1', root = document.documentElement;
-  var DEF = { gleam: true, gleamRate: 'selten', glint: false, globeSpin: true, globeFx: true, orb: true, shimmer: true, pulse: true, autoLite: true };
+  var DEF = { gleam: true, gleamRate: 'selten', glint: false, globeSpin: true, globeFx: true, orb: true, shimmer: true, pulse: true, pageFx: true, ambient: true, autoLite: true };
   var OPTS = [
     ['gleam', 'Glanz', 'Ab und zu gleitet zufällig ein Glanz über ein Element'],
     ['glint', 'Randlicht', 'Lichtpunkt, der dauerhaft um die Kacheln läuft (rechenintensiv)'],
@@ -12,6 +12,8 @@
     ['orb', 'Energieball', 'Lichtbänder des KI-Balls bewegen sich'],
     ['shimmer', 'Gold-Schimmer', 'Goldene Symbole und Texte schimmern langsam'],
     ['pulse', 'Sanftes Pulsieren', 'KI-Leiste, „Heute“, Abzeichen und Hauptknöpfe pulsieren leicht'],
+    ['pageFx', 'Seitenwechsel', 'Inhalte gleiten beim Öffnen einer Seite nacheinander herein'],
+    ['ambient', 'Lichter im Hintergrund', 'Warme und blaue Lichter wandern langsam durch den Hintergrund'],
     ['autoLite', 'Automatischer Sparmodus', 'Schaltet bei sehr langsamen Geräten teure Effekte selbst ab']
   ];
   var RATES = { selten: [9000, 16000], mittel: [5000, 9000], oft: [2500, 5000] };
@@ -26,6 +28,8 @@
     root.classList.toggle('cc-no-shimmer', !c.shimmer);
     root.classList.toggle('cc-no-pulse', !c.pulse);
     root.classList.toggle('cc-no-orbanim', !c.orb);
+    root.classList.toggle('cc-no-pagefx', !c.pageFx);
+    root.classList.toggle('cc-no-ambient', !c.ambient);
     Array.prototype.forEach.call(document.querySelectorAll('.v15-globe-wrap svg'), function (v) { if (v.pauseAnimations) { if (c.globeFx) v.unpauseAnimations(); else v.pauseAnimations(); } });
     if (window.RVFx) setTimeout(window.RVFx.redraw, 30);
     schedule();
@@ -71,6 +75,26 @@
     c.querySelector('#rvAnimSave').addEventListener('click', function () { var v = read(); try { localStorage.setItem(KEY, JSON.stringify(v)); say('Gespeichert und angewendet.'); } catch (e) { say('Speichern nicht möglich, aber angewendet.'); } apply(v); });
     c.querySelector('#rvAnimReset').addEventListener('click', function () { fill(DEF); apply(Object.assign({}, DEF)); say('Standard angewendet – zum Behalten „Speichern“ tippen.'); });
   }
-  function start() { apply(cfg); card(); }
+  /* Seitenwechsel: neu sichtbare Seite bekommt einen gestaffelten Auftritt */
+  var PAGES = ['home', 's4', 'finance', 'settingsPage', 'aiChat', 's0', 's1', 's2', 's3'];
+  function enter(el) {
+    if (!cfg.pageFx || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    el.classList.remove('cc-enter'); void el.offsetWidth; el.classList.add('cc-enter');
+    clearTimeout(el._cce); el._cce = setTimeout(function () { el.classList.remove('cc-enter'); }, 1600);
+  }
+  function watchPages() {
+    if (!window.MutationObserver) return;
+    PAGES.forEach(function (id) {
+      var el = document.getElementById(id); if (!el) return;
+      var was = !el.classList.contains('hidden');
+      new MutationObserver(function () { var now = !el.classList.contains('hidden'); if (now && !was) enter(el); was = now; }).observe(el, { attributes: true, attributeFilter: ['class'] });
+    });
+  }
+  function ambient() {
+    if (document.querySelector('.cc-ambient')) return;
+    var a = document.createElement('div'); a.className = 'cc-ambient'; a.setAttribute('aria-hidden', 'true');
+    a.innerHTML = '<i></i><i></i><i></i><i></i>'; document.body.insertBefore(a, document.body.firstChild);
+  }
+  function start() { apply(cfg); card(); watchPages(); ambient(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
