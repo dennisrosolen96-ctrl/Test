@@ -1,6 +1,6 @@
 {
-  "name": "rv-studio-v20",
-  "version": "20.0.0",
+  "name": "rv-studio-v21",
+  "version": "21.0.0",
   "private": true,
   "description": "RV Studio V17 — bestehende Cloudflare-App mit animiertem Reference Command Center",
   "scripts": {

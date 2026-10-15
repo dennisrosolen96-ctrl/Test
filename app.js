@@ -85,7 +85,7 @@ async function renderLibrary(){
  const items=await allArticles(),search=($('searchArticles').value||'').trim().toLowerCase(),target=$('library');
  $('stockSummary').textContent=`${items.length} Artikel · ${items.filter(a=>stockStatus(a)==='active').length} aktiv · ${items.filter(a=>stockStatus(a)==='sold').length} verkauft`;
  const visible=(stockFilter==='archived'?allItems.filter(a=>Boolean(a.archivedAt)):items).filter(a=>{
-  const text=[a.sku,a.brand,a.category,a.size,a.location,a.color,a.listings?.ebay?.title].map(stockText).join(' ').toLowerCase();
+  const text=[a.sku,a.brand,a.model,a.category,a.size,a.location,a.color,a.listings?.ebay?.title].map(stockText).join(' ').toLowerCase();
   return (!search||text.includes(search))&&(stockFilter==='all'||(stockFilter==='remove'?stockRemoveNeeded(a):stockStatus(a)===stockFilter));
  }).reverse();target.replaceChildren();
  if(!visible.length){const el=document.createElement('div');el.className='stock-empty';el.textContent='Noch keine passenden Artikel. Über + Neuen Artikel anlegen starten.';target.append(el);return}
@@ -103,8 +103,8 @@ async function renderLibrary(){
 }
 async function openStockDetail(id){
  const a=(await allArticles()).find(x=>x.id===id);if(!a)return;stockSelectedId=id;
- $('stockSku').textContent=a.sku||'Ohne Artikelnummer';$('stockTitle').textContent=[a.brand,a.category].filter(Boolean).join(' ')||'Artikel';
- $('stockMeta').textContent=[a.size&&'Größe '+a.size,a.color,a.material,a.model].filter(Boolean).join(' · ');
+ $('stockSku').textContent=a.sku||'Ohne Artikelnummer';$('stockTitle').textContent=[a.brand,a.model].filter(Boolean).join(' ')||[a.brand,a.category].filter(Boolean).join(' ')||'Artikel';
+ $('stockMeta').textContent=[a.category,a.size&&'Größe '+a.size,a.color,a.material].filter(Boolean).join(' · ');
  $('stockHero').src=a.photos?.[0]?.src||'rv-logo.jpg';$('stockCost').textContent=euro(a.cost);$('stockCondition').textContent=a.condition?a.condition+'/10':'—';$('stockLocationText').textContent=a.location||'—';
  $('stockLocation').value=a.location||'';$('stockStatus').value=['Entwurf','Bereit','Online','Verkauft'].includes(a.articleStatus)?a.articleStatus:'Entwurf';
  const pp=$('stockPlatformPrices');pp.replaceChildren();for(const [k,title] of [['ebay','eBay'],['vinted','Vinted'],['instagram','Instagram']]){const row=document.createElement('div');row.className='stock-platform';const l=document.createElement('span'),v=document.createElement('b');l.textContent=title;v.textContent=a.prices?.[k]?euro(a.prices[k]):'Kein Preis';row.append(l,v);pp.append(row)}
@@ -234,10 +234,10 @@ async function recordSale(a){let platform=prompt('Verkauft auf welcher Plattform
 function syncFeeds(){const from=$('homeAiFeed');const to=$('chatFeed');if(from&&to)to.innerHTML=from.innerHTML}
 function showChat(){closeStockDetail&&closeStockDetail();hidePrimaryViews();$('aiChat').classList.remove('hidden');selectBottomNav('navChat');syncFeeds();window.scrollTo(0,0);setTimeout(()=>{$('chatInput')&&$('chatInput').focus()},80)}
 function showSettings(){closeStockDetail&&closeStockDetail();hidePrimaryViews();$('settingsPage').classList.remove('hidden');selectBottomNav('navSettings');window.scrollTo(0,0)}
-$('stockNewArticleQuick').onclick=()=>$('newArticle').click();$('homeNew').onclick=()=>{article=blank();push();showStep(0)};$('homeLibrary').onclick=()=>showStep(4);$('homeLibraryTop').onclick=()=>showStep(4);$('homeBackup').onclick=()=>$('backup').click();$('homeToSettings').onclick=()=>showSettings();$('homeToChat').onclick=()=>showChat();$('homeRefresh').onclick=()=>renderHome();$('homeAiSend').onclick=()=>runHomeAi();$('chatSend').onclick=()=>runHomeAi($('chatInput').value);$('chatClear').onclick=()=>{clearHomeFeed();syncFeeds()};$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runHomeAi($('chatInput').value)}});document.querySelectorAll('.chat-chip').forEach(b=>b.onclick=()=>runHomeAi(b.dataset.chatCmd||b.textContent));$('settingsBackup').onclick=()=>$('backup').click();$('settingsRestore').onchange=async e=>{await importBackupFile(e.target.files&&e.target.files[0]);e.target.value=''};$('homeAiClear').onclick=clearHomeFeed;$('homeAiAttach').onclick=()=>{article=blank();push();showStep(0);$('upload').click()};$('homeDrafts').onclick=()=>{showStep(4);stockFilter='draft';document.querySelectorAll('.stock-chip').forEach(b=>b.classList.toggle('selected',b.dataset.filter==='draft'));renderLibrary()};$('homeFinances').onclick=showFinance;$('homeSyncShort').onclick=()=>{showSettings();setTimeout(()=>{$('rvCloudPassword').scrollIntoView({behavior:'smooth'});if(rvCloudPassword)$('rvCloudSync').click()},80)};$('homeStatStock').onclick=()=>showStep(4);$('homeStatSold').onclick=showFinance;$('homeStatInvest').onclick=showFinance;$('homeStatProfit').onclick=showFinance;$('rvNotify').onclick=()=>{showHome();const tasks=$('homeTasks'),tools=tasks&&tasks.closest('details.v15-more-tools');if(tools)tools.open=true;if(tasks)requestAnimationFrame(()=>tasks.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}))};$('navChat').onclick=showChat;$('navSettings').onclick=showSettings;$('homeAiInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runHomeAi()}});document.querySelectorAll('.home-chip').forEach(b=>b.onclick=()=>runHomeAi(b.dataset.cmd||b.textContent));$('navHome').onclick=showHome;$('navStock').onclick=()=>showStep(4);$('navStudio').onclick=()=>{article=blank();push();showStep(0)};$('navFinance').onclick=showFinance;$('searchArticles').oninput=renderLibrary;
+$('stockNewArticleQuick').onclick=()=>$('newArticle').click();$('homeNew').onclick=()=>{article=blank();push();showStep(0)};$('homeLibrary').onclick=()=>showStep(4);$('homeLibraryTop').onclick=()=>showStep(4);$('homeBackup').onclick=()=>$('backup').click();$('homeToSettings').onclick=()=>showSettings();$('homeToChat').onclick=()=>showChat();$('homeRefresh').onclick=()=>renderHome();$('homeAiSend').onclick=()=>runHomeAi();$('chatSend').onclick=()=>runHomeAi($('chatInput').value);$('chatClear').onclick=()=>{clearHomeFeed();syncFeeds()};$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runHomeAi($('chatInput').value)}});document.querySelectorAll('.chat-chip').forEach(b=>b.onclick=()=>runHomeAi(b.dataset.chatCmd||b.textContent));$('settingsBackup').onclick=()=>$('backup').click();$('settingsRestore').onchange=async e=>{await importBackupFile(e.target.files&&e.target.files[0]);e.target.value=''};$('homeAiClear').onclick=clearHomeFeed;$('homeAiAttach').onclick=()=>{article=blank();push();showStep(0);$('upload').click()};$('homeDrafts').onclick=()=>{showStep(4);stockFilter='draft';document.querySelectorAll('.stock-chip').forEach(b=>b.classList.toggle('selected',b.dataset.filter==='draft'));renderLibrary()};$('homeFinances').onclick=showFinance;$('homeSyncShort').onclick=()=>{showSettings();setTimeout(()=>{$('rvCloudPassword').scrollIntoView({behavior:'smooth'});if(rvCloudPassword)$('rvCloudSync').click()},80)};$('homeStatStock').onclick=()=>showStep(4);$('homeStatSold').onclick=showFinance;$('homeStatInvest').onclick=showFinance;$('homeStatProfit').onclick=showFinance;$('rvNotify').onclick=()=>{showHome();const tasks=$('homeTasks'),tools=tasks&&tasks.closest('details.v15-more-tools');if(tools)tools.open=true;if(tasks)requestAnimationFrame(()=>tasks.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}))};$('navChat').onclick=showChat;$('navSettings').onclick=showSettings;$('homeAiInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runHomeAi()}});document.querySelectorAll('.home-chip').forEach(b=>b.onclick=()=>runHomeAi(b.dataset.cmd||b.textContent));$('navHome').onclick=showHome;$('navStock').onclick=()=>showStep(4);$('navStudio').onclick=()=>{article=blank();push();showStep(0)};$('navFinance').onclick=showFinance;$('searchArticles').oninput=()=>renderLibrary();
 
 // V5 Bestand: only inventory UI; photo upload, AI and editor remain V4 originals.
-let v5Tab='all',v5List=(()=>{try{return localStorage.getItem('rv_stock_view')!=='grid'}catch(e){return true}})(),v5Selecting=false,v5Picked=new Set(),v5WorkFilter='',v5Cache=[];
+let v5Tab='all',v5List=(()=>{try{return localStorage.getItem('rv_stock_view')==='list'}catch(e){return false}})(),v5Selecting=false,v5Picked=new Set(),v5WorkFilter='',v5Cache=[];
 const v5Date=a=>{const v=a.purchaseDate||a.createdAt||a.date||'';const t=Date.parse(v);return Number.isFinite(t)?t:null};
 const v5Age=a=>{const t=v5Date(a);return t===null?null:Math.max(0,Math.floor((Date.now()-t)/86400000))};
 const v5Available=a=>a.articleStatus!=='Verkauft';
@@ -249,24 +249,99 @@ const v5Task=(a,key)=>{
  if(key==='remove')return stockRemoveNeeded(a);
  return true;
 };
+// Bestands-Übersicht im Aufbau der Startseite: Kennzahlen links, Status-Ring in der Mitte, Kategorien rechts.
+const bxEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const bxSvg=d=>'<svg class="bx-ico" viewBox="0 0 24 24" aria-hidden="true">'+d+'</svg>';
+const BX_ICONS={
+ coins:bxSvg('<ellipse cx="12" cy="6" rx="6" ry="2.5"/><path d="M6 6v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V6M6 10v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4M6 14v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4"/>'),
+ tag:bxSvg('<path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/>'),
+ clock:bxSvg('<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>'),
+ chart:bxSvg('<path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/>'),
+ globe:bxSvg('<circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c2.5 2.5 2.5 13.5 0 16M12 4c-2.5 2.5-2.5 13.5 0 16"/>'),
+ percent:bxSvg('<path d="M6 18 18 6"/><circle cx="7.5" cy="7.5" r="2"/><circle cx="16.5" cy="16.5" r="2"/>'),
+ active:bxSvg('<path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>'),
+ incomplete:bxSvg('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M12 12v3M12 18h.01"/>'),
+ stale:bxSvg('<path d="M7 3h10M7 21h10M8 3c0 5 8 5 8 9s-8 4-8 9M16 3c0 5-8 5-8 9s8 4 8 9"/>'),
+ price:bxSvg('<path d="M3 12V4h8l9 9-8 8-9-9Z"/><path d="M9.5 9.5 14 14M14 9.5 9.5 14"/>')
+};
+const BX_STATUS=[['online','Online','#3d9bff'],['ready','Bereit','#8fd4ff'],['draft','Entwurf','#7f8da8'],['sold','Verkauft','#ffb060']];
+function bxStatusKey(a){return ({Entwurf:'draft',Bereit:'ready',Online:'online',Verkauft:'sold'}[a.articleStatus]||'draft')}
+function bxMaxPrice(a){return Math.max(0,...Object.values(a.prices||{}).map(Number).filter(Number.isFinite))}
+function bxProfit(a){return a.sale?Number(a.sale.price||0)-Number(a.cost||0)-Number(a.sale.fees||0)-Number(a.sale.shipping||0):0}
+function bxMetric(icon,label,value,delta,cls,extra){return '<div class="bx-m'+(extra?' has-spark':'')+'"><span class="mi">'+BX_ICONS[icon]+'</span><span class="tx"><span class="lbl">'+label+'</span><span class="val">'+bxEsc(value)+'</span><span class="dl '+(cls||'')+'">'+bxEsc(delta)+'</span></span>'+(extra||'')+'</div>'}
+function bxBars(rows,unit){return rows.map(([name,val,pct])=>'<div class="row"><span class="nm">'+bxEsc(name)+'</span><span class="tr"><s style="width:'+Math.max(4,Math.round(pct))+'%"></s></span><span class="pc">'+bxEsc(val)+(unit||'')+'</span></div>').join('')}
+function bxSpark(values){
+ if(values.filter(v=>v).length<2)return '';
+ const w=86,h=34,max=Math.max(...values,1),min=Math.min(...values,0),step=w/(values.length-1);
+ const pts=values.map((v,i)=>[i*step,h-3-((v-min)/(max-min||1))*(h-8)]);
+ const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+ return '<svg class="bx-spark" viewBox="0 0 '+w+' '+h+'" aria-hidden="true"><defs><linearGradient id="bxSpF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d9bff" stop-opacity=".45"/><stop offset="1" stop-color="#3d9bff" stop-opacity="0"/></linearGradient></defs><path d="'+d+' L'+w+' '+h+' L0 '+h+' Z" fill="url(#bxSpF)"/><path d="'+d+'" fill="none" stroke="#5fb4ff" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+}
 function v5Analytics(items){
  const available=items.filter(v5Available),sold=items.filter(a=>a.articleStatus==='Verkauft'&&a.sale);
  const cost=available.reduce((n,a)=>n+Number(a.cost||0),0);
- const potential=available.reduce((n,a)=>n+Math.max(0,...['ebay','vinted','instagram'].map(k=>Number(a.prices?.[k]||0))),0);
+ const potential=available.reduce((n,a)=>n+bxMaxPrice(a),0);
  const ages=available.map(v5Age).filter(x=>x!==null);
- const profit=sold.reduce((n,a)=>n+Number(a.sale.price||0)-Number(a.cost||0)-Number(a.sale.fees||0)-Number(a.sale.shipping||0),0);
- const kpis=[['Aktiver Warenwert (EK)',euro(cost)],['Inserierte Preissumme',euro(potential)],['Ø Lagerdauer',ages.length?Math.round(ages.reduce((a,b)=>a+b,0)/ages.length)+' Tage':'—'],['Realisierter Gewinn',euro(profit)]];
- const root=$('v5Analysis');root.replaceChildren();for(const [label,val] of kpis){const b=document.createElement('div');b.className='v5-kpi';const small=document.createElement('small'),strong=document.createElement('strong');small.textContent=label;strong.textContent=val;b.append(small,strong);root.append(b)}
+ const avgAge=ages.length?Math.round(ages.reduce((a,b)=>a+b,0)/ages.length):null,old60=ages.filter(x=>x>60).length;
+ const profit=sold.reduce((n,a)=>n+bxProfit(a),0),revenue=sold.reduce((n,a)=>n+Number(a.sale.price||0),0);
+ const listed=available.filter(a=>bxMaxPrice(a)>0),listedCost=listed.reduce((n,a)=>n+Number(a.cost||0),0),spread=potential-listedCost;
+ const weeks=Array(8).fill(0),now=Date.now();for(const a of sold){const t=Date.parse(a.sale.date);if(!Number.isFinite(t))continue;const w=Math.floor((now-t)/(7*86400000));if(w>=0&&w<8)weeks[7-w]+=bxProfit(a)}
+ const counts=Object.fromEntries(BX_STATUS.map(([k])=>[k,0]));for(const a of items)counts[bxStatusKey(a)]++;
+ const total=items.length||0;
+ // Status-Ring
+ const R=78,C=2*Math.PI*R;let off=0,ring='';
+ for(const [k,,color] of BX_STATUS){const part=total?counts[k]/total:0;if(!part)continue;const len=Math.max(0,part*C-3);ring+='<circle class="seg" cx="100" cy="100" r="'+R+'" stroke="'+color+'" stroke-dasharray="'+len.toFixed(1)+' '+(C-len).toFixed(1)+'" stroke-dashoffset="'+(-off).toFixed(1)+'" style="--glow:'+color+'"/>';off+=part*C}
+ const legend=BX_STATUS.map(([k,label,color])=>'<span><i style="background:'+color+';box-shadow:0 0 8px '+color+'"></i>'+label+'<b>'+counts[k]+'</b></span>').join('');
+ // Kategorien
+ const cat=new Map();for(const a of available){const k=String(a.category||'Ohne Kategorie').trim()||'Ohne Kategorie';cat.set(k,(cat.get(k)||0)+1)}
+ let cats=[...cat.entries()].sort((x,y)=>y[1]-x[1]);if(cats.length>5){const rest=cats.slice(4).reduce((n,x)=>n+x[1],0);cats=cats.slice(0,4).concat([['Sonstiges',rest]])}
+ const catRows=cats.map(([n,c])=>[n,Math.round(c/(available.length||1)*100),c/(cats[0]?.[1]||1)*100]);
+ const online=items.filter(a=>a.articleStatus==='Online').length,quote=total?Math.round(sold.length/total*100):0;
+ let html='<div class="bx-ph"><span class="bx-hx">'+BX_ICONS.chart+'</span><div class="bx-tt"><h2 class="bx-title">Bestands-Übersicht</h2><span class="bx-sub">Live aus deinem Lager</span></div>'
+  +(v5Tab==='analytics'?'':'<button type="button" class="bx-link" data-bx-tab="analytics">Analyse <svg class="bx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>')+'</div>'
+  +'<div class="bx-body"><div class="bx-col">'
+  +bxMetric('coins','Warenwert (EK)',euro(cost),available.length+' Artikel im Lager','nil')
+  +bxMetric('tag','Verkaufswert',euro(potential),spread>0?'↗ +'+euro(spread)+' Spanne':'Noch keine Preise',spread>0?'':'nil')
+  +bxMetric('clock','Ø Lagerdauer',avgAge===null?'—':avgAge+' Tage',old60?old60+' Artikel über 60 Tage':'↗ Alles frisch',old60?'warn':'')
+  +bxMetric('chart','Realisierter Gewinn',euro(profit),revenue>0?'↗ Ø '+Math.round(profit/revenue*100)+' % Marge':'Noch keine Verkäufe',revenue>0?'':'nil',bxSpark(weeks))
+  +'</div><div class="bx-ring" role="img" aria-label="'+(total-counts.sold)+' Artikel im Lager, '+counts.sold+' verkauft">'
+  +'<svg viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="bxCore" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="#2a5fae" stop-opacity=".55"/><stop offset=".7" stop-color="#0c1a33" stop-opacity=".2"/><stop offset="1" stop-color="#050a14" stop-opacity="0"/></radialGradient></defs>'
+  +'<circle cx="100" cy="100" r="96" class="hud a"/><circle cx="100" cy="100" r="90" class="hud b"/><circle cx="100" cy="100" r="66" fill="url(#bxCore)"/>'
+  +'<circle cx="100" cy="100" r="'+R+'" class="track"/>'+ring+'<g class="orbit"><circle cx="100" cy="4" r="2.6" class="dot"/></g></svg>'
+  +'<div class="bx-ring-c"><b>'+(total-counts.sold)+'</b><span>im Lager</span><small>'+counts.sold+' verkauft</small></div>'
+  +'<div class="bx-legend">'+legend+'</div></div>'
+  +'<div class="bx-col"><div class="bx-cat"><div class="hd"><b>Top Kategorien</b><small>% vom Bestand</small></div>'+(catRows.length?bxBars(catRows,' %'):'<p class="bx-empty">Noch keine Artikel im Lager.</p>')+'</div>'
+  +'<div class="bx-s2"><span class="mi">'+BX_ICONS.globe+'</span><span class="tx"><span class="lbl">Online-Angebote</span><span class="val">'+online+'</span></span></div>'
+  +'<div class="bx-s2"><span class="mi">'+BX_ICONS.percent+'</span><span class="tx"><span class="lbl">Verkaufsquote</span><span class="val">'+quote+' %</span></span></div>'
+  +'</div></div>';
+ if(v5Tab==='analytics')html+=bxAnalyticsExtras(available);
+ const root=$('v5Analysis');root.innerHTML=html;
+ root.querySelectorAll('[data-bx-tab]').forEach(b=>b.onclick=()=>{v5SetTab(b.dataset.bxTab);$('v5Tabs').scrollIntoView({behavior:'smooth',block:'start'})});
+ root.querySelectorAll('[data-bx-open]').forEach(b=>b.onclick=()=>openStockDetail(b.dataset.bxOpen));
+}
+function bxAnalyticsExtras(available){
+ const buckets=[['0–30 Tage',0,30],['31–60 Tage',31,60],['61–90 Tage',61,90],['über 90 Tage',91,1e9]].map(([n,lo,hi])=>[n,available.filter(a=>{const d=v5Age(a);return d!==null&&d>=lo&&d<=hi}).length]);
+ const maxB=Math.max(1,...buckets.map(x=>x[1]));
+ const brands=new Map();for(const a of available){const k=String(a.brand||'Ohne Marke').trim()||'Ohne Marke';brands.set(k,(brands.get(k)||0)+bxMaxPrice(a))}
+ const topB=[...brands.entries()].sort((x,y)=>y[1]-x[1]).slice(0,5),maxM=Math.max(1,...topB.map(x=>x[1]));
+ const slow=[...available].filter(a=>v5Age(a)!==null).sort((x,y)=>v5Age(y)-v5Age(x)).slice(0,4);
+ return '<div class="bx-ana">'
+  +'<div class="bx-cat"><div class="hd"><b>Lager-Alter</b><small>Artikel</small></div>'+bxBars(buckets.map(([n,c])=>[n,c,c/maxB*100]))+'</div>'
+  +'<div class="bx-cat"><div class="hd"><b>Top Marken</b><small>Verkaufswert</small></div>'+(topB.length?bxBars(topB.map(([n,v])=>[n,euro(v),v/maxM*100])):'<p class="bx-empty">Noch keine Daten.</p>')+'</div>'
+  +'<div class="bx-cat bx-slow"><div class="hd"><b>Ladenhüter</b><small>längste Lagerdauer</small></div>'
+  +(slow.length?slow.map(a=>'<button type="button" class="bx-slowrow" data-bx-open="'+bxEsc(a.id)+'">'+(a.photos?.[0]?.src?'<img src="'+bxEsc(a.photos[0].src)+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+bxEsc([a.brand,a.model].filter(Boolean).join(' ')||a.category||'Artikel')+'</b><small>'+bxEsc(a.location||a.sku||'')+'</small></span><span class="dd">'+v5Age(a)+' T</span></button>').join(''):'<p class="bx-empty">Keine Artikel im Lager.</p>')
+  +'</div></div>';
 }
 function v5Work(items){
  const defs=[['draft','Entwürfe','Noch fertigstellen'],['unlisted','Ohne Listing','Plattformen prüfen'],['sale','Verkauf abwickeln','Versand bestätigen'],['remove','Listings entfernen','Andere Plattformen']];
  const root=$('v5Work');root.replaceChildren();for(const [k,label,desc] of defs){const b=document.createElement('button');b.type='button';b.innerHTML='<span></span><strong></strong><span></span>';b.children[0].textContent=label;b.children[1].textContent=items.filter(a=>v5Task(a,k)).length;b.children[2].textContent=desc;b.onclick=()=>{v5Tab='all';v5WorkFilter=k;$('v5Tabs').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v5Tab==='all'));$('v5Work').classList.add('v5-hidden');$('v5InventoryArea').classList.remove('v5-hidden');renderLibrary()};root.append(b)}
 }
-function v5BulkRefresh(){ $('v5Bulk').classList.toggle('v5-hidden',!v5Selecting);$('v5SelectedCount').textContent=v5Picked.size+' ausgewählt';$('v5Multi').classList.toggle('active',v5Selecting);$('v5Multi').textContent=v5Selecting?'✓ Auswahl aktiv':'☑ Auswahl';}
+function v5BulkRefresh(){ $('v5Bulk').classList.toggle('v5-hidden',!v5Selecting);$('v5SelectedCount').textContent=v5Picked.size+' ausgewählt';$('v5Multi').classList.toggle('active',v5Selecting);$('v5Multi').innerHTML=v5Selecting?'<svg class="bx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg><span>Fertig</span>':'<svg class="bx-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><span>Auswahl</span>';}
 function v5SetTab(tab){v5Tab=tab;v5WorkFilter='';$('v5Tabs').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v5Tab===tab));$('v5Work').classList.toggle('v5-hidden',tab!=='work');$('v5InventoryArea').classList.toggle('v5-hidden',tab!=='all');$('v5Analysis').classList.toggle('v5-hidden',tab==='work'||tab==='brands');$('v6Brands').classList.toggle('v5-hidden',tab!=='brands');renderLibrary()}
 $('v5Tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>v5SetTab(b.dataset.v5Tab));
-$('v5Sort').onchange=renderLibrary;
-$('v5View').textContent=v5List?'▦ Raster':'☷ Liste';$('v5View').onclick=()=>{v5List=!v5List;try{localStorage.setItem('rv_stock_view',v5List?'list':'grid')}catch(e){}$('v5View').textContent=v5List?'▦ Raster':'☷ Liste';renderLibrary()};
+$('v5Sort').onchange=()=>renderLibrary();
+const bxViewLabel=()=>{$('v5View').innerHTML=v5List?'<svg class="bx-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg><span>Raster</span>':'<svg class="bx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Liste</span>'};
+bxViewLabel();$('v5View').onclick=()=>{v5List=!v5List;try{localStorage.setItem('rv_stock_view',v5List?'list':'grid')}catch(e){}bxViewLabel();renderLibrary()};
 $('v5Multi').onclick=()=>{v5Selecting=!v5Selecting;if(!v5Selecting)v5Picked.clear();v5BulkRefresh();renderLibrary()};
 $('v5Cancel').onclick=()=>{v5Selecting=false;v5Picked.clear();v5BulkRefresh();renderLibrary()};
 $('v5SelectAll').onclick=()=>{v5Picked=new Set(v5Cache.filter(v5Available).map(x=>x.id));v5BulkRefresh();renderLibrary()};
@@ -308,7 +383,7 @@ function v6ShowFilter(key){
 function v6RenderCockpit(items){
  const active=items.filter(v5Available);
  const stats=[['active','Aktive Artikel',active.length],['incomplete','Unvollständige Artikel',active.filter(a=>v6Missing(a).length).length],['stale','Über 30 Tage',active.filter(a=>(v5Age(a)??-1)>=30).length],['price','Preis prüfen',active.filter(a=>v5HasListing(a)&&(v5Age(a)??-1)>=30).length]];
- const r=$('v6Tiles');r.replaceChildren();stats.forEach(([k,label,count])=>{const b=document.createElement('button');b.type='button';b.className='v6-tile';const c=document.createElement('strong'),n=document.createElement('span');c.textContent=count;n.textContent=label;b.append(c,n);b.onclick=()=>v6ShowFilter(k);r.append(b)});
+ const r=$('v6Tiles');r.replaceChildren();stats.forEach(([k,label,count])=>{const b=document.createElement('button');b.type='button';b.className='v6-tile bx-q'+(count?'':' bx-zero');b.innerHTML='<span class="ic">'+BX_ICONS[k]+'</span><span class="lb"></span><strong class="bd"></strong>';b.querySelector('.lb').textContent=label;b.querySelector('.bd').textContent=count;b.onclick=()=>v6ShowFilter(k);r.append(b)});
 }
 function v6RenderBrands(items){
  const target=$('v6Brands');target.replaceChildren();const h=document.createElement('h3');h.textContent='Marken-Analyse';target.append(h);
@@ -357,7 +432,7 @@ renderLibrary=async function(){
  $('stockSummary').textContent=`${items.length} Artikel · ${items.filter(a=>stockStatus(a)==='active').length} aktiv · ${items.filter(a=>stockStatus(a)==='sold').length} verkauft`;
  v5Analytics(items);v5Work(items);v6RenderCockpit(items);v6RenderBrands(items);
  const visible=(stockFilter==='archived'?allItems.filter(a=>Boolean(a.archivedAt)):items).filter(a=>{
- const text=[a.sku,a.brand,a.category,a.size,a.location,a.color,a.listings?.ebay?.title].map(stockText).join(' ').toLowerCase();
+ const text=[a.sku,a.brand,a.model,a.category,a.size,a.location,a.color,a.listings?.ebay?.title].map(stockText).join(' ').toLowerCase();
  return (!search||text.includes(search))&&(stockFilter==='archived'||stockFilter==='all'||(stockFilter==='remove'?stockRemoveNeeded(a):stockStatus(a)===stockFilter))&&(stockFilter==='archived'||!v5WorkFilter||(v5WorkFilter==='active'?v5Available(a):v5WorkFilter==='incomplete'?v6Missing(a).length>0&&v5Available(a):v5WorkFilter==='stale'?v5Available(a)&&(v5Age(a)??-1)>=30:v5WorkFilter==='price'?v5Available(a)&&v5HasListing(a)&&(v5Age(a)??-1)>=30:v5Task(a,v5WorkFilter)));
  });
  const mode=$('v5Sort').value;
@@ -370,18 +445,29 @@ renderLibrary=async function(){
  });
  v5Cache=visible;$('v5Count').textContent=visible.length+' Treffer'+(v5WorkFilter?' · Arbeitsfilter aktiv':'');
  target.replaceChildren();if(!visible.length){const el=document.createElement('div');el.className='stock-empty';el.textContent='Keine passenden Artikel gefunden.';target.append(el);return}
+ target.classList.toggle('bx-listview',v5List);
  for(const a of visible){
- const btn=document.createElement('button');btn.type='button';btn.className='stock-card'+(v5List?' v5-list':'')+(v5Picked.has(a.id)?' v5-picked':'');const rvSt=a.archivedAt?'archived':stockRemoveNeeded(a)?'remove':({Entwurf:'draft',Bereit:'ready',Online:'online',Verkauft:'sold'}[a.articleStatus]||'draft');btn.dataset.status=rvSt;
+ const rvSt=a.archivedAt?'archived':stockRemoveNeeded(a)?'remove':bxStatusKey(a);
+ const btn=document.createElement('button');btn.type='button';btn.className='bx-card'+(v5Picked.has(a.id)?' v5-picked':'');btn.dataset.status=rvSt;
  btn.onclick=()=>{if(v5Selecting){if(!v5Available(a))return;if(v5Picked.has(a.id))v5Picked.delete(a.id);else v5Picked.add(a.id);v5BulkRefresh();renderLibrary()}else openStockDetail(a.id)};
- const picture=document.createElement('div');picture.className='stock-img';
- if(a.photos?.[0]?.src){const img=document.createElement('img');img.src=a.photos[0].src;img.loading='lazy';img.alt='Foto '+(a.sku||'Artikel');picture.append(img)}else picture.textContent='RV';
- const info=document.createElement('div');info.className='stock-info';const name=document.createElement('div');name.className='stock-name';name.textContent=[a.brand,a.category].filter(Boolean).join(' ')||'Unbenannter Artikel';
- const meta=document.createElement('div');meta.className='stock-muted';{const sk=document.createElement('span');sk.className='rv-sku';sk.textContent=a.sku||'Ohne Details';meta.append(sk);const chips=document.createElement('div');chips.className='rv-chips';for(const [txt,cls] of [[a.size&&('Gr. '+a.size),'rv-chip'],[a.location,'rv-chip rv-loc']]){if(!txt)continue;const sp=document.createElement('span');sp.className=cls;sp.textContent=txt;chips.append(sp)}if(chips.children.length)meta.append(chips)}
- const foot=document.createElement('div');foot.className='stock-price';const pill=document.createElement('span');pill.className='stock-pill';pill.textContent=a.archivedAt?'Archiviert':stockRemoveNeeded(a)?'Entfernen':a.articleStatus||'Entwurf';pill.dataset.status=rvSt;
- const cost=document.createElement('span');cost.textContent=a.sale?euro(Number(a.sale.price||0)-Number(a.cost||0)-Number(a.sale.fees||0)-Number(a.sale.shipping||0))+' Gewinn':euro(a.cost)+' EK';
- foot.append(pill,cost);const sub=document.createElement('div');sub.className='v5-cardbottom';sub.textContent=['Zustand '+(a.condition||'—')+'/10', 'Preis '+euro(Math.max(0,...Object.values(a.prices||{}).map(Number).filter(Number.isFinite)))].join(' · ');info.append(name,meta,foot,sub);btn.append(picture,info);
+ const vk=a.sale?Number(a.sale.price||0):bxMaxPrice(a),ek=Number(a.cost||0),age=v5Age(a),missing=v6Missing(a);
+ const statusLabel=a.archivedAt?'Archiviert':rvSt==='remove'?'Listing entfernen':a.articleStatus||'Entwurf';
+ let delta='',deltaCls='';
+ if(a.sale){const p=bxProfit(a);delta=(p>=0?'↗ +':'↘ ')+euro(p)+' Gewinn';deltaCls=p>=0?'':'neg'}
+ else if(vk>0){const m=vk-ek;delta=(m>=0?'↗ +':'↘ ')+euro(m)+(ek>0?' · '+Math.round(m/ek*100)+' %':'');deltaCls=m>=0?'':'neg'}
+ else{delta='';deltaCls='nil'}
+ const name=[a.brand,a.model].filter(Boolean).join(' ')||[a.brand,a.category].filter(Boolean).join(' ')||'Unbenannter Artikel';
+ const meta=[a.size&&('Gr. '+a.size),a.condition&&('Zustand '+a.condition+'/10'),a.color].filter(Boolean).join(' · ');
+ btn.innerHTML='<span class="bx-img">'+(a.photos?.[0]?.src?'<img src="'+bxEsc(a.photos[0].src)+'" alt="" loading="lazy" decoding="async">':'<span class="bx-noimg">RV</span>')
+  +'<span class="bx-st" data-status="'+rvSt+'"><i></i>'+bxEsc(statusLabel)+'</span>'+(age!==null&&!a.sale?'<span class="bx-age">'+age+' T</span>':'')+'</span>'
+  +'<span class="bx-info"><span class="bx-sku">'+bxEsc([a.sku,a.location].filter(Boolean).join(' · ')||'Ohne Nummer')+'</span>'
+  +'<span class="bx-name">'+bxEsc(name)+'</span><span class="bx-meta">'+bxEsc(meta)+'</span>'
+  +'<span class="bx-price">'+(vk>0?'<b>'+euro(vk)+'</b>':'<b class="nop">Preis festlegen</b>')+'<small>EK '+euro(ek)+'</small></span>'
+  +(delta?'<span class="bx-dl '+deltaCls+'">'+bxEsc(delta)+'</span>':'')
+  +(missing.length&&v5Available(a)?'<span class="bx-miss v6-badge">'+missing.length+(missing.length===1?' Angabe fehlt':' Angaben fehlen')+'</span>':'')+'</span>';
+ btn.querySelector('.bx-img').setAttribute('aria-hidden','true');btn.setAttribute('aria-label',name+', '+statusLabel+(vk>0?', '+euro(vk):''));
  if(v5Selecting&&v5Available(a)){const dot=document.createElement('span');dot.className='v5-selectdot';dot.textContent=v5Picked.has(a.id)?'✓':'+';btn.append(dot)}
- if(v5Selecting&&!v5Available(a))btn.disabled=true;const missing=v6Missing(a);if(missing.length&&v5Available(a)){const d=document.createElement('span');d.className='v6-badge';d.textContent=missing.length+' Angaben fehlen';info.append(d)}
+ if(v5Selecting&&!v5Available(a))btn.disabled=true;
  target.append(btn);
  }
 };
@@ -697,4 +783,6 @@ window.addEventListener('load',()=>{rvRenderConflicts();if('serviceWorker'in nav
 });
 
 (async()=>{const extra=$('settingsExtras');if(extra&&$('v7BackupPanel'))extra.append($('v7BackupPanel'));try{db=await dbOpen()}catch(e){alert('Lokaler Speicher ist in diesem Browser nicht verfügbar: '+e.message)}article=blank();$('template').value=localStorage.getItem('fsflow_template')||'RV STIL: Erstelle einen präzisen, suchoptimierten Titel mit Marke, Kleidungsart, Größe, Farben und belegten Besonderheiten. Beschreibung mit genau diesen Überschriften: 🥇 DAS STÜCK, 📐 MAẞE & PASSFORM, 👀 ZUSTAND, ⚠️ MÄNGEL, 👕 STYLING, 📦 VERSAND & ANGEBOTE, 🏷️ ARTIKELNUMMER. Beschreibe das konkrete Stück lebendig, aber sachlich. Brustweite und Länge nur aus meinen Eingaben. Keine unbelegten Material-, Alters-, Herkunfts- oder Zustandsbehauptungen. Bei nicht sichtbaren Mängeln vorsichtig formulieren. Abschlusstext: Schneller, sorgfältig verpackter Versand. Faire Preisvorschläge sind willkommen. Bei Fragen zur Passform schreib mir einfach.';push();showHome()})();
+// Externe Datenänderungen (z. B. Beispielartikel laden/entfernen) neu anzeigen.
+window.addEventListener('rv:data-changed',()=>{renderLibrary().catch(()=>{});try{renderHome()}catch(e){}});
 })();

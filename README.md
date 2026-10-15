@@ -1,4 +1,6 @@
-# RV Studio V17 — Animated Reference Command Center
+# RV Studio V21 — Command Center
+
+Neu in V21 (Details: [UEBERGABE-V21.md](UEBERGABE-V21.md)): Bestand komplett im Design der Startseite, Status-Ring, Analyse mit Ladenhütern, neue Artikelkarten und 30 Beispielartikel (Kleidung) mit Titelbild.
 
 Neu in V17 (Details: [UEBERGABE-V17.md](UEBERGABE-V17.md)): Startseite auf allen Breiten im Referenz-Layout, drehende Erde, lebendiger KI-Roboter und Lichteffekte.
 

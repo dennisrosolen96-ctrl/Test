@@ -36,7 +36,7 @@
   }
 
   /* Zufälliger Glanz: ein Element zur Zeit, nur wenn sichtbar */
-  var SEL = '#v11Root .v11-tile, #v11Root .v11-q, #v11Root .v11-card, #v11Root .v11-m, #v11Root .v11-s2, #s4 .stock-card, #s4 .v5-kpi, #s4 .v6-tile, #ccChat .cc-q, #finance .stat, #finance .insight';
+  var SEL = '#v11Root .v11-tile, #v11Root .v11-q, #v11Root .v11-card, #v11Root .v11-m, #v11Root .v11-s2, #s4 .bx-card, #s4 .bx-m, #s4 .bx-q, #s4 .bx-tab, #ccChat .cc-q, #finance .stat, #finance .insight';
   var timer = null;
   function gleamOnce() {
     var list = Array.prototype.filter.call(document.querySelectorAll(SEL), function (e) {
