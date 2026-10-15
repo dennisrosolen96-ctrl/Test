@@ -464,7 +464,7 @@
   }
   function setupGlobeGold() {
     var wrap = doc.querySelector('.v15-globe-wrap'); if (!wrap || wrap.querySelector('.cc-globe-gold')) return;
-    goldField(wrap, { C: 43, Y: 50, R: 33.7 });
+    goldField(wrap, { C: 43, Y: 50, R: 33.7, sparks: 72, len0: 10, len1: 21, w0: .55, w1: .9 });
   }
   function setupGoldElsewhere() {
     var bot = doc.querySelector('.v15-bot-frame'); if (bot && !bot.querySelector('.cc-globe-gold')) goldField(bot, { R: 18.5, rays: 32, len0: 2.5, len1: 6, w0: .35, w1: .55, sparks: 14, sparkR: .8, arcW: .7, rim: true, cls: 'cc-gold-soft', seed: 21 });
@@ -907,7 +907,7 @@
     lastFrame = now;
     var t = (now - start) / 1000, dt = Math.min(0.1, t - lastT); lastT = t;
     // Sparmodus: wenn das Gerät dauerhaft unter ~15 Bildern/s bleibt, teure Effekte abschalten
-    if (!lite) { frames++; if (t > 3 && t < 9 && frames / t < 22) { lite = true; root.classList.add('cc-lite'); Array.prototype.forEach.call(doc.querySelectorAll('svg'), function (v) { if (v.pauseAnimations && !v.closest('#bottomnav')) v.pauseAnimations(); }); } }
+    if (!lite) { frames++; if (t > 3 && t < 9 && frames / t < 12) { lite = true; root.classList.add('cc-lite'); Array.prototype.forEach.call(doc.querySelectorAll('svg'), function (v) { if (v.pauseAnimations && !v.closest('#bottomnav, .v15-globe-wrap')) v.pauseAnimations(); }); } }
     if (lite && (frames++ % 2)) return;
     tick++;
     if (hv && tick % 2 === 0) for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(t); }

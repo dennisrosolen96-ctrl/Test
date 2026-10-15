@@ -31,3 +31,21 @@ html.cc-lite .v11-tile .ic, html.cc-lite .v11-q .ic, html.cc-lite .v11-m .mi .v1
 .cc-gold-rays { animation:cc-spin 90s linear infinite, cc-raysbreath 4.2s ease-in-out infinite !important; }
 @keyframes cc-raysbreath { 0%,100% { opacity:.6; } 55% { opacity:1; } }
 html.cc-lite svg * { animation:none !important; }
+
+/* Globus: volle Effekte zurück (ein einzelnes Element, gut verkraftbar) */
+.v15-globe-wrap .cc-glowline { filter:drop-shadow(0 0 1.2px #5fb4ff) drop-shadow(0 0 2.4px #3d9bff) !important; }
+.v15-globe-wrap .cc-orbit-dot { filter:drop-shadow(0 0 1.6px #ffffff) drop-shadow(0 0 3px #5fb4ff) !important; }
+.v15-globe-wrap .cc-spark, .v15-globe-wrap .cc-gold-spark { filter:drop-shadow(0 0 .8px #ffb060) !important; }
+.v15-globe-wrap .cc-globe-hud { filter:drop-shadow(0 0 3px rgba(95,180,255,.8)) !important; }
+.v15-globe-wrap .cc-globe-gold { filter:drop-shadow(0 0 2.5px rgba(255,190,100,.95)) !important; mix-blend-mode:screen !important; }
+.v15-globe-wrap .cc-ray { animation:cc-ray 3.4s ease-in-out infinite !important; }
+.v15-globe-wrap .cc-gold-rays { animation:cc-spin 90s linear infinite !important; }
+.v15-globe-wrap .cc-earth { animation:cc-globeglow 4.5s ease-in-out infinite !important; }
+.v15-globe-wrap::before { opacity:1; }
+/* Im Sparmodus bleibt der Globus voll animiert, nur Funken weniger sichtbar */
+html.cc-lite .v15-globe-wrap svg * { animation-play-state:running !important; }
+html.cc-lite .v15-globe-wrap .cc-ray { animation:cc-ray 3.4s ease-in-out infinite !important; }
+html.cc-lite .v15-globe-wrap .cc-gold-rays { animation:cc-spin 90s linear infinite !important; }
+.v15-globe-wrap .cc-globe-gold { animation:cc-goldfield2 4.2s ease-in-out infinite !important; }
+@keyframes cc-goldfield2 { 0%,100% { opacity:.85; } 55% { opacity:1; } }
+.v15-globe-wrap .cc-ray { opacity:1; }
