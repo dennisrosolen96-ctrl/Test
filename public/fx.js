@@ -356,6 +356,25 @@
       var sx = 43 + Math.cos(ang) * dist * 1.25, sy = 50 + Math.sin(ang) * dist * 0.95;
       sparks.appendChild(svgEl('circle', { cx: sx.toFixed(2), cy: sy.toFixed(2), r: (0.35 + rnd() * 0.7).toFixed(2), fill: rnd() < 0.7 ? '#308cff' : '#7ac2ff', class: 'cc-spark cc-spark-' + (sp % 4) }));
     }
+    // Mehr Licht: Leuchthof, Lichtsäule, zusätzliche Orbitbahnen, Sternfunkeln
+    var lgB = svgEl('linearGradient', { id: 'ccPillar', x1: '0', y1: '0', x2: '0', y2: '1' });
+    [['0', '0'], ['.3', '.55'], ['.5', '1'], ['.7', '.55'], ['1', '0']].forEach(function (q) { lgB.appendChild(svgEl('stop', { offset: q[0], 'stop-color': '#bfe3ff', 'stop-opacity': q[1] })); });
+    bd.appendChild(lgB);
+    var rgG = svgEl('radialGradient', { id: 'ccGlowHalo', cx: '43', cy: '50', r: '48', gradientUnits: 'userSpaceOnUse' });
+    [['0', '#5fb4ff', '.0'], ['.68', '#3d9bff', '.0'], ['.72', '#3d9bff', '.55'], ['.8', '#2a7ae0', '.22'], ['1', '#000', '0']].forEach(function (q) { rgG.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
+    bd.appendChild(rgG);
+    bg.appendChild(svgEl('circle', { cx: '43', cy: '50', r: '48', fill: 'url(#ccGlowHalo)', class: 'cc-field-halo' }));
+    bg.appendChild(svgEl('rect', { x: '42.4', y: '-45', width: '1.2', height: '190', fill: 'url(#ccPillar)', class: 'cc-glowline cc-beam' }));
+    bg.appendChild(svgEl('rect', { x: '-30', y: '49.6', width: '146', height: '.8', fill: 'url(#ccStreak)', opacity: '.8' }));
+    [[52, 12, -16, '.9', '#5fb4ff', '14s'], [58, 16, 12, '.6', '#9fd2ff', '20s'], [47, 7, -4, '.5', '#ffb066', '11s']].forEach(function (q, k) {
+      var e = svgEl('ellipse', { cx: '43', cy: '50', rx: String(q[0]), ry: String(q[1]), fill: 'none', stroke: q[4], 'stroke-width': q[3], transform: 'rotate(' + q[2] + ' 43 50)', 'stroke-dasharray': k === 1 ? '6 3 1 3' : '30 8', class: 'cc-glowline cc-orbit-flow', style: 'animation-duration:' + q[5] });
+      bg.appendChild(e);
+    });
+    [[8, 14, 2.4], [82, 24, 3], [92, 78, 2.2], [-4, 86, 2.6], [60, -2, 2], [20, 104, 1.8]].forEach(function (q, k) {
+      var x = q[0], y = q[1], r = q[2];
+      var st = svgEl('path', { d: 'M' + x + ' ' + (y - r) + ' Q' + x + ' ' + y + ' ' + (x + r) + ' ' + y + ' Q' + x + ' ' + y + ' ' + x + ' ' + (y + r) + ' Q' + x + ' ' + y + ' ' + (x - r) + ' ' + y + ' Q' + x + ' ' + y + ' ' + x + ' ' + (y - r) + 'Z', fill: k % 3 === 2 ? '#ffd2a0' : '#e6f4ff', class: 'cc-spark cc-spark-' + (k % 4) });
+      bg.appendChild(st);
+    });
     wrap.insertBefore(bg, wrap.firstChild);
     earths.push(e);
     wrap.classList.add('cc-live');
@@ -515,20 +534,6 @@
     Array.prototype.forEach.call(doc.querySelectorAll('.cc-rbot-host'), function (h) { h.classList.toggle('cc-busy', st === 'busy'); });
   });
 
-  function setupRobot() {
-    var f = doc.querySelector('.v15-bot-frame'); if (!f || f.querySelector('.cc-rbot')) return;
-    Array.prototype.slice.call(f.children).forEach(function (c) { c.remove(); });
-    buildBot(f, { R: 58 });
-    var chat = doc.getElementById('ccChatBot'); if (chat && !chat.querySelector('.cc-rbot')) buildBot(chat, { R: 60, pedestal: true });
-    var av = doc.getElementById('ccChatAvatar'); if (av && !av.querySelector('.cc-rbot')) buildBot(av, { R: 60 });
-  }
-
-  /* Mitte des Menüs: der KI-Chat als kleiner Roboter im Kraftfeld */
-  function setupNavCore() {
-    var btn = doc.querySelector('#bottomnav .orb'); if (!btn || btn.querySelector('.cc-rbot')) return;
-    buildBot(btn, { R: 62 });
-  }
-
   /* Menü: rotes Aufleuchten beim Antippen */
   function setupNavTap() {
     var nav = doc.getElementById('bottomnav'); if (!nav || nav.dataset.ccTap) return; nav.dataset.ccTap = '1';
@@ -557,28 +562,132 @@
     });
   }
 
-  /* Glutpartikel im Hintergrund */
+  /* Energieball wie in der Vorlage: dunkler Kern, umkreist von leuchtenden Lichtbändern in Blau und Orange */
+  var orbSerial = 0;
+  function buildOrb(host, opt) {
+    opt = opt || {};
+    var id = 'eo' + (++orbSerial), C = 100, Y = 100, R = opt.R || 40, H = opt.pedestal ? 236 : 200;
+    var S = svgEl('svg', { viewBox: '0 0 200 ' + H, class: 'cc-orb', 'aria-hidden': 'true', focusable: 'false' });
+    var d = svgEl('defs', {}); S.appendChild(d);
+    function A(tag, at, p) { var e = svgEl(tag, at); (p || S).appendChild(e); return e; }
+    function grad(type, gid, at, stops) { var g = svgEl(type, Object.assign({ id: id + gid }, at || {})); stops.forEach(function (q) { g.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] == null ? '1' : q[2] })); }); d.appendChild(g); }
+    function blur(fid, sd) { var f = svgEl('filter', { id: id + fid, x: '-60%', y: '-60%', width: '220%', height: '220%' }); f.appendChild(svgEl('feGaussianBlur', { stdDeviation: sd })); d.appendChild(f); }
+    grad('radialGradient', 'h', { cx: C, cy: Y, r: 98, gradientUnits: 'userSpaceOnUse' }, [['0', '#3d9bff', '.45'], ['.4', '#1f5fd0', '.18'], ['1', '#000', '0']]);
+    grad('radialGradient', 'k', { cx: '.42', cy: '.36', r: '.75' }, [['0', '#1c2c52'], ['.55', '#070d1c'], ['1', '#010309']]);
+    grad('linearGradient', 'wb', { x1: '0', y1: '0', x2: '1', y2: '0' }, [['0', '#3d9bff', '0'], ['.35', '#5fb4ff'], ['.55', '#ffffff'], ['.8', '#9fd2ff'], ['1', '#3d9bff', '0']]);
+    grad('linearGradient', 'wo', { x1: '0', y1: '0', x2: '1', y2: '0' }, [['0', '#ff9a40', '0'], ['.35', '#ffb066'], ['.55', '#fff2dc'], ['.8', '#ffc58a'], ['1', '#ff9a40', '0']]);
+    blur('g', '2.6'); blur('G', '7');
+    A('circle', { cx: C, cy: Y, r: 98, fill: 'url(#' + id + 'h)', class: 'cc-field-halo' });
+    if (opt.pedestal) {
+      var py = 212;
+      grad('linearGradient', 'b', { x1: '0', y1: '0', x2: '0', y2: '1' }, [['0', '#3d9bff', '0'], ['.6', '#3d9bff', '.25'], ['1', '#9fd2ff', '.65']]);
+      A('rect', { x: C - 14, y: Y + R, width: 28, height: py - Y - R, fill: 'url(#' + id + 'b)', class: 'cc-beam' });
+      A('ellipse', { cx: C, cy: py + 5, rx: 80, ry: 14, fill: '#030814', stroke: '#1d3460', 'stroke-width': '1' });
+      A('ellipse', { cx: C, cy: py, rx: 80, ry: 14, fill: '#06122a', stroke: '#7cc4ff', 'stroke-width': '1.1' });
+      A('ellipse', { cx: C, cy: py, rx: 80, ry: 14, fill: 'none', stroke: '#3d9bff', 'stroke-width': '4', opacity: '.6', filter: 'url(#' + id + 'g)' });
+      A('ellipse', { cx: C, cy: py, rx: 62, ry: 10.8, fill: 'none', stroke: '#5fb4ff', 'stroke-width': '1.5', 'stroke-dasharray': '10 5 3 5', class: 'cc-ped-dash' });
+      A('ellipse', { cx: C, cy: py, rx: 44, ry: 7.6, fill: 'none', stroke: '#ffb066', 'stroke-width': '1', 'stroke-dasharray': '2 2', class: 'cc-ped-dash cc-ped-rev' });
+      A('ellipse', { cx: C, cy: py, rx: 28, ry: 5, fill: '#9fd2ff', opacity: '.55', filter: 'url(#' + id + 'g)', class: 'cc-field-halo' });
+    }
+    var body = A('g', { class: 'cc-orb-float' });
+    A('circle', { cx: C, cy: Y, r: R * 1.25, fill: '#3d9bff', opacity: '.35', filter: 'url(#' + id + 'G)', class: 'cc-orb-pulse' }, body);
+    A('circle', { cx: C, cy: Y, r: R, fill: 'url(#' + id + 'k)' }, body);
+    A('circle', { cx: C, cy: Y, r: R, fill: 'none', stroke: '#7cc4ff', 'stroke-width': '1', opacity: '.6' }, body);
+    // Lichtbänder: gekippte Ellipsen, die sich mit unterschiedlichem Tempo drehen
+    var bands = [[1.36, .42, -18, '9s', 'wb', 1, 3.4], [1.24, .62, 34, '7s', 'wo', -1, 2.8], [1.46, .3, 70, '12s', 'wb', 1, 2.2],
+                 [1.16, .8, -55, '6s', 'wb', -1, 2.4], [1.3, .5, 110, '10s', 'wo', 1, 2], [1.08, .95, 15, '14s', 'wb', -1, 1.6],
+                 [1.5, .22, -40, '8s', 'wo', -1, 1.6], [1.2, .7, 150, '11s', 'wb', 1, 1.8], [1.1, .4, 85, '5.5s', 'wb', -1, 2.6]];
+    bands.forEach(function (b, i) {
+      var g = A('g', {}, body);
+      if (!reduce) g.appendChild(svgEl('animateTransform', { attributeName: 'transform', type: 'rotate', values: (b[5] > 0 ? '0 ' : '360 ') + C + ' ' + Y + ';' + (b[5] > 0 ? '360 ' : '0 ') + C + ' ' + Y, dur: b[3], repeatCount: 'indefinite' }));
+      var tr = 'rotate(' + b[2] + ' ' + C + ' ' + Y + ')';
+      A('ellipse', { cx: C, cy: Y, rx: R * b[0], ry: R * b[1], fill: 'none', stroke: b[4] === 'wo' ? '#ff9a40' : '#3d9bff', 'stroke-width': b[6] * 3, opacity: '.6', filter: 'url(#' + id + 'g)', transform: tr, pathLength: '100', 'stroke-dasharray': '58 42', 'stroke-linecap': 'round' }, g);
+      A('ellipse', { cx: C, cy: Y, rx: R * b[0], ry: R * b[1], fill: 'none', stroke: 'url(#' + id + b[4] + ')', 'stroke-width': b[6], transform: tr, pathLength: '100', 'stroke-dasharray': '58 42', 'stroke-linecap': 'round' }, g);
+      A('ellipse', { cx: C, cy: Y, rx: R * b[0], ry: R * b[1], fill: 'none', stroke: b[4] === 'wo' ? '#ffd2a0' : '#bfe3ff', 'stroke-width': '.4', opacity: '.35', transform: tr }, g);
+    });
+    var sp = A('g', {}, body), seed = 9;
+    function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    if (!reduce) sp.appendChild(svgEl('animateTransform', { attributeName: 'transform', type: 'rotate', values: '0 ' + C + ' ' + Y + ';360 ' + C + ' ' + Y, dur: '40s', repeatCount: 'indefinite' }));
+    for (var i = 0; i < 22; i++) { var an = rnd() * 6.283, ds = R * (1.1 + rnd() * 0.9); A('circle', { cx: (C + Math.cos(an) * ds).toFixed(1), cy: (Y + Math.sin(an) * ds * 0.8).toFixed(1), r: (0.5 + rnd() * 1.1).toFixed(2), fill: rnd() < 0.65 ? '#bfe3ff' : '#ffc58a', class: 'cc-spark cc-spark-' + (i % 4) }, sp); }
+    A('ellipse', { cx: C - R * 0.32, cy: Y - R * 0.42, rx: R * 0.3, ry: R * 0.12, fill: '#fff', opacity: '.14', transform: 'rotate(-30 ' + (C - R * 0.32) + ' ' + (Y - R * 0.42) + ')' }, body);
+    host.appendChild(S); host.classList.add('cc-orb-host');
+    return S;
+  }
+
+  /* Menümitte: leuchtender Ring mit Lichtreflex und Dreieck (KI-Chat) */
+  function buildNavOrb(host) {
+    var id = 'no' + (++orbSerial), S = svgEl('svg', { viewBox: '0 0 100 100', class: 'cc-navorb', 'aria-hidden': 'true' });
+    var d = svgEl('defs', {}); S.appendChild(d);
+    function A(tag, at, p) { var e = svgEl(tag, at); (p || S).appendChild(e); return e; }
+    function grad(type, gid, at, stops) { var g = svgEl(type, Object.assign({ id: id + gid }, at || {})); stops.forEach(function (q) { g.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] == null ? '1' : q[2] })); }); d.appendChild(g); }
+    var f = svgEl('filter', { id: id + 'g', x: '-60%', y: '-60%', width: '220%', height: '220%' }); f.appendChild(svgEl('feGaussianBlur', { stdDeviation: '2.2' })); d.appendChild(f);
+    grad('radialGradient', 'h', {}, [['0', '#3d9bff', '.6'], ['.55', '#1f5fd0', '.25'], ['1', '#000', '0']]);
+    grad('radialGradient', 'k', { cx: '.5', cy: '.4', r: '.6' }, [['0', '#12306a'], ['.7', '#050c1e'], ['1', '#02050e']]);
+    grad('linearGradient', 'l', { x1: '0', y1: '0', x2: '1', y2: '0' }, [['0', '#7cc4ff', '0'], ['.5', '#ffffff'], ['1', '#7cc4ff', '0']]);
+    grad('linearGradient', 't', { x1: '0', y1: '0', x2: '0', y2: '1' }, [['0', '#e6f4ff'], ['.5', '#5fb4ff'], ['1', '#1f6fe0']]);
+    A('circle', { cx: 50, cy: 50, r: 50, fill: 'url(#' + id + 'h)', class: 'cc-field-halo' });
+    A('circle', { cx: 50, cy: 50, r: 36, fill: 'url(#' + id + 'k)' });
+    A('circle', { cx: 50, cy: 50, r: 37, fill: 'none', stroke: '#3d9bff', 'stroke-width': '5', opacity: '.7', filter: 'url(#' + id + 'g)', class: 'cc-orb-pulse' });
+    A('circle', { cx: 50, cy: 50, r: 37, fill: 'none', stroke: '#bfe3ff', 'stroke-width': '1.4' });
+    function rot(v, dur) { var g = A('g', {}); if (!reduce) g.appendChild(svgEl('animateTransform', { attributeName: 'transform', type: 'rotate', values: v, dur: dur, repeatCount: 'indefinite' })); return g; }
+    A('circle', { cx: 50, cy: 50, r: 43, fill: 'none', stroke: '#5fb4ff', 'stroke-width': '1', 'stroke-dasharray': '14 5 3 5', opacity: '.8' }, rot('0 50 50;360 50 50', '12s'));
+    A('circle', { cx: 50, cy: 50, r: 30, fill: 'none', stroke: '#9fd2ff', 'stroke-width': '.6', 'stroke-dasharray': '2 2.4', opacity: '.7' }, rot('360 50 50;0 50 50', '9s'));
+    var cm = rot('0 50 50;360 50 50', '3.8s');
+    A('path', { d: 'M50 7 A43 43 0 0 1 80.4 19.6', fill: 'none', stroke: '#ffffff', 'stroke-width': '1.6', 'stroke-linecap': 'round', filter: 'url(#' + id + 'g)' }, cm);
+    A('circle', { cx: 80.4, cy: 19.6, r: 1.8, fill: '#fff' }, cm);
+    A('path', { d: 'M4 50 H96', stroke: 'url(#' + id + 'l)', 'stroke-width': '1.2', opacity: '.85' });
+    A('path', { d: 'M36 39 H64 L50 63 Z', fill: '#3d9bff', opacity: '.8', filter: 'url(#' + id + 'g)', class: 'cc-orb-pulse' });
+    A('path', { d: 'M36 39 H64 L50 63 Z', fill: 'url(#' + id + 't)', stroke: '#e6f4ff', 'stroke-width': '1', 'stroke-linejoin': 'round' });
+    A('path', { d: 'M43 43 H57 L50 55 Z', fill: '#0a1a3a', opacity: '.75' });
+    host.appendChild(S);
+    return S;
+  }
+
+  function setupRobot() {
+    var f = doc.querySelector('.v15-bot-frame'); if (!f || f.querySelector('.cc-orb')) return;
+    Array.prototype.slice.call(f.children).forEach(function (c) { c.remove(); });
+    buildOrb(f, { R: 54 });
+    var chat = doc.getElementById('ccChatBot'); if (chat && !chat.querySelector('.cc-orb')) { chat.innerHTML = ''; buildOrb(chat, { R: 54, pedestal: true }); }
+    var av = doc.getElementById('ccChatAvatar'); if (av && !av.querySelector('.cc-orb')) { av.innerHTML = ''; buildOrb(av, { R: 54 }); }
+  }
+  doc.addEventListener('rv:ai-state', function (e) {
+    var st = e && e.detail && e.detail.state;
+    Array.prototype.forEach.call(doc.querySelectorAll('.cc-orb-host'), function (h) { h.classList.toggle('cc-busy', st === 'busy'); });
+  });
+
+  function setupNavCore() {
+    var btn = doc.querySelector('#bottomnav .orb'); if (!btn || btn.querySelector('.cc-navorb')) return;
+    btn.innerHTML = ''; buildNavOrb(btn);
+  }
+
+  /* Farbige Lichter hinter dem Glas: weiche, langsam treibende Lichtflecken */
   var embers = null;
   function setupEmbers() {
-    if (reduce || doc.querySelector('.cc-embers')) return;
-    var c = doc.createElement('canvas'); c.className = 'cc-embers'; c.setAttribute('aria-hidden', 'true');
-    doc.body.appendChild(c);
+    if (doc.querySelector('.cc-bokeh')) return;
+    var c = doc.createElement('canvas'); c.className = 'cc-bokeh'; c.setAttribute('aria-hidden', 'true');
+    doc.body.insertBefore(c, doc.body.firstChild);
     var ctx = c.getContext('2d'), list = [];
-    function size() { var dpr = Math.min(window.devicePixelRatio || 1, 1.5); c.width = Math.round(innerWidth * dpr); c.height = Math.round(innerHeight * dpr); c.dataset.dpr = dpr; }
+    function size() { c.width = Math.round(innerWidth * 0.5); c.height = Math.round(innerHeight * 0.5); }
     size(); window.addEventListener('resize', size);
-    for (var i = 0; i < 34; i++) list.push({ x: Math.random(), y: Math.random(), v: 0.015 + Math.random() * 0.04, r: 0.6 + Math.random() * 1.6, ph: Math.random() * 6.28, red: Math.random() < 0.6 });
+    var cols = ['61,155,255', '80,190,255', '120,110,255', '255,160,80', '61,155,255', '40,120,255'];
+    for (var i = 0; i < 18; i++) list.push({ x: Math.random(), y: Math.random(), r: 0.08 + Math.random() * 0.18, a: 0.16 + Math.random() * 0.2, vx: (Math.random() - .5) * 0.006, vy: (Math.random() - .5) * 0.006, ph: Math.random() * 6.28, c: cols[i % cols.length] });
+    for (var j = 0; j < 26; j++) list.push({ x: Math.random(), y: Math.random(), r: 0.006 + Math.random() * 0.012, a: 0.35 + Math.random() * 0.4, vx: (Math.random() - .5) * 0.01, vy: -0.004 - Math.random() * 0.01, ph: Math.random() * 6.28, c: Math.random() < .7 ? '150,205,255' : '255,190,120', dot: true });
     embers = function (t, dt) {
-      var w = c.width, h = c.height, dpr = +c.dataset.dpr || 1;
+      var w = c.width, h = c.height, m = Math.max(w, h);
       ctx.clearRect(0, 0, w, h);
+      ctx.globalCompositeOperation = 'lighter';
       for (var i = 0; i < list.length; i++) {
         var p = list[i];
-        p.y -= p.v * dt; if (p.y < -0.02) { p.y = 1.02; p.x = Math.random(); }
-        var x = (p.x + Math.sin(t * 0.6 + p.ph) * 0.01) * w, y = p.y * h;
-        var a = (0.25 + 0.5 * Math.max(0, Math.sin(t * 1.7 + p.ph))) * Math.min(1, p.y * 1.4);
-        ctx.fillStyle = p.red ? 'rgba(40,140,255,' + a + ')' : 'rgba(110,190,255,' + a + ')';
-        ctx.beginPath(); ctx.arc(x, y, p.r * dpr, 0, 6.2832); ctx.fill();
+        p.x += p.vx * dt; p.y += p.vy * dt;
+        if (p.x < -0.2) p.x = 1.2; if (p.x > 1.2) p.x = -0.2; if (p.y < -0.2) p.y = 1.2; if (p.y > 1.2) p.y = -0.2;
+        var a = p.a * (0.7 + 0.3 * Math.sin(t * 0.7 + p.ph)), x = p.x * w, y = p.y * h, r = p.r * m;
+        var g = ctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, 'rgba(' + p.c + ',' + a + ')'); g.addColorStop(p.dot ? 0.35 : 0.5, 'rgba(' + p.c + ',' + (a * (p.dot ? 0.5 : 0.35)) + ')'); g.addColorStop(1, 'rgba(' + p.c + ',0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill();
       }
+      ctx.globalCompositeOperation = 'source-over';
     };
+    if (reduce) embers(0, 0);
   }
 
   /* ---------- 5) Zahlen hochzählen, wenn sich ein Wert ändert ---------- */
@@ -616,11 +725,12 @@
   var start = performance.now(), lastFrame = 0, lastT = 0;
   function frame(now) {
     requestAnimationFrame(frame);
-    if (doc.hidden || !homeVisible()) return;
+    var hv = homeVisible(), ch = doc.getElementById('aiChat'), cv = !!ch && !ch.classList.contains('hidden');
+    if (doc.hidden || !(hv || cv)) return;
     if (now - lastFrame < 33) return;
     lastFrame = now;
     var t = (now - start) / 1000, dt = Math.min(0.1, t - lastT); lastT = t;
-    for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(t); }
+    if (hv) for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(t); }
     if (embers) embers(t, dt);
   }
   function drawStatic() { for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(0); } }
