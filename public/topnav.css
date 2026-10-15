@@ -1,0 +1,104 @@
+/* RV Studio – Kopfmenü auf allen Seiten (ersetzt das untere Menü und den KI-Ball). */
+html body nav#bottomnav.bottomnav.lux-bottomnav, html body header.rv-crafted-header { display:none !important; }
+html body .cc-frame { display:none !important; }
+
+.rvt { --t-text:#eef4ff; --t-sub:#b8c8e6; --t-font:'Segoe UI','Inter','Roboto','Helvetica Neue',system-ui,-apple-system,sans-serif;
+  --t-tile:linear-gradient(180deg, rgba(185,205,230,.14), rgba(120,140,170,.06) 55%, rgba(90,110,140,.08)) padding-box,
+    linear-gradient(180deg, rgba(18,26,40,.70), rgba(14,20,32,.76)) padding-box,
+    linear-gradient(165deg, rgba(255,255,255,.55), rgba(255,255,255,.14) 30%, rgba(255,255,255,.06) 65%, rgba(255,255,255,.28)) border-box;
+  --t-card:linear-gradient(180deg, rgba(185,205,230,.16), rgba(120,140,170,.07) 55%, rgba(90,110,140,.10)) padding-box,
+    linear-gradient(180deg, rgba(20,30,46,.35), rgba(20,30,46,.35)) padding-box,
+    linear-gradient(165deg, rgba(255,255,255,.55), rgba(255,255,255,.14) 30%, rgba(255,255,255,.06) 65%, rgba(255,255,255,.28)) border-box;
+  --t-sh:inset 0 1px 0 rgba(255,255,255,.22), inset 0 -10px 18px -14px rgba(200,220,255,.35), 0 6px 18px rgba(0,0,0,.3);
+  position:relative; z-index:20; max-width:1000px; margin:0 auto; padding:18px 16px 4px; font-family:var(--t-font); color:var(--t-text); }
+.rvt * { box-sizing:border-box; font-family:var(--t-font); }
+.rvt button { -webkit-tap-highlight-color:transparent; cursor:pointer; font:inherit; color:inherit; }
+.rvt :focus-visible { outline:2px solid #8fd4ff; outline-offset:2px; }
+.rvt .v11-ico { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+
+/* Zeile 1: Globus, Begrüßung, KI-Leiste, Glocke */
+.rvt-row { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.rvt-home { display:flex; align-items:center; gap:14px; min-width:0; flex:1; padding:0; border:0; background:none; text-align:left; }
+.rvt-globe { position:relative; width:58px; height:58px; flex:none; border-radius:50%; display:block; }
+.rvt-globe .v11-avatar { width:100%; height:100%; border-radius:50%; display:block; object-fit:cover; }
+.rvt-greet { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.rvt-greet b { font:600 30px/1.08 var(--t-font) !important; color:var(--t-text) !important; text-shadow:0 0 14px rgba(120,180,255,.25); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; background:none !important; -webkit-text-fill-color:currentColor; }
+.rvt-greet span { font-size:15px; color:var(--t-sub); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rvt-home:hover .rvt-greet span { color:#dbe8ff; }
+.rvt-pill { display:flex; align-items:center; gap:10px; min-height:56px; max-width:300px; padding:6px 12px 6px 7px; border:1px solid transparent; border-radius:999px; text-align:left;
+  background:var(--t-card); box-shadow:var(--t-sh); transition:transform .2s, filter .25s, box-shadow .25s; }
+.rvt-pill .dot { width:40px; height:40px; flex:none; border-radius:50%; background:radial-gradient(circle at 35% 30%, #9fd4ff, #2a7ae8 40%, #0b2a66 75%); box-shadow:0 0 14px rgba(61,155,255,.7), inset 0 0 10px rgba(180,225,255,.5); animation:rvt-orb 3.2s ease-in-out infinite; }
+.rvt-pill > span { font-size:13.5px; line-height:1.25; color:#e9effa; min-width:0; }
+.rvt-pill > .v11-ico { width:16px; height:16px; color:#a9b8d4; flex:none; }
+.rvt-bell { position:relative; width:52px; height:52px; flex:none; display:grid; place-items:center; padding:0; border:1px solid transparent; border-radius:50%; background:var(--t-card); box-shadow:var(--t-sh); color:#eef4ff; }
+.rvt-bell > i { position:absolute; top:9px; right:10px; width:10px; height:10px; border-radius:50%; background:#ff4d5e; box-shadow:0 0 8px rgba(255,77,94,.8); display:none; }
+.rvt-bell.has-tasks > i { display:block; }
+@media(hover:hover) { .rvt-pill:hover, .rvt-bell:hover { transform:translateY(-1px); filter:brightness(1.15); } }
+
+/* Zeile 2: sechs Kacheln */
+.rvt-tiles { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; }
+.rvt-tile { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; min-height:92px; padding:10px 4px; border:1px solid transparent; border-radius:20px;
+  background:var(--t-tile); box-shadow:var(--t-sh); color:#e9edf3; transition:transform .2s, box-shadow .25s, filter .25s; }
+.rvt-tile .ic { display:grid; color:#f4f8ff; filter:drop-shadow(0 0 6px rgba(140,200,255,.55)); }
+.rvt-tile .ic .v11-ico { width:30px; height:30px; stroke-width:1.5; }
+.rvt-tile .lb { font-size:14px; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+.rvt-tile .bd { position:absolute; top:-6px; right:-4px; min-width:24px; height:24px; padding:0 7px; border-radius:999px; display:grid; place-items:center; font:700 13px/1 var(--t-font); color:#fff; background:#1e9bff; box-shadow:0 0 10px rgba(30,155,255,.9); }
+.rvt-tile .bd[hidden] { display:none; }
+.rvt-tile.on { color:#fff; background:radial-gradient(ellipse at 50% 0, rgba(70,160,255,.38), rgba(10,40,100,.45) 75%) padding-box, var(--t-tile);
+  box-shadow:inset 0 0 0 1.5px #4aa8ff, 0 0 14px rgba(61,155,255,.65), 0 0 30px rgba(61,155,255,.3); }
+.rvt-tile.on .ic { color:#fff; filter:drop-shadow(0 0 8px rgba(120,190,255,1)); }
+@media(hover:hover) { .rvt-tile:hover { transform:translateY(-2px); filter:brightness(1.15); box-shadow:0 0 0 1px rgba(140,200,255,.55), 0 0 18px rgba(70,150,255,.45), 0 10px 22px rgba(0,0,0,.4); } }
+.rvt-tile:active { transform:scale(.96); }
+
+@keyframes rvt-orb { 0%,100% { box-shadow:0 0 10px rgba(61,155,255,.55), inset 0 0 10px rgba(180,225,255,.5); } 50% { box-shadow:0 0 20px rgba(61,155,255,.95), inset 0 0 12px rgba(200,235,255,.7); } }
+html.cc-no-pulse .rvt-pill .dot { animation:none; }
+@media (prefers-reduced-motion: reduce) { .rvt * { animation:none !important; transition:none !important; } }
+
+/* Ohne unteres Menü: Seiten enden normal, fixierte Leisten rutschen nach unten */
+body main.wrap, body:has(#home:not(.hidden)) main.wrap, body:has(#s4:not(.hidden)) main.wrap, body:has(#steps:not(.hidden)) main.wrap { padding-top:8px !important; padding-bottom:40px !important; }
+#finance.in, #settingsPage.st { padding-top:8px !important; padding-bottom:40px !important; }
+body:has(#aiChat:not(.hidden)) #aiChat.ch { padding-top:8px !important; padding-bottom:24px !important; }
+#nav.sx-nav { bottom:12px !important; }
+.ch-entry { bottom:12px !important; }
+#s4.bx .v5-bulk { bottom:16px !important; }
+#sxToast { bottom:28px !important; }
+
+/* Schmale Bildschirme: Aufbau bleibt wie im Vorbild, nur kompakter */
+@media (max-width:720px) {
+  .rvt { padding:14px 12px 2px; }
+  .rvt-row { gap:9px; margin-bottom:10px; }
+  .rvt-globe { width:46px; height:46px; }
+  .rvt-home { gap:10px; }
+  .rvt-greet b { font-size:24px !important; }
+  .rvt-greet span { font-size:13px; }
+  .rvt-pill { min-height:46px; max-width:210px; gap:8px; padding:5px 10px 5px 5px; }
+  .rvt-pill .dot { width:32px; height:32px; }
+  .rvt-pill > span { font-size:12px; }
+  .rvt-bell { width:44px; height:44px; }
+  .rvt-tiles { gap:7px; }
+  .rvt-tile { min-height:74px; gap:7px; border-radius:16px; }
+  .rvt-tile .ic .v11-ico { width:24px; height:24px; }
+  .rvt-tile .lb { font-size:12px; }
+}
+@media (max-width:480px) {
+  .rvt-greet b { font-size:21px !important; }
+  .rvt-greet span { font-size:12px; }
+  .rvt-pill { max-width:none; padding-right:6px; }
+  .rvt-pill > span, .rvt-pill > .v11-ico { display:none; }
+  .rvt-tiles { gap:5px; }
+  .rvt-tile { min-height:62px; gap:5px; border-radius:14px; padding:8px 2px; }
+  .rvt-tile .ic .v11-ico { width:21px; height:21px; }
+  .rvt-tile .lb { font-size:9.5px; letter-spacing:-.1px; }
+  .rvt-tile .bd { min-width:18px; height:18px; font-size:10.5px !important; top:-5px; right:-3px; padding:0 5px; }
+}
+/* Ältere allgemeine header-Regeln neutralisieren */
+html body header#rvTop.rvt { position:relative !important; top:auto !important; display:block !important; height:auto !important; min-height:0 !important; background:none !important; border:0 !important; box-shadow:none !important; flex-wrap:nowrap; }
+html body header#rvTop.rvt { padding:18px 16px 4px !important; }
+@media (max-width:720px) { html body header#rvTop.rvt { padding:14px 12px 2px !important; } }
+#rvTop .rvt-globe .cc-avatar { position:absolute; inset:0; width:100%; height:100%; display:block; }
+#rvTop .rvt-globe .cc-avatar .v11-avatar { position:absolute; inset:0; width:100% !important; height:100% !important; }
+#rvTop .rvt-globe .cc-avatar .cc-avatar-earth { position:absolute !important; left:50% !important; top:50% !important; width:78% !important; height:78% !important; transform:translate(-50%,-50%) !important; }
+html.rvt-hidden #rvTop { display:none !important; }
+@media (max-width:480px) {
+  .rvt-tile .lb { white-space:normal; overflow:visible; text-overflow:clip; text-align:center; line-height:1.05; -webkit-hyphens:manual; hyphens:manual; }
+}

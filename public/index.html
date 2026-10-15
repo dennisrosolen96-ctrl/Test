@@ -25,6 +25,7 @@
 <link rel="stylesheet" href="/settings.css">
 <link rel="stylesheet" href="/insights.css">
 <link rel="stylesheet" href="/chat.css">
+<link rel="stylesheet" href="/topnav.css">
 <link rel="preload" href="/fonts/command-sans-regular.otf" as="font" type="font/otf" crossorigin>
 <link rel="preload" href="/fonts/command-sans-bold.otf" as="font" type="font/otf" crossorigin>
 </head>
@@ -64,36 +65,24 @@
     </div>
   </div>
 </header>
-<main class="wrap">
-<section id="home" class="home lux-home">
-<div class="v11" id="v11Root">
-<div class="v16-crown" aria-hidden="true">
-</div>
-<div class="v11-top">
-<img class="v11-avatar" src="/v11-avatar.webp" alt="" width="252" height="252" aria-hidden="true">
-<div class="v11-greet">
-<b id="v11Greet">Guten Tag!</b>
-<span>Dein Reselling Command Center</span>
-</div>
-<button type="button" class="v11-pill v11-hud" id="v11AiPill">
-<i class="dot">
-</i>
+<header id="rvTop" class="rvt">
+<div class="rvt-row">
+<button type="button" class="rvt-home" id="rvTopHome" aria-label="Zur Startseite">
+<span class="rvt-globe"><img class="v11-avatar" src="/v11-avatar.webp" alt="" width="252" height="252" aria-hidden="true"></span>
+<span class="rvt-greet"><b id="v11Greet">Guten Tag!</b><span id="rvTopSub">Dein Reselling Command Center</span></span>
+</button>
+<button type="button" class="rvt-pill" id="v11AiPill">
+<i class="dot"></i>
 <span>Dein KI-Assistent<br>ist bereit.</span>
-<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
-<path d="m9 5 7 7-7 7"/>
-</svg>
+<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
 </button>
-<button type="button" class="v11-bell" id="v11Bell" aria-label="Aufgaben">
-<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
-<path d="M6 17v-6a6 6 0 0 1 12 0v6l1.5 2h-15L6 17Z"/>
-<path d="M10 21h4"/>
-</svg>
-<i>
-</i>
+<button type="button" class="rvt-bell" id="v11Bell" aria-label="Aufgaben">
+<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17v-6a6 6 0 0 1 12 0v6l1.5 2h-15L6 17Z"/><path d="M10 21h4"/></svg>
+<i></i>
 </button>
 </div>
-<div class="v11-tiles">
-<button type="button" class="v11-tile v11-hud" data-go="studio" aria-label="Studio">
+<div class="rvt-tiles" role="navigation" aria-label="Hauptmenü">
+<button type="button" class="rvt-tile" data-nav="studio" aria-label="Studio">
 <span class="ic">
 <svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
 <path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/>
@@ -102,7 +91,7 @@
 </span>
 <span class="lb">Studio</span>
 </button>
-<button type="button" class="v11-tile v11-hud" data-go="stock" aria-label="Bestand">
+<button type="button" class="rvt-tile" data-nav="stock" aria-label="Bestand">
 <span class="ic">
 <svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
 <path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/>
@@ -111,7 +100,7 @@
 </span>
 <span class="lb">Bestand</span>
 </button>
-<button type="button" class="v11-tile v11-hud" data-go="purchases" aria-label="Einkäufe">
+<button type="button" class="rvt-tile" data-nav="purchases" aria-label="Einkäufe">
 <span class="ic">
 <svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
 <path d="M3 4h2.5l2 11h10.5l2-8H7"/>
@@ -121,7 +110,7 @@
 </span>
 <span class="lb">Einkäufe</span>
 </button>
-<button type="button" class="v11-tile v11-hud" data-go="sales" aria-label="Verkauf">
+<button type="button" class="rvt-tile" data-nav="sales" aria-label="Verkauf">
 <span class="ic">
 <svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
 <path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/>
@@ -130,7 +119,7 @@
 <span class="lb">Verkauf</span>
 <span class="bd" id="v11-badge-sales" hidden>0</span>
 </button>
-<button type="button" class="v11-tile v11-hud" data-go="chat" aria-label="KI-Chat">
+<button type="button" class="rvt-tile" data-nav="chat" aria-label="KI-Chat">
 <span class="ic">
 <svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
 <path d="M4 5h16v11H9l-5 4V5Z"/>
@@ -139,16 +128,23 @@
 </span>
 <span class="lb">KI-Chat</span>
 </button>
-<button type="button" class="v11-tile v11-hud" data-go="settings" aria-label="Einstellungen">
+<button type="button" class="rvt-tile" data-nav="settings" aria-label="Einstellungen">
 <span class="ic">
 <svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
 <circle cx="12" cy="12" r="3"/>
 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
 </svg>
 </span>
-<span class="lb">Einstellungen</span>
+<span class="lb">Einstel&shy;lungen</span>
 </button>
 </div>
+</header>
+<main class="wrap">
+<section id="home" class="home lux-home">
+<div class="v11" id="v11Root">
+<div class="v16-crown" aria-hidden="true">
+</div>
+
 <section class="v11-panel v11-sales v11-hud" aria-label="Verkaufsübersicht">
 <div class="v11-ph">
 <span class="hx">

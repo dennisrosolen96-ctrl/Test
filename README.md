@@ -1,4 +1,6 @@
-# RV Studio V25 — Command Center
+# RV Studio V26 — Command Center
+
+Neu in V26 (Details: [UEBERGABE-V26.md](UEBERGABE-V26.md)): Kopfmenü mit Begrüßung, KI-Leiste und sechs Kacheln auf allen Seiten; unteres Menü und KI-Ball entfernt.
 
 Neu in V25 (Details: [UEBERGABE-V25.md](UEBERGABE-V25.md)): KI-Chat als eigene Seite mit gespeichertem Verlauf, formatierten Antworten, Folgefragen, Artikel-Kontext und Einrichtung direkt im Chat.
 
