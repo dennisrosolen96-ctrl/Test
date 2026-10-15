@@ -102,3 +102,7 @@ html.rvt-hidden #rvTop { display:none !important; }
 @media (max-width:480px) {
   .rvt-tile .lb { white-space:normal; overflow:visible; text-overflow:clip; text-align:center; line-height:1.05; -webkit-hyphens:manual; hyphens:manual; }
 }
+/* V30: siebte Kachel (Snipes) */
+.rvt-tiles { grid-template-columns:repeat(7,minmax(0,1fr)); }
+@media (max-width:720px) { .rvt-tiles { gap:5px; } .rvt-tile .lb { font-size:11px; } }
+@media (max-width:480px) { .rvt-tiles { gap:4px; } .rvt-tile { padding:8px 1px; } .rvt-tile .lb { font-size:8.6px; letter-spacing:-.2px; } .rvt-tile .ic .v11-ico { width:19px; height:19px; } }

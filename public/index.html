@@ -27,6 +27,7 @@
 <link rel="stylesheet" href="/chat.css">
 <link rel="stylesheet" href="/topnav.css">
 <link rel="stylesheet" href="/home.css">
+<link rel="stylesheet" href="/snipe.css">
 <link rel="preload" href="/fonts/command-sans-regular.otf" as="font" type="font/otf" crossorigin>
 <link rel="preload" href="/fonts/command-sans-bold.otf" as="font" type="font/otf" crossorigin>
 </head>
@@ -110,6 +111,14 @@
 </svg>
 </span>
 <span class="lb">Einkäufe</span>
+</button>
+<button type="button" class="rvt-tile" data-nav="snipe" aria-label="Snipes">
+<span class="ic">
+<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
+<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+</svg>
+</span>
+<span class="lb">Snipes</span>
 </button>
 <button type="button" class="rvt-tile" data-nav="sales" aria-label="Verkauf">
 <span class="ic">
@@ -1210,6 +1219,69 @@
 </div>
 </div>
 </section>
+<section id="sniper" class="wrap hidden sx sn">
+<div class="sx-top">
+<span class="sx-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></span>
+<div class="sx-greet"><h1>Snipes</h1><p id="snSub">Vinted-Funde mit Gewinnbewertung</p></div>
+<span class="sn-state" id="snState" data-s="off" role="status">Aus</span>
+</div>
+
+<section class="sx-panel" aria-label="Treffer">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7Z" fill="currentColor" stroke="none"/></svg></span><div class="sx-tt"><h2 class="sx-title">Treffer</h2><span class="sx-sub" id="snHitSub">Sortiert nach Gewinn</span></div></div>
+<div class="sx-seg sn-tabs" id="snTabs" role="group" aria-label="Filter"><button type="button" data-t="snipes">Snipes</button><button type="button" data-t="all">Alle</button><button type="button" data-t="saved">Gemerkt</button></div>
+<div class="sn-hits" id="snHits"></div>
+<div class="sn-empty" id="snEmpty" hidden></div>
+</section>
+
+<section class="sx-panel" aria-label="Suchaufträge">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Suchaufträge</h2><span class="sx-sub">Was soll ich für dich beobachten?</span></div></div>
+<div class="sn-list" id="snSearches"></div>
+<form class="sn-form" id="snForm" autocomplete="off">
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Suchbegriff</span><input id="snQ" placeholder="z. B. Nike Tech Fleece" required maxlength="80"></label>
+<label class="sx-field"><span>Höchstpreis</span><span class="sx-input-wrap"><input id="snMax" type="number" inputmode="decimal" min="1" step="1" placeholder="40"><i>€</i></span></label>
+<label class="sx-field"><span>Größe (optional)</span><input id="snSize" placeholder="z. B. M" maxlength="12"></label>
+<label class="sx-field"><span>Wiederverkauf (optional)</span><span class="sx-input-wrap"><input id="snResale" type="number" inputmode="decimal" min="0" step="1" placeholder="auto"><i>€</i></span></label>
+</div>
+<button type="submit" class="sx-btn primary" id="snAdd">Suchauftrag hinzufügen</button>
+</form>
+</section>
+
+<section class="sx-panel" aria-label="Snipe-Regeln">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></span><div class="sx-tt"><h2 class="sx-title">Snipe-Regeln</h2><span class="sx-sub">Ab wann ein Fund Alarm auslöst</span></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Mindestgewinn</span><span class="sx-input-wrap"><input data-sn="minProfit" type="number" inputmode="decimal" min="0" step="1"><i>€</i></span></label>
+<label class="sx-field"><span>Mindestmarge</span><span class="sx-input-wrap"><input data-sn="minMargin" type="number" inputmode="decimal" min="0" step="1"><i>%</i></span></label>
+<label class="sx-field"><span>Eingangsversand (Vinted)</span><span class="sx-input-wrap"><input data-sn="inShip" type="number" inputmode="decimal" min="0" step="0.1"><i>€</i></span></label>
+<label class="sx-field"><span>Gebühr beim Wiederverkauf</span><span class="sx-input-wrap"><input data-sn="sellFee" type="number" inputmode="decimal" min="0" step="0.5"><i>%</i></span></label>
+<label class="sx-field"><span>Abfrage alle</span><span class="sx-input-wrap"><input data-sn="interval" type="number" inputmode="numeric" min="45" step="5"><i>Sek.</i></span></label>
+<label class="sx-field"><span>Vinted-Land</span><select data-sn="domain"><option value="de">Deutschland</option><option value="at">Österreich</option><option value="fr">Frankreich</option><option value="nl">Niederlande</option><option value="pl">Polen</option><option value="it">Italien</option><option value="es">Spanien</option><option value="co.uk">Großbritannien</option></select></label>
+</div>
+<div class="st-toggles">
+<label class="sx-switch"><input type="checkbox" data-sn="auto"><span></span>Automatisch abfragen, solange die App offen ist</label>
+<label class="sx-switch"><input type="checkbox" data-sn="notify"><span></span>Benachrichtigung bei Snipes</label>
+</div>
+<p class="sx-hint">Käuferschutz (0,70 € + 5 %) wird automatisch eingerechnet. Der geschätzte Verkaufspreis kommt aus deinem Wert, deinen eigenen Verkäufen oder dem Marktmedian der Treffer.</p>
+</section>
+
+<section class="sx-panel" aria-label="Verbindung">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></span><div class="sx-tt"><h2 class="sx-title">Verbindung</h2><span class="sx-sub" id="snLinkSub">Userscript auf diesem Gerät</span></div></div>
+<div class="st-checks" id="snLink"></div>
+<ol class="sn-steps">
+<li>Browser mit Userscript-Unterstützung nutzen (Firefox oder Kiwi mit Tampermonkey, am PC jeder Browser mit Tampermonkey).</li>
+<li>Auf „Userscript herunterladen“ tippen und in Tampermonkey installieren, oder Code kopieren und dort als neues Skript einfügen.</li>
+<li>Diese Seite neu laden. Oben muss „Verbunden“ stehen. Abgefragt wird mit deiner eigenen Vinted-Sitzung, kein Passwort wird weitergegeben.</li>
+</ol>
+<div class="settings-btns sn-btns">
+<button type="button" class="sx-btn" id="snDl">Userscript herunterladen</button>
+<button type="button" class="sx-btn" id="snCopy">Code kopieren</button>
+<button type="button" class="sx-btn" id="snPing">Verbindung prüfen</button>
+<button type="button" class="sx-btn primary" id="snRun">Jetzt abfragen</button>
+</div>
+<p class="sx-hint" id="snLog"></p>
+</section>
+</section>
+
 <section id="settingsPage" class="wrap hidden sx st">
 <div class="sx-top">
 <span class="sx-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></span>

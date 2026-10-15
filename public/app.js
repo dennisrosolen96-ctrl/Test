@@ -1388,6 +1388,169 @@ $('hmPerfPeriod').onclick=e=>{const b=e.target.closest('[data-p]');if(!b)return;
 document.querySelectorAll('#hmRoot [data-hm-go]').forEach(b=>b.onclick=()=>hmGo(b.dataset.hmGo));
 {const prevRH=renderHome;renderHome=async function(){await prevRH();await hmRender()}}
 {let rz=0,lw=0;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if($('home').classList.contains('hidden'))return;const w=$('hmChart').clientWidth;if(Math.abs(w-lw)>40){lw=w;hmRender()}},250)})}
+// ===================== Snipes V30 (Vinted-Funde mit Gewinnbewertung) =====================
+// Abgefragt wird ausschließlich vom eigenen Gerät über ein Userscript (deine Sitzung, nur lesend, ohne Tarnung).
+// Bei Sperre (403/429) pausiert die Abfrage und wird länger, sie versucht nichts zu umgehen.
+const SN_KEY='rv_snipe_v1',SN_DEF={minProfit:15,minMargin:40,inShip:3.9,sellFee:5,interval:75,domain:'de',auto:true,notify:true};
+const SN_DOMAINS=['de','at','fr','nl','pl','it','es','co.uk'];
+let SN={searches:[],hits:[],seen:{},cfg:{...SN_DEF}},snTab='snipes',snBridge=false,snSeq=0,snBusy=false,snTimer=0,snBack=0,snBlockedUntil=0;
+const snReq=new Map(),snSleep=ms=>new Promise(r=>setTimeout(r,ms));
+function snLoad(){try{const v=JSON.parse(sxGet(SN_KEY,'{}'))||{};SN={searches:Array.isArray(v.searches)?v.searches:[],hits:Array.isArray(v.hits)?v.hits:[],seen:v.seen&&typeof v.seen==='object'?v.seen:{},cfg:{...SN_DEF,...(v.cfg||{})}}}catch{}
+ if(!SN_DOMAINS.includes(SN.cfg.domain))SN.cfg.domain='de'}
+function snPersist(){const ids=Object.keys(SN.seen);if(ids.length>3000)for(const k of ids.slice(0,ids.length-2000))delete SN.seen[k];SN.hits=SN.hits.slice(0,150);sxSet(SN_KEY,JSON.stringify(SN))}
+const snMedian=a=>{const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2};
+const snNum=v=>{const n=parseFloat(String(v??'').replace(',','.'));return Number.isFinite(n)?n:0};
+function snUserscript(){const o=location.origin;return `// ==UserScript==
+// @name         RV Studio – Vinted-Abfrage
+// @namespace    rv-studio
+// @version      1.0
+// @description  Fragt Vinted-Suchen für deine RV-Studio-App ab. Nur lesend, mit deiner eigenen Sitzung.
+// @match        ${o}/*
+// @grant        GM_xmlhttpRequest
+// @connect      vinted.de
+// @connect      vinted.at
+// @connect      vinted.fr
+// @connect      vinted.nl
+// @connect      vinted.pl
+// @connect      vinted.it
+// @connect      vinted.es
+// @connect      vinted.co.uk
+// ==/UserScript==
+(function () {
+  'use strict';
+  var OK = /^https:\\/\\/www\\.vinted\\.(de|at|fr|nl|pl|it|es|co\\.uk)\\/api\\/v2\\/catalog\\/items\\?/;
+  function reply(id, status, text) { window.postMessage({ rvSnipe: 'res', id: id, status: status, text: text }, location.origin); }
+  function hello() { window.postMessage({ rvSnipe: 'hello', v: 1 }, location.origin); }
+  window.addEventListener('message', function (e) {
+    if (e.source !== window || e.origin !== location.origin || !e.data) return;
+    var d = e.data;
+    if (d.rvSnipe === 'ping') { hello(); return; }
+    if (d.rvSnipe !== 'req') return;
+    if (typeof d.url !== 'string' || !OK.test(d.url)) { reply(d.id, 0, ''); return; }
+    GM_xmlhttpRequest({
+      method: 'GET', url: d.url, headers: { Accept: 'application/json' }, timeout: 20000,
+      onload: function (r) { reply(d.id, r.status, r.responseText); },
+      onerror: function () { reply(d.id, 0, ''); },
+      ontimeout: function () { reply(d.id, 0, ''); }
+    });
+  });
+  hello();
+})();
+`}
+window.addEventListener('message',e=>{if(e.source!==window||e.origin!==location.origin)return;const d=e.data;if(!d||typeof d!=='object')return;
+ if(d.rvSnipe==='hello'){snBridge=true;snRenderLink();snState()}
+ else if(d.rvSnipe==='res'){const f=snReq.get(d.id);if(f){snReq.delete(d.id);f(d)}}});
+const snPing=()=>window.postMessage({rvSnipe:'ping'},location.origin);
+function snAsk(url){return new Promise((ok,no)=>{if(!snBridge)return no(Error('nobridge'));const id=++snSeq,t=setTimeout(()=>{snReq.delete(id);no(Error('timeout'))},25000);snReq.set(id,d=>{clearTimeout(t);ok(d)});window.postMessage({rvSnipe:'req',id,url},location.origin)})}
+function snUrl(s){const q=new URLSearchParams({search_text:s.q,order:'newest_first',per_page:'40',page:'1'});if(s.max>0)q.set('price_to',String(s.max));return 'https://www.vinted.'+SN.cfg.domain+'/api/v2/catalog/items?'+q}
+function snNorm(it){const p=it&&it.price,price=snNum(p&&typeof p==='object'?p.amount:p),ph=it&&it.photo||{},dom=SN.cfg.domain;
+ let url=String(it&&it.url||'');if(url&&!/^https:\/\//.test(url))url='https://www.vinted.'+dom+(url.startsWith('/')?'':'/')+url;
+ if(!/^https:\/\/www\.vinted\.[a-z.]+\//.test(url))url=it&&it.id?'https://www.vinted.'+dom+'/items/'+it.id:'';
+ let img=String(ph.url||ph.full_size_url||'');if(!/^https:\/\//.test(img))img='';
+ return {id:String(it&&it.id||''),title:String(it&&it.title||'').slice(0,120),price,brand:String(it&&it.brand_title||'').slice(0,40),size:String(it&&it.size_title||'').slice(0,20),status:String(it&&it.status||'').slice(0,30),img,url}}
+async function snOwnMedian(q){const words=q.toLowerCase().split(/\s+/).filter(w=>w.length>1);if(!words.length)return null;
+ const prices=(await allArticles()).filter(a=>a.articleStatus==='Verkauft'&&a.sale&&Number(a.sale.price)>0&&words.every(w=>[a.brand,a.model,a.category,a.listings?.vinted?.title,a.listings?.ebay?.title].join(' ').toLowerCase().includes(w))).map(a=>Number(a.sale.price));
+ return prices.length>=2?snMedian(prices):null}
+const snBuyCost=(price)=>price+0.7+0.05*price+SN.cfg.inShip;
+function snRate(price,est){const buy=snBuyCost(price),profit=est*(1-SN.cfg.sellFee/100)-buy;return {profit,margin:buy>0?profit/buy:0}}
+async function snRunSearch(s,silent){
+ const r=await snAsk(snUrl(s));
+ if([401,403,429].includes(r.status))throw Object.assign(Error('blocked'),{status:r.status});
+ if(r.status!==200)throw Error('Antwort '+(r.status||'ohne Verbindung'));
+ let j;try{j=JSON.parse(r.text)}catch{throw Error('Antwort nicht lesbar')}
+ const all=(Array.isArray(j.items)?j.items:[]).map(snNorm).filter(x=>x.id&&x.price>0);
+ const sz=String(s.size||'').toLowerCase().trim(),items=sz?all.filter(x=>x.size.toLowerCase().split(/[\s/,]+/).includes(sz)||x.size.toLowerCase().includes(sz)):all;
+ let est=null,src='';
+ if(s.resale>0){est=s.resale;src='dein Wert'}
+ else{const own=await snOwnMedian(s.q);if(own){est=own;src='deine Verkäufe'}else if(all.length>=8){est=snMedian(all.map(x=>x.price))*0.85;src='Marktmedian'}}
+ let added=0;
+ for(const x of items){if(SN.seen[x.id])continue;SN.seen[x.id]=1;
+  const rt=est?snRate(x.price,est):{profit:0,margin:0},snipe=!!est&&rt.profit>=SN.cfg.minProfit&&rt.margin>=SN.cfg.minMargin/100;
+  const h={...x,sid:s.id,sname:s.q,est:est?Math.round(est):0,src,profit:rt.profit,margin:rt.margin,snipe,found:Date.now(),isNew:!silent};
+  SN.hits.unshift(h);added++;if(snipe&&!silent)snAlert(h)}
+ return {added,total:items.length}}
+function snAlert(h){try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch{}
+ sxToast('🎯 Snipe: '+h.title.slice(0,36)+' · '+euro(h.price)+' → +'+euro(h.profit));
+ if(!SN.cfg.notify||typeof Notification==='undefined'||Notification.permission!=='granted')return;
+ const opt={body:euro(h.price)+' · Gewinn ca. '+euro(h.profit)+' ('+Math.round(h.margin*100)+' %)',icon:'/icons/icon-192.png',tag:'sn-'+h.id,data:{url:h.url}};
+ try{navigator.serviceWorker?.getRegistration().then(r=>r?r.showNotification('Snipe: '+h.title.slice(0,50),opt):new Notification('Snipe: '+h.title.slice(0,50),opt))}catch{}}
+function snLog(t){const el=$('snLog');if(el)el.textContent=t}
+function snState(){const el=$('snState');if(!el)return;const act=SN.searches.some(s=>s.active);
+ const st=Date.now()<snBlockedUntil?'wait':(SN.cfg.auto&&snBridge&&act?'on':'off');el.dataset.s=st;el.textContent=st==='on'?'Läuft':st==='wait'?'Pausiert':'Aus'}
+function snSchedule(ms){clearTimeout(snTimer);if(!SN.cfg.auto)return;const base=Math.max(45,SN.cfg.interval)*1000;snTimer=setTimeout(snTick,ms??base*(0.8+Math.random()*0.5))}
+async function snTick(){if(document.hidden||Date.now()<snBlockedUntil){snSchedule(Date.now()<snBlockedUntil?snBlockedUntil-Date.now()+1000:undefined);return}await snRunAll()}
+async function snRunAll(manual){
+ if(snBusy)return;const act=SN.searches.filter(s=>s.active);
+ if(!act.length){if(manual)snLog('Lege zuerst einen aktiven Suchauftrag an.');snSchedule();return}
+ if(Date.now()<snBlockedUntil){if(manual)snLog('Vinted hat zuletzt abgelehnt. Pause noch '+Math.ceil((snBlockedUntil-Date.now())/60000)+' Min.');snSchedule(snBlockedUntil-Date.now()+1000);return}
+ if(!snBridge){snPing();await snSleep(500);if(!snBridge){snLog('Userscript nicht verbunden. Installiere es unten und lade die Seite neu.');snState();snSchedule();return}}
+ snBusy=true;snLog('Frage ab …');let added=0,err='';
+ try{for(let i=0;i<act.length;i++){const s=act[i];
+  try{const r=await snRunSearch(s,!s.seeded);s.seeded=true;added+=r.added;snBack=0}
+  catch(e){if(e.status){snBack=Math.min(snBack?snBack*2:5,30);snBlockedUntil=Date.now()+snBack*60000;err='Vinted hat die Abfrage abgelehnt ('+e.status+'). Ich pausiere '+snBack+' Min. und versuche nichts zu umgehen.';break}err='Fehler bei „'+s.q+'“: '+e.message}
+  if(i<act.length-1)await snSleep(4000+Math.random()*5000)}}
+ finally{snBusy=false;snPersist();snRender();snState();
+  snLog(err||('Zuletzt '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' · '+added+' neue Treffer'));
+  snSchedule(snBack&&Date.now()<snBlockedUntil?snBlockedUntil-Date.now()+1000:undefined)}}
+function snEl(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+function snCard(h){const c=snEl('article','sn-hit'+(h.snipe?' snipe':'')+(h.isNew?' new':''));
+ if(h.img){const im=snEl('img','sn-img');im.src=h.img;im.alt='';im.loading='lazy';im.referrerPolicy='no-referrer';c.append(im)}else c.append(snEl('div','sn-img'));
+ const b=snEl('div','sn-body');b.append(snEl('h3','',h.title||'Ohne Titel'));
+ b.append(snEl('div','sn-meta',[h.brand,h.size,h.status].filter(Boolean).join(' · ')||h.sname));
+ const n=snEl('div','sn-nums');n.append(snEl('span','sn-price',euro(h.price)));
+ if(h.est){const p=snEl('span','sn-profit'+(h.profit<0?' bad':''),(h.profit>=0?'+':'')+euro(h.profit)+' · '+Math.round(h.margin*100)+' %');n.append(p);n.append(snEl('span','sn-est','Verkauf ca. '+euro(h.est)+' ('+h.src+')'))}
+ else n.append(snEl('span','sn-est','Keine Bewertung möglich'));
+ b.append(n);const a=snEl('div','sn-act');
+ if(h.url){const l=snEl('a','go','Öffnen');l.href=h.url;l.target='_blank';l.rel='noopener noreferrer';a.append(l)}
+ const sv=snEl('button',h.saved?'on':'',h.saved?'★ Gemerkt':'☆ Merken');sv.type='button';sv.onclick=()=>{h.saved=!h.saved;snPersist();snRender()};
+ const bg=snEl('button','','Gekauft');bg.type='button';bg.onclick=()=>snBought(h);
+ const rm=snEl('button','','×');rm.type='button';rm.title='Ausblenden';rm.setAttribute('aria-label','Ausblenden');rm.onclick=()=>{SN.hits=SN.hits.filter(x=>x!==h);snPersist();snRender()};
+ a.append(sv,bg,rm);b.append(a);c.append(b);return c}
+function snRender(){const root=$('snHits');if(!root)return;
+ document.querySelectorAll('#snTabs [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===snTab));
+ let list=SN.hits.filter(h=>!h.bought);
+ if(snTab==='snipes')list=list.filter(h=>h.snipe).sort((a,b)=>b.profit-a.profit);else if(snTab==='saved')list=list.filter(h=>h.saved);
+ list=list.slice(0,60);root.replaceChildren(...list.map(snCard));
+ const em=$('snEmpty');em.hidden=list.length>0;
+ em.textContent=!SN.searches.length?'Lege unten einen Suchauftrag an, zum Beispiel „Nike Tech Fleece“ mit Höchstpreis 40 €.':snTab==='snipes'?'Noch keine Snipes. Sobald ein Fund deine Regeln (Mindestgewinn und Marge) erfüllt, erscheint er hier.':snTab==='saved'?'Noch nichts gemerkt.':'Noch keine Treffer.';
+ $('snHitSub').textContent=snTab==='snipes'?'Sortiert nach Gewinn':'Neueste zuerst';
+ const sl=$('snSearches');sl.replaceChildren(...SN.searches.map(s=>{const r=snEl('div','sn-s'),d=snEl('div');d.append(snEl('b','',s.q),snEl('small','',[s.max>0?'bis '+euro(s.max):'',s.size?'Gr. '+s.size:'',s.resale>0?'Verkauf '+euro(s.resale):'Verkauf automatisch'].filter(Boolean).join(' · ')));
+  const sw=snEl('label','sx-switch');const ck=snEl('input');ck.type='checkbox';ck.checked=!!s.active;ck.setAttribute('aria-label','Aktiv');ck.onchange=()=>{s.active=ck.checked;snPersist();snState()};sw.append(ck,snEl('span'));
+  const x=snEl('button','del','×');x.type='button';x.setAttribute('aria-label','Suchauftrag löschen');x.onclick=()=>{if(!confirm('Suchauftrag „'+s.q+'“ löschen?'))return;SN.searches=SN.searches.filter(y=>y!==s);snPersist();snRender();snState()};
+  r.append(d,sw,x);return r}));
+ $('snSub').textContent=SN.searches.filter(s=>s.active).length+' aktiv · '+SN.hits.filter(h=>h.snipe&&!h.bought).length+' Snipes';snState()}
+function snRenderLink(){const l=$('snLink');if(!l)return;l.replaceChildren();
+ const a=snEl('span',snBridge?'ok':'miss',snBridge?'✓ Userscript verbunden':'○ Userscript nicht verbunden');l.append(a);
+ const n=typeof Notification==='undefined'?null:Notification.permission;l.append(snEl('span',n==='granted'?'ok':'miss',n==='granted'?'✓ Benachrichtigungen erlaubt':'○ Benachrichtigungen aus'));
+ $('snLinkSub').textContent=snBridge?'Bereit, Vinted abzufragen':'Userscript auf diesem Gerät nötig'}
+async function snBought(h){
+ const def=snBuyCost(h.price).toFixed(2).replace('.',','),v=prompt('Was hast du insgesamt bezahlt (inkl. Versand und Käuferschutz) in €?',def);if(v===null)return;
+ const cost=snNum(v);if(!(cost>=0)){sxToast('Betrag ungültig');return}
+ const a=blank();a.cost=String(Math.round(cost*100)/100);a.brand=h.brand;a.size=h.size;a.model=h.title;a.source='Vinted';a.purchaseDate=new Date().toISOString().slice(0,10);a.notes='Vinted-Einkauf: '+h.url;
+ try{a.sku=await sxNextSku()}catch{}
+ try{await store('readwrite',s=>s.put(a))}catch(e){sxToast('Speichern fehlgeschlagen');return}
+ h.bought=true;snPersist();snRender();window.dispatchEvent(new Event('rv:data-changed'));sxToast('Im Bestand angelegt: '+(a.sku||a.model))}
+function snBind(){
+ document.querySelectorAll('#snTabs [data-t]').forEach(b=>b.onclick=()=>{snTab=b.dataset.t;snRender()});
+ document.querySelectorAll('[data-sn]').forEach(el=>{const k=el.dataset.sn;if(el.type==='checkbox')el.checked=!!SN.cfg[k];else el.value=SN.cfg[k];
+  el.onchange=async()=>{let v=el.type==='checkbox'?el.checked:el.type==='number'?snNum(el.value):el.value;
+   if(k==='interval')v=Math.max(45,v||75);if(k==='domain'&&!SN_DOMAINS.includes(v))v='de';
+   SN.cfg[k]=v;if(el.type==='number')el.value=v;
+   if(k==='notify'&&v&&typeof Notification!=='undefined'&&Notification.permission==='default'){try{await Notification.requestPermission()}catch{}snRenderLink()}
+   if(k==='domain'){SN.seen={};SN.searches.forEach(s=>s.seeded=false)}
+   snPersist();if(k==='auto'){v?snSchedule(3000):clearTimeout(snTimer)}snState()}});
+ $('snForm').onsubmit=e=>{e.preventDefault();const q=$('snQ').value.trim();if(!q)return;
+  SN.searches.push({id:'s'+Date.now().toString(36),q,max:snNum($('snMax').value),size:$('snSize').value.trim(),resale:snNum($('snResale').value),active:true,seeded:false});
+  $('snForm').reset();snPersist();snRender();snLog('Suchauftrag angelegt. Die ersten Treffer werden still übernommen, Alarme gibt es ab der zweiten Abfrage.');if(SN.cfg.auto)snSchedule(1500)};
+ $('snDl').onclick=()=>{const u=URL.createObjectURL(new Blob([snUserscript()],{type:'text/javascript'})),a=document.createElement('a');a.href=u;a.download='rv-studio-vinted.user.js';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)};
+ $('snCopy').onclick=async()=>{try{await navigator.clipboard.writeText(snUserscript());sxToast('Code kopiert – in Tampermonkey als neues Skript einfügen')}catch{snLog('Kopieren nicht möglich. Nutze „Userscript herunterladen“.')}};
+ $('snPing').onclick=async()=>{snBridge=false;snPing();await snSleep(600);snRenderLink();snState();snLog(snBridge?'Verbunden.':'Keine Antwort. Userscript installiert, aktiviert und Seite neu geladen?')};
+ $('snRun').onclick=()=>snRunAll(true)}
+function showSniper(){closeStockDetail&&closeStockDetail();hidePrimaryViews();$('sniper').classList.remove('hidden');topActive('snipe');snRender();snRenderLink();snPing();window.scrollTo(0,0)}
+{const prev=hidePrimaryViews;hidePrimaryViews=function(){prev();$('sniper')&&$('sniper').classList.add('hidden')}}
+{const prev=showStep;showStep=function(n){$('sniper')&&$('sniper').classList.add('hidden');return prev.apply(this,arguments)}}
+TOP_GO.snipe=showSniper;
+snLoad();snBind();snRender();snRenderLink();setTimeout(snPing,700);snSchedule(8000);
 // Externe Datenänderungen (z. B. Beispielartikel laden/entfernen) neu anzeigen.
 window.addEventListener('rv:data-changed',()=>{renderLibrary().catch(()=>{});try{renderHome()}catch(e){}});
 })();

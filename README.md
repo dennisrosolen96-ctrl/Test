@@ -1,4 +1,6 @@
-# RV Studio V29 — Command Center
+# RV Studio V30 — Command Center
+
+Neu in V30 (Details: [UEBERGABE-V30.md](UEBERGABE-V30.md)): Seite „Snipes“ – Vinted-Suchaufträge mit Gewinnbewertung, Alarm bei Funden und „Gekauft“-Übernahme in den Bestand (Abruf über ein Userscript auf deinem Gerät).
 
 Neu in V29 (Details: [UEBERGABE-V29.md](UEBERGABE-V29.md)): Flackern durch das Randlicht behoben (neues, flüssiges Lauflicht), Globus auf der Startseite exakt mittig.
 

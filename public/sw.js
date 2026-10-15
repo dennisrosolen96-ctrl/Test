@@ -1,5 +1,5 @@
-const CACHE='rv-studio-v29-1';
-const FILES=['/','/index.html','/app.css','/dashboard.css','/fx.css','/ref.css','/theme.css','/bestand.css','/studio.css','/settings.css','/insights.css','/chat.css','/topnav.css','/home.css','/pages.css','/perf.css','/anim.css','/app.js','/dashboard.js','/fx.js','/demo.js','/cutout.js','/anim.js',
+const CACHE='rv-studio-v30-1';
+const FILES=['/','/index.html','/app.css','/dashboard.css','/fx.css','/ref.css','/theme.css','/bestand.css','/studio.css','/settings.css','/insights.css','/chat.css','/topnav.css','/home.css','/snipe.css','/pages.css','/perf.css','/anim.css','/app.js','/dashboard.js','/fx.js','/demo.js','/cutout.js','/anim.js',
   '/vendor/jszip.min.js','/fonts/command-sans-regular.otf','/fonts/command-sans-bold.otf',
   '/rv-logo.jpg','/rv-ai-mascot.png','/rv-robot-premium.png','/rv-white.png',
   '/rv-mark-cropped.png','/rv-studio-script.png','/icons/icon-192.png','/icons/icon-512.png',
@@ -21,4 +21,7 @@ self.addEventListener('fetch',event=>{
     const cached=await caches.match(event.request);
     return cached||new Response('Offline: Diese Datei ist noch nicht auf diesem Gerät verfügbar.',{status:503,headers:{'Content-Type':'text/plain;charset=utf-8'}});
   }));
+});
+self.addEventListener('notificationclick',event=>{event.notification.close();const url=event.notification.data&&event.notification.data.url;
+  event.waitUntil(url&&/^https:\/\/www\.vinted\./.test(url)?clients.openWindow(url):clients.matchAll({type:'window'}).then(l=>l[0]&&l[0].focus()));
 });
