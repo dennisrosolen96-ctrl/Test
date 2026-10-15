@@ -769,7 +769,7 @@
 
   function setupNavCore() {
     var btn = doc.querySelector('#bottomnav .orb'); if (!btn || btn.querySelector('.cc-navorb')) return;
-    btn.innerHTML = ''; buildNavOrb(btn);
+    btn.innerHTML = ''; var pl = plasmaInto(btn, { seed: 19, scale: 1.05 }); pl.c.classList.add('cc-nav-plasma'); buildNavOrb(btn);
   }
 
   /* Farbige Lichter hinter dem Glas: weiche, langsam treibende Lichtflecken */
