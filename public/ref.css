@@ -84,23 +84,6 @@ body:has(#home:not(.hidden)) .v11-ai .rv-crafted-chat #homeAiSend svg { stroke:n
 @keyframes cc-strip { 0%,100% { opacity:.7; } 50% { opacity:1; } }
 @media (prefers-reduced-motion: reduce) { .cc-edge-strip, .cc-edge-corner { animation:none; } }
 
-/* Äußerer Panzerrahmen (ersetzt die Bildstreifen und die Krone) */
-.cc-bezel { display:none; position:fixed; inset:0; z-index:18; pointer-events:none; overflow:visible; }
-body:has(#home:not(.hidden)) .cc-bezel { display:block; }
-body:has(#home:not(.hidden))::before, body:has(#home:not(.hidden))::after { display:none; }
-.v16-crown { visibility:hidden; }
-.cc-bz-light { animation: cc-strip 4.5s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .cc-bz-light { animation:none; } }
-
-
-
-/* Platz für den massiveren Rahmen */
-body:has(#home:not(.hidden)) main.wrap { padding-top:48px; padding-left:40px; padding-right:40px; }
-@media(max-width:999px) { body:has(#home:not(.hidden)) main.wrap { padding-left:38px; padding-right:38px; } }
-.cc-bz-sweep { animation: cc-sweep 6s linear infinite; }
-@keyframes cc-sweep { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
-@media (prefers-reduced-motion: reduce) { .cc-bz-sweep { display:none; } }
-
 /* Abschnittsüberschriften etwas tiefer, weg vom Rahmen */
 .v11-panel { padding-top:27px; }
 .v11-sales > .v11-seg { top:25px; }
@@ -111,37 +94,56 @@ body:has(#home:not(.hidden)) main.wrap { padding-top:48px; padding-left:40px; pa
   .v11-ai .v11-state { top:28px; }
 }
 
-/* Menü unten: massiver, klar gegliedert, rotes Leuchten */
-.lux-bottomnav { background:transparent !important; box-shadow:none !important;
+/* ===== Rahmen aus dem Referenzbild (rv-frame.webp, Vorlage 941 px breit) – getrennt vom Menü ===== */
+:root {
+  --fw: min(100vw, 860px);
+  --fr-top: calc(var(--fw) * 95 / 941);
+  --fr-side: calc(var(--fw) * 80 / 941);
+}
+.cc-frame { display:none; position:fixed; left:0; right:0; top:0; bottom:calc(70px * var(--cc-zoom, 1)); z-index:18; pointer-events:none;
+  border-style:solid; border-color:transparent; border-width:var(--fr-top) var(--fr-side) 0 var(--fr-side);
+  border-image:url('/rv-frame.webp') 95 80 0 80 stretch; }
+body:has(#home:not(.hidden)) .cc-frame { display:block; }
+body:has(#home:not(.hidden))::before, body:has(#home:not(.hidden))::after { display:none; }
+.v16-crown { display:none; }
+body:has(#home:not(.hidden)) main.wrap {
+  padding-top:calc((var(--fr-top) + 10px) / var(--cc-zoom, 1));
+  padding-left:calc((var(--fr-side) + 6px) / var(--cc-zoom, 1));
+  padding-right:calc((var(--fr-side) + 6px) / var(--cc-zoom, 1));
+  padding-bottom:124px; }
+
+/* ===== Menü unten: eigenes Design, passend zum Rahmen ===== */
+.lux-bottomnav { background:transparent !important; box-shadow:none !important; z-index:20 !important;
   grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.4fr) repeat(3,minmax(0,1fr)) !important;
   padding:22px 14px calc(10px + env(safe-area-inset-bottom,0px)) !important; }
+#bottomnav button.cc-nav-hidden { display:none !important; }
 .lux-bottomnav button:not(.orb) { min-height:60px; gap:6px; border-radius:10px; transition:color .2s ease; }
 .lux-bottomnav button span { color:#e8e2da; font-size:13px !important; letter-spacing:.02em !important; }
 .lux-bottomnav button:not(.orb) svg { color:#f2ece4; width:28px !important; height:28px !important; transition:filter .2s ease, color .2s ease; }
-.lux-bottomnav button:not(.orb)::before { content:''; position:absolute; left:10%; right:10%; top:6px; bottom:4px; border-radius:12px; pointer-events:none; opacity:0;
-  background:radial-gradient(ellipse 70% 75% at 50% 60%, rgba(255,40,20,.42), rgba(255,40,20,.08) 60%, transparent 75%);
-  box-shadow:inset 0 0 0 1px rgba(255,90,60,.35), 0 0 14px rgba(255,40,20,.35); transition:opacity .25s ease; }
+.lux-bottomnav button:not(.orb)::before { content:''; position:absolute; left:8%; right:8%; top:6px; bottom:4px; pointer-events:none; opacity:0;
+  clip-path:polygon(14% 0,86% 0,100% 20%,100% 80%,86% 100%,14% 100%,0 80%,0 20%);
+  background:radial-gradient(ellipse 70% 75% at 50% 58%, rgba(255,40,20,.45), rgba(255,40,20,.1) 62%, transparent 80%),
+    linear-gradient(180deg, rgba(255,90,60,.28), transparent 18%, transparent 82%, rgba(255,60,30,.32));
+  transition:opacity .25s ease; }
 .lux-bottomnav button.selected::before { opacity:1; }
 .lux-bottomnav button.selected { background:none !important; color:#ff6a4a !important; }
 .lux-bottomnav button.selected svg { color:#ff4a30 !important; filter:drop-shadow(0 0 4px #ff302b) drop-shadow(0 0 10px #ff302b) !important; }
 .lux-bottomnav button.selected span { color:#ff7a5a !important; text-shadow:0 0 8px #ff302b, 0 0 14px #ff302b88; font-weight:600 !important; }
-.lux-bottomnav button.selected::after { content:'' !important; display:block !important; position:absolute; left:28% !important; right:28% !important; bottom:0 !important; height:2px !important;
+.lux-bottomnav button:not(.orb).selected::after { content:'' !important; display:block !important; position:absolute; left:28% !important; right:28% !important; bottom:0 !important; top:auto !important; width:auto !important; height:2px !important;
   background:#ff5a40 !important; box-shadow:0 0 6px #ff302b, 0 0 14px #ff302b !important; border-radius:2px; }
 .lux-bottomnav button.cc-tap:not(.orb) svg, .lux-bottomnav button.cc-tap:not(.orb) span { color:#ff5a3a !important; }
 .lux-bottomnav button.cc-tap:not(.orb)::before { animation: cc-tapflash .65s ease-out; }
-@keyframes cc-tapflash { 0% { opacity:1; transform:scale(.85); filter:brightness(1.8); } 100% { opacity:var(--o,0); transform:scale(1.05); filter:brightness(1); } }
+@keyframes cc-tapflash { 0% { opacity:1; filter:brightness(1.9); } 100% { opacity:var(--o,0); filter:brightness(1); } }
 .lux-bottomnav button.selected.cc-tap::before { --o:1; }
 @media(hover:hover) { .lux-bottomnav button:not(.orb):not(.selected):hover svg { color:#ffb090; filter:drop-shadow(0 0 4px #ff5a3a88); } }
 
-/* Allsehendes Auge in der Mitte */
-.lux-bottomnav .orb { position:relative; margin-top:-34px !important; min-height:96px !important; }
-.lux-bottomnav .orb.cc-has-eye img { display:none; }
-.lux-bottomnav .orb svg.cc-navEye { display:block; width:108px !important; height:108px !important; overflow:visible; filter:drop-shadow(0 0 8px rgba(255,60,30,.55)); --ex:0; --ey:0; }
-.lux-bottomnav .orb { --ex:0; --ey:0; }
-.cc-navEye-iris { transform: translate(calc(var(--ex) * 9px), calc(var(--ey) * 5px)); transition: transform .45s cubic-bezier(.3,.1,.2,1); }
-.cc-navEye-ball { transform-box: view-box; transform-origin: 50px 50px; transition: transform .08s ease-in; }
-.cc-eye-blink .cc-navEye-ball { transform: scaleY(.08); }
-.cc-navEye-pupil { transform-box: fill-box; transform-origin: center; animation: cc-pupil 3.2s ease-in-out infinite; }
-@keyframes cc-pupil { 0%,100% { transform: scale(1); } 50% { transform: scale(.75,.85); } }
-.lux-bottomnav .orb.cc-tap .cc-navEye, .lux-bottomnav .orb.selected .cc-navEye { filter:drop-shadow(0 0 10px #ff302b) drop-shadow(0 0 22px #ff302b); }
-@media (prefers-reduced-motion: reduce) { .cc-navEye-pupil { animation:none; } }
+/* Energie-Reaktor in der Mitte (Neuer Artikel) */
+.lux-bottomnav .orb { position:relative; margin-top:-38px !important; min-height:100px !important; padding:0 !important; background:none !important; }
+.lux-bottomnav .orb svg.cc-core { display:block; width:104px !important; height:104px !important; overflow:visible; filter:drop-shadow(0 0 8px rgba(255,60,30,.6)); transition:filter .2s ease, transform .2s ease; }
+.cc-core-energy { transform-box:view-box; transform-origin:50px 50px; animation:cc-corepulse 2.6s ease-in-out infinite; }
+.cc-core-plus { filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 4px #ffb070); }
+@keyframes cc-corepulse { 0%,100% { transform:scale(.94); opacity:.88; } 50% { transform:scale(1.04); opacity:1; } }
+.lux-bottomnav .orb.selected svg.cc-core, .lux-bottomnav .orb.cc-tap svg.cc-core { filter:drop-shadow(0 0 10px #ff302b) drop-shadow(0 0 22px #ff302b); }
+.lux-bottomnav .orb.cc-tap svg.cc-core { transform:scale(.94); }
+@media(hover:hover) { .lux-bottomnav .orb:hover svg.cc-core { filter:drop-shadow(0 0 10px #ff5a30) drop-shadow(0 0 18px #ff302b); } }
+@media (prefers-reduced-motion: reduce) { .cc-core-energy { animation:none; } }

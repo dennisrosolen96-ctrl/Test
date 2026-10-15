@@ -1,10 +1,10 @@
-const CACHE='rv-studio-v18-reference-9';
+const CACHE='rv-studio-v18-reference-10';
 const FILES=['/','/index.html','/app.css','/dashboard.css','/fx.css','/ref.css','/app.js','/dashboard.js','/fx.js',
   '/vendor/jszip.min.js','/fonts/command-sans-regular.otf','/fonts/command-sans-bold.otf',
   '/rv-logo.jpg','/rv-ai-mascot.png','/rv-robot-premium.png','/rv-white.png',
   '/rv-mark-cropped.png','/rv-studio-script.png','/icons/icon-192.png','/icons/icon-512.png',
   '/manifest.webmanifest','/v11-globe.webp','/v11-robot.webp','/v11-navorb.webp',
-  '/v11-avatar.webp','/v15-frame-left.png','/v15-frame-right.png'];
+  '/v11-avatar.webp','/v15-frame-left.png','/v15-frame-right.png','/rv-frame.webp'];
 self.addEventListener('install',event=>event.waitUntil(
   caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())
 ));

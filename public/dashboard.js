@@ -205,6 +205,7 @@ function bind(){
   var bell=$('v11Bell');if(bell)bell.addEventListener('click',function(){click('rvNotify')});
   var sales=$('navSales');if(sales)sales.addEventListener('click',function(){click('navStock');setTimeout(function(){var tab=document.querySelector('[data-v5-tab="all"]');if(tab)tab.click();var f=document.querySelector('[data-stock-filter="sold"]');if(f)f.click();var e=$('navSales');if(e){document.querySelectorAll('#bottomnav button').forEach(function(b){b.classList.toggle('selected',b===e);if(b===e)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')})}},90)});
   var mic=document.querySelector('#v11Root .rv-crafted-chat-icon');if(mic){mic.addEventListener('click',listen)}
+  var np=$('navPurchases');if(np)np.addEventListener('click',function(){actions.purchases();setTimeout(function(){document.querySelectorAll('#bottomnav button').forEach(function(b){var on=b===np;b.classList.toggle('selected',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')})},200)});
   var more=$('v11InsightsAll');if(more)more.addEventListener('click',function(){click('navFinance')});
 }
 
