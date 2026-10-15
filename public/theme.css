@@ -495,3 +495,19 @@ body:has(#home:not(.hidden)) main.wrap { padding-bottom:110px !important; }
 .v11-pill > svg:not(.hud-frame) { color:#dfe6f1 !important; }
 .v11-pill { border-radius:999px !important; }
 .v11-bell { position:relative !important; } .v11-bell.has-tasks i { top:1px !important; right:1px !important; width:9px !important; height:9px !important; }
+/* Plasma-Energieball */
+.cc-plasma { display:block; width:100%; aspect-ratio:1; }
+.v15-bot-frame { position:relative; }
+.v15-bot-frame .cc-plasma { width:128%; margin:-14%; }
+#ccChatBot { position:relative; }
+#ccChatBot .cc-orb-float { display:none; }
+#ccChatBot .cc-plasma { position:absolute; left:-4%; top:-4%; width:108%; height:auto; }
+.cc-busy .cc-plasma { filter:brightness(1.25) saturate(1.2); }
+.v11-ai .v11-chatrow, .v11-chatrow { grid-template-columns:31% minmax(0,1fr) !important; }
+.v15-bot-frame .cc-plasma { width:136% !important; margin:-18% !important; }
+.v15-bot-frame { aspect-ratio:auto !important; height:178px; display:grid; place-items:center; }
+.v15-bot-frame .cc-plasma { width:auto !important; height:236px !important; margin:-29px -20px !important; }
+#ccChatBot .cc-plasma { top:0 !important; margin-top:-4%; }
+.cc-chat-top .v11-ph { padding-right:340px !important; }
+@media(max-width:999px) { .v15-bot-frame { height:150px; } .v15-bot-frame .cc-plasma { height:200px !important; margin:-25px -16px !important; } }
+#ccChatBot .cc-plasma { left:50% !important; width:130% !important; transform:translateX(-50%); margin-top:-15% !important; }

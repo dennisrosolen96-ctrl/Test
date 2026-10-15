@@ -643,12 +643,124 @@
     return S;
   }
 
+  /* Plasma-Energieball wie in der Vorlage: seidige, gewellte Lichtbänder aus vielen feinen
+     Fäden um einen dunklen Kern, additiv leuchtend, mit Funken. Gezeichnet auf Canvas. */
+  var plasmas = [];
+  function Plasma(canvas, opt) {
+    this.c = canvas; this.ctx = canvas.getContext('2d'); this.size = 0; opt = opt || {};
+    this.scale = opt.scale || 1;
+    var seed = opt.seed || 3; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    var bands = [];
+    for (var i = 0; i < 6; i++) {
+      bands.push({
+        ax: (rnd() - .5) * 2.6, ay: (rnd() - .5) * 2.6, az: rnd() * 6.283,
+        sx: 0.15 + rnd() * .25, sy: 0.15 + rnd() * .25, sz: (rnd() < .5 ? -1 : 1) * (0.12 + rnd() * .2),
+        r: 0.27 + rnd() * 0.08, lobes: 2 + Math.floor(rnd() * 2), amp: 0.05 + rnd() * 0.06, ph: rnd() * 6.283,
+        warm: i % 3 === 1, strands: 13, spread: 0.008 + rnd() * 0.007, tw: 0.4 + rnd() * 0.8
+      });
+    }
+    this.bands = bands;
+    var parts = [];
+    for (var j = 0; j < 70; j++) parts.push({ a: rnd() * 6.283, b: rnd() * 6.283, r: 0.16 + rnd() * 0.32, sp: (rnd() - .5) * .6, s: 0.4 + rnd() * 1.2, ph: rnd() * 6.283 });
+    this.parts = parts;
+  }
+  Plasma.prototype.resize = function () {
+    if (!this.c.offsetParent) return false;
+    var r = this.c.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var s = Math.max(40, Math.round(Math.max(r.width, r.height) * dpr));
+    if (s !== this.size) { this.size = s; this.c.width = s; this.c.height = s; }
+    return true;
+  };
+  Plasma.prototype.draw = function (t) {
+    var ctx = this.ctx, s = this.size, cx = s / 2, cy = s / 2, k = this.scale;
+    ctx.clearRect(0, 0, s, s);
+    // Schein hinter dem Ball
+    var h = ctx.createRadialGradient(cx, cy, 0, cx, cy, s * .5);
+    h.addColorStop(0, 'rgba(50,110,230,.38)'); h.addColorStop(.42, 'rgba(40,90,210,.22)'); h.addColorStop(1, 'rgba(10,20,60,0)');
+    ctx.fillStyle = h; ctx.fillRect(0, 0, s, s);
+    var core = s * .18 * k;
+    function rot(p, ax, ay, az) {
+      var x = p[0], y = p[1], z = p[2], c, sn, t1;
+      c = Math.cos(ax); sn = Math.sin(ax); t1 = y * c - z * sn; z = y * sn + z * c; y = t1;
+      c = Math.cos(ay); sn = Math.sin(ay); t1 = x * c + z * sn; z = -x * sn + z * c; x = t1;
+      c = Math.cos(az); sn = Math.sin(az); t1 = x * c - y * sn; y = x * sn + y * c; x = t1;
+      return [x, y, z];
+    }
+    var N = 90, self = this;
+    function pass(front) {
+      ctx.globalCompositeOperation = 'lighter';
+      for (var b = 0; b < self.bands.length; b++) {
+        var B = self.bands[b], ax = B.ax + .35 * Math.sin(t * B.sx + B.ph), ay = B.ay + .35 * Math.cos(t * B.sy + B.ph), az = B.az + t * B.sz;
+        for (var st = 0; st < B.strands; st++) {
+          var off = (st - (B.strands - 1) / 2) * B.spread, edge = 1 - Math.abs(st - (B.strands - 1) / 2) / ((B.strands - 1) / 2 + .5);
+          ctx.beginPath(); var on = false;
+          for (var i = 0; i <= N; i++) {
+            var th = i / N * 6.283;
+            var twist = .25 + .75 * Math.abs(Math.sin(th * 1.5 + B.ph + t * .3));
+            var rr = (B.r + off * twist + B.amp * Math.sin(B.lobes * th + B.ph + t * B.tw)) * k;
+            var p = rot([Math.cos(th) * rr, Math.sin(th) * rr, Math.sin(2 * th + B.ph) * B.amp * .8 * k], ax, ay, az);
+            var vis = front ? p[2] >= -0.02 : p[2] < 0.02;
+            if (!vis) { on = false; continue; }
+            var X = cx + p[0] * s, Y = cy + p[1] * s;
+            if (!on) { ctx.moveTo(X, Y); on = true; } else ctx.lineTo(X, Y);
+          }
+          var mid = st === (B.strands - 1) / 2;
+          if (mid) { ctx.lineWidth = s / 30; ctx.strokeStyle = B.warm ? 'rgba(255,170,110,' + (front ? .1 : .04) + ')' : 'rgba(70,140,255,' + (front ? .13 : .05) + ')'; ctx.stroke(); }
+          var a = (front ? .75 : .22) * (.25 + .75 * edge * edge);
+          ctx.lineWidth = Math.max(.5, s / 600) * (mid ? 1.8 : 1);
+          ctx.strokeStyle = mid ? (B.warm ? 'rgba(255,240,220,' + a + ')' : 'rgba(235,245,255,' + a + ')') : B.warm ? 'rgba(255,180,120,' + a + ')' : (st % 3 === 0 ? 'rgba(190,220,255,' + a + ')' : 'rgba(90,160,255,' + a + ')');
+          ctx.stroke();
+        }
+      }
+      // weicher Schleier über die Bänder
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    pass(false);
+    // Kern
+    var g = ctx.createRadialGradient(cx - core * .3, cy - core * .35, core * .1, cx, cy, core);
+    g.addColorStop(0, '#16223f'); g.addColorStop(.6, '#070c1c'); g.addColorStop(1, '#03060f');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, core, 0, 6.283); ctx.fill();
+    ctx.save(); ctx.shadowColor = 'rgba(90,160,255,.9)'; ctx.shadowBlur = s / 25;
+    ctx.strokeStyle = 'rgba(120,180,255,.45)'; ctx.lineWidth = Math.max(1, s / 300);
+    ctx.beginPath(); ctx.arc(cx, cy, core, 0, 6.283); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = 'rgba(160,200,255,.07)'; ctx.beginPath(); ctx.ellipse(cx - core * .35, cy - core * .45, core * .45, core * .2, -.5, 0, 6.283); ctx.fill();
+    pass(true);
+    // Leuchtpunkte und Funken
+    ctx.globalCompositeOperation = 'lighter';
+    if (!SPRITE_RED) { SPRITE_RED = glowSprite('255,150,60'); SPRITE_GOLD = glowSprite('255,215,150'); }
+    if (!this.blue) this.blue = glowSprite('110,180,255');
+    for (var q = 0; q < this.parts.length; q++) {
+      var P = this.parts[q], a2 = P.a + t * P.sp, rr2 = P.r * k;
+      var px = cx + Math.cos(a2) * Math.cos(P.b) * rr2 * s, py = cy + Math.sin(a2) * rr2 * s * .95;
+      var tw = .3 + .7 * Math.max(0, Math.sin(t * 2 * P.s + P.ph));
+      ctx.globalAlpha = tw * .9; var sz = s * .025 * P.s;
+      ctx.drawImage(q % 7 === 0 ? SPRITE_GOLD : this.blue, px - sz / 2, py - sz / 2, sz, sz);
+    }
+    ctx.globalAlpha = 1;
+    [[.27, -.2, 2.1], [-.3, .18, 1.6], [.05, .36, 2.6]].forEach(function (f, i) {
+      var tw2 = .5 + .5 * Math.sin(t * f[2] + i), L = s * .09 * tw2;
+      ctx.globalAlpha = tw2; ctx.drawImage(self.blue, cx + f[0] * s * k - L / 2, cy + f[1] * s * k - L / 2, L, L);
+    });
+    ctx.globalAlpha = 1;
+    // Bloom: weich gezeichnete Kopie für den Leuchtschimmer
+    if (!this.bloom) { this.bloom = doc.createElement('canvas'); }
+    var bl = this.bloom; if (bl.width !== s) { bl.width = s; bl.height = s; }
+    var bc = bl.getContext('2d'); bc.clearRect(0, 0, s, s); bc.filter = 'blur(' + Math.round(s / 60) + 'px)'; bc.drawImage(this.c, 0, 0); bc.filter = 'none';
+    ctx.globalAlpha = .7; ctx.drawImage(bl, 0, 0); ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+  };
+  function plasmaInto(host, opt) {
+    var c = doc.createElement('canvas'); c.className = 'cc-plasma'; c.setAttribute('aria-hidden', 'true');
+    host.appendChild(c); host.classList.add('cc-orb-host');
+    var p = new Plasma(c, opt); plasmas.push(p); return p;
+  }
+
   function setupRobot() {
     var f = doc.querySelector('.v15-bot-frame'); if (!f || f.querySelector('.cc-orb')) return;
     Array.prototype.slice.call(f.children).forEach(function (c) { c.remove(); });
-    buildOrb(f, { R: 60 });
-    var chat = doc.getElementById('ccChatBot'); if (chat && !chat.querySelector('.cc-orb')) { chat.innerHTML = ''; buildOrb(chat, { R: 54, pedestal: true }); }
-    var av = doc.getElementById('ccChatAvatar'); if (av && !av.querySelector('.cc-orb')) { av.innerHTML = ''; buildOrb(av, { R: 54 }); }
+    plasmaInto(f, { seed: 3 });
+    var chat = doc.getElementById('ccChatBot'); if (chat && !chat.querySelector('.cc-orb')) { chat.innerHTML = ''; buildOrb(chat, { R: 54, pedestal: true }); plasmaInto(chat, { seed: 7 }); }
+    var av = doc.getElementById('ccChatAvatar'); if (av && !av.querySelector('.cc-plasma')) { av.innerHTML = ''; plasmaInto(av, { seed: 11 }); }
   }
   doc.addEventListener('rv:ai-state', function (e) {
     var st = e && e.detail && e.detail.state;
@@ -732,8 +844,9 @@
     var t = (now - start) / 1000, dt = Math.min(0.1, t - lastT); lastT = t;
     if (hv) for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(t); }
     if (embers) embers(t, dt);
+    for (var pi = 0; pi < plasmas.length; pi++) { if (plasmas[pi].resize()) plasmas[pi].draw(t); }
   }
-  function drawStatic() { for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(0); } }
+  function drawStatic() { for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(0); } for (var j = 0; j < plasmas.length; j++) { if (plasmas[j].resize()) plasmas[j].draw(2); } }
 
   function init() {
     setupGlobe(); setupAvatar(); setupRobot(); setupNavCore(); setupNavTap(); setupFills(); setupGlints(); setupEmbers(); setupCounters();
