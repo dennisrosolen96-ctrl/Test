@@ -250,3 +250,13 @@ body:has(#aiChat:not(.hidden)) #aiChat { zoom:var(--cc-zoom,1); max-width:1160px
 .cc-side { padding-top:16px; }
 .cc-q b { white-space:normal; line-height:1.05; }
 .cc-chat .cc-q { gap:8px; padding:7px 8px; }
+.cc-chat .cc-chat-state, .cc-chat .cc-clear { position:absolute; }
+.cc-chat .v11-title { font-family:var(--cc-font); margin:0; font-weight:700; }
+.cc-chat-top .v11-ph { margin-bottom:18px; }
+.cc-chat-grid { grid-template-columns:minmax(0,1.12fr) minmax(0,.9fr) minmax(0,1.12fr); }
+.cc-side { padding-top:16px; }
+.cc-q b { white-space:normal; line-height:1.05; }
+.cc-chat .cc-q { gap:8px; padding:7px 8px; }
+.cc-chat .cc-clear { top:24px; right:26px; }
+.cc-talk-row { margin-top:18px; }
+.cc-chat-bot { margin:0 -8px; }

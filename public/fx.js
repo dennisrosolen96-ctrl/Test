@@ -518,15 +518,15 @@
   function setupRobot() {
     var f = doc.querySelector('.v15-bot-frame'); if (!f || f.querySelector('.cc-rbot')) return;
     Array.prototype.slice.call(f.children).forEach(function (c) { c.remove(); });
-    buildBot(f, { R: 46 });
-    var chat = doc.getElementById('ccChatBot'); if (chat && !chat.querySelector('.cc-rbot')) buildBot(chat, { R: 46, pedestal: true });
-    var av = doc.getElementById('ccChatAvatar'); if (av && !av.querySelector('.cc-rbot')) buildBot(av, { R: 52 });
+    buildBot(f, { R: 58 });
+    var chat = doc.getElementById('ccChatBot'); if (chat && !chat.querySelector('.cc-rbot')) buildBot(chat, { R: 60, pedestal: true });
+    var av = doc.getElementById('ccChatAvatar'); if (av && !av.querySelector('.cc-rbot')) buildBot(av, { R: 60 });
   }
 
   /* Mitte des Menüs: der KI-Chat als kleiner Roboter im Kraftfeld */
   function setupNavCore() {
     var btn = doc.querySelector('#bottomnav .orb'); if (!btn || btn.querySelector('.cc-rbot')) return;
-    buildBot(btn, { R: 54 });
+    buildBot(btn, { R: 62 });
   }
 
   /* Menü: rotes Aufleuchten beim Antippen */
