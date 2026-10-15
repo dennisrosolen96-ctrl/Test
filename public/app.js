@@ -1299,6 +1299,95 @@ const TOP_GO={
  sales:()=>showFinance(),chat:()=>showChat(),settings:()=>showSettings()};
 document.querySelectorAll('#rvTop [data-nav]').forEach(b=>b.onclick=()=>{TOP_GO[b.dataset.nav]&&TOP_GO[b.dataset.nav]();window.scrollTo(0,0)});
 $('rvTopHome').onclick=()=>{showHome();window.scrollTo(0,0)};
+// ===================== Startseite V27 =====================
+// Lebende Teile der alten Startseite (Globus, KI-Kugel, KI-Eingabe) in die neue Startseite umziehen.
+{const mv=(sel,to)=>{const e=document.querySelector(sel),t=$(to);if(e&&t)t.append(e)};
+ mv('#v11Root .v15-globe-wrap','hmGlobe');mv('#v11Root .v15-bot-frame','hmOrb');mv('#homeAiFeed','hmFeedSlot');mv('#v16AiState','hmAiStateSlot');
+ const entry=$('hmEntry'),old=document.querySelector('#v11Root .rv-crafted-chat');if(old&&entry){['v16Mic','homeAiInput','homeAiSend'].forEach(id=>{const e=$(id);if(e)entry.append(e)});old.remove()}}
+const HM_QUICK=[['photo','<path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>','Artikel fotografieren'],['new','<path d="M12 5v14M5 12h14"/>','Neuen Artikel anlegen'],['purchases','<path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9.5" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>','Einkauf erfassen'],['sell','<path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/>','Artikel verkaufen'],['scan','<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8"/>','Barcode scannen'],['stats','<path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/>','Statistiken anzeigen']];
+const HM_PROMPTS=[['Artikel bewerten','Bewerte meinen aktuellen Bestand'],['Verkaufstext','Erstelle einen Verkaufstext für meinen neuesten Artikel'],['Preisempfehlung','Welche Preise soll ich anpassen?'],['Lager optimieren','Wie kann ich mein Lager optimieren?'],['Ideen & Strategien','Gib mir Ideen und Strategien für mein Reselling-Business']];
+const hmName=a=>[a.brand,a.model].filter(Boolean).join(' ')||[a.brand,a.category].filter(Boolean).join(' ')||a.sku||'Artikel';
+const hmImg=a=>a.photos?.[0]?.src?'<img src="'+sxEsc(a.photos[0].src)+'" alt="" loading="lazy">':'<span class="ph">RV</span>';
+function hmWhen(t){const d=new Date(t),now=new Date(),day=Math.round((new Date(now.getFullYear(),now.getMonth(),now.getDate())-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/DAY),hm=d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});return day===0?'Heute, '+hm:day===1?'Gestern, '+hm:day<7?d.toLocaleDateString('de-DE',{weekday:'long'}):d.toLocaleDateString('de-DE')}
+function hmRange(p){const now=Date.now();if(p==='today'){const s=new Date();s.setHours(0,0,0,0);return {s:s.getTime(),e:now,prev:[s.getTime()-DAY,s.getTime()]}}if(p==='all')return {s:0,e:now,prev:null};const len=Number(p)*DAY;return {s:now-len,e:now,prev:[now-2*len,now-len]}}
+function hmSeries(sales,p,f){const now=Date.now(),n=p==='today'?6:p==='7'?7:p==='30'?10:12,out=Array(n).fill(0);let start;
+ if(p==='today'){const s=new Date();s.setHours(0,0,0,0);start=s.getTime()}else if(p==='all'){const ts=sales.map(inSaleTime).filter(x=>x!==null);start=ts.length?Math.min(...ts):now-DAY}else start=now-Number(p)*DAY;
+ const step=Math.max(1,(now-start)/n);for(const a of sales){const t=inSaleTime(a);if(t===null||t<start)continue;out[Math.min(n-1,Math.floor((t-start)/step))]+=f(a)}return out}
+function hmGo(k){({stock:()=>TOP_GO.stock(),insights:()=>showFinance(),chat:()=>showChat()})[k]?.();window.scrollTo(0,0)}
+function hmOld(go){const b=document.querySelector('#v11Root [data-go="'+go+'"]');if(b)b.click()}
+async function hmRender(){if(!$('hmRoot'))return;const all=await allArticles(),sales=all.filter(a=>a.sale&&a.articleStatus==='Verkauft'&&inSaleTime(a)!==null),avail=all.filter(a=>v5Available(a)&&!a.archivedAt);
+ const p=sxGet('rv_home_period','30'),r=hmRange(p),cur=sales.filter(a=>{const t=inSaleTime(a);return t>=r.s&&t<=r.e}),prev=r.prev?sales.filter(a=>{const t=inSaleTime(a);return t>=r.prev[0]&&t<r.prev[1]}):null,c=inStats(cur),pv=prev?inStats(prev):null;
+ $('hmPeriod').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+ const kp=[['<ellipse cx="12" cy="6" rx="6" ry="2.5"/><path d="M6 6v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V6M6 10v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4M6 14v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4"/>','Umsatz',euro(c.rev),pv&&inDelta(c.rev,pv.rev,''),hmSeries(cur,p,a=>Number(a.sale.price)||0)],
+  ['<path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9.5" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>','Verkäufe',String(c.count),pv&&inDelta(c.count,pv.count,''),hmSeries(cur,p,()=>1)],
+  ['<path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/>','Gewinn',euro(c.pro),pv&&inDelta(c.pro,pv.pro,''),hmSeries(cur,p,a=>bxProfit(a))],
+  ['<path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/>','Ø Verkaufspreis',c.count?euro(c.avg):'—',pv&&inDelta(c.avg,pv.avg,''),null]];
+ $('hmKpis').innerHTML=kp.map(([ic,l,v,d,ser])=>'<div class="st-m hm-m'+(ser?' has-spark':'')+'"><span class="mi">'+sxIcon(ic)+'</span><span class="tx"><span class="lbl">'+l+'</span><span class="val">'+sxEsc(v)+'</span><span class="dl '+((d||[0,'nil'])[1])+'">'+sxEsc((d||[p==='all'?'Gesamt':'Kein Vergleich'])[0])+'</span></span>'+(ser?bxSpark(ser):'')+'</div>').join('');
+ const cm=new Map();for(const a of cur){const k=a.category||'Sonstiges';cm.set(k,(cm.get(k)||0)+Number(a.sale.price||0))}const tot=[...cm.values()].reduce((x,y)=>x+y,0),top=[...cm.entries()].sort((x,y)=>y[1]-x[1]).slice(0,5);
+ $('hmCats').innerHTML='<div class="hd"><b>Top Kategorien</b><small>% vom Umsatz</small></div>'+(top.length?top.map(([k,v])=>'<div class="row"><span class="nm">'+sxEsc(k)+'</span><span class="tr"><s style="width:'+Math.max(4,Math.round(v/tot*100))+'%"></s></span><span class="pc">'+Math.round(v/tot*100)+' %</span></div>').join(''):'<p class="hm-empty">Noch keine Verkäufe in diesem Zeitraum.</p>');
+ const online=avail.filter(a=>a.articleStatus==='Online').length,worth=avail.reduce((n,a)=>n+(bxMaxPrice(a)||Number(a.cost)||0),0);
+ $('hmActive').innerHTML='<span class="mi">'+sxIcon('<circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c2.5 2.5 2.5 13.5 0 16M12 4c-2.5 2.5-2.5 13.5 0 16"/>')+'</span><span class="tx"><span class="lbl">Aktive Angebote</span><span class="val">'+online+'</span></span>';
+ $('hmWorth').innerHTML='<span class="mi">'+sxIcon('<path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>')+'</span><span class="tx"><span class="lbl">Lagerwert (geschätzt)</span><span class="val">'+euro(worth)+'</span></span>';
+ // Neueste Artikel & Verkäufe
+ const byNew=[...all].filter(a=>!a.archivedAt).sort((x,y)=>(Date.parse(y.createdAt||y.purchaseDate||0)||0)-(Date.parse(x.createdAt||x.purchaseDate||0)||0)).slice(0,4);
+ $('hmNew').innerHTML=byNew.length?byNew.map(a=>'<button type="button" class="hm-row" data-open="'+sxEsc(a.id)+'">'+hmImg(a)+'<span class="nm"><b>'+sxEsc(hmName(a))+'</b><small>'+sxEsc([a.size&&'Gr. '+a.size,a.location].filter(Boolean).join(' · ')||a.category||'')+'</small></span><span class="pr"><b>'+(bxMaxPrice(a)?euro(bxMaxPrice(a)):'—')+'</b><small class="st" data-s="'+bxStatusKey(a)+'">'+sxEsc(a.articleStatus||'Entwurf')+'</small></span>'+sxIcon('<path d="m9 5 7 7-7 7"/>')+'</button>').join(''):'<p class="hm-empty">Noch keine Artikel. Starte im Studio mit deinem ersten Produkt.</p>';
+ const bySale=[...sales].sort((x,y)=>inSaleTime(y)-inSaleTime(x)).slice(0,4);
+ $('hmSales').innerHTML=bySale.length?bySale.map(a=>{const pr=bxProfit(a);return '<button type="button" class="hm-row" data-open="'+sxEsc(a.id)+'">'+hmImg(a)+'<span class="nm"><b>'+sxEsc(hmName(a))+'</b><small><i style="background:'+inPfColor(a.sale.platform)+'"></i>'+sxEsc(inPfName(a.sale.platform))+(a.size?' · Gr. '+sxEsc(a.size):'')+'</small></span><span class="pr"><b class="pos">'+euro(a.sale.price)+'</b><small>'+hmWhen(inSaleTime(a))+'</small></span>'+sxIcon('<path d="m9 5 7 7-7 7"/>')+'</button>'}).join(''):'<p class="hm-empty">Noch keine Verkäufe erfasst.</p>';
+ // Kategorien mit Bild
+ const cg=new Map();for(const a of avail){const k=a.category||'Sonstiges';if(!cg.has(k))cg.set(k,[]);cg.get(k).push(a)}
+ const cats=[...cg.entries()].sort((x,y)=>y[1].length-x[1].length).slice(0,6);
+ $('hmCatTiles').innerHTML=cats.length?cats.map(([k,l])=>{const pic=l.find(a=>a.photos?.[0]?.src);return '<button type="button" class="hm-cattile" data-cat="'+sxEsc(k)+'">'+(pic?'<img src="'+sxEsc(pic.photos[0].src)+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<b>'+sxEsc(k)+'</b><small>'+l.length+' Artikel</small></button>'}).join(''):'<p class="hm-empty">Noch keine Artikel im Lager.</p>';
+ hmRenderPerf(all,sales);hmRenderTasks(all,sales,avail);hmRenderTrends(sales);
+ $('homeAiInput').placeholder=innerWidth<560?'Frag mich etwas …':'Frag deinen KI-Assistenten …';$('hmAiHello').textContent=stAll().name?'Hallo '+stAll().name+'! 👋':'Hallo! 👋';
+ document.querySelectorAll('#hmRoot [data-open]').forEach(b=>b.onclick=()=>openStockDetail(b.dataset.open));
+ document.querySelectorAll('#hmCatTiles [data-cat]').forEach(b=>b.onclick=()=>{TOP_GO.stock();$('searchArticles').value=b.dataset.cat;renderLibrary()});
+}
+let hmSeriesOn={rev:true,pro:true};
+function hmRenderPerf(all,sales){const p=sxGet('rv_home_perf','30'),days=Number(p),now=new Date();now.setHours(0,0,0,0);const start=now.getTime()-(days-1)*DAY,pts=[];let rev=0,pro=0;
+ for(let i=0;i<days;i++){const s=start+i*DAY,e=s+DAY,l=sales.filter(a=>{const t=inSaleTime(a);return t>=s&&t<e});rev+=l.reduce((n,a)=>n+Number(a.sale.price||0),0);pro+=l.reduce((n,a)=>n+bxProfit(a),0);pts.push({s,rev,pro,n:l.length})}
+ $('hmPerfPeriod').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+ const host=$('hmChart'),W=Math.max(300,Math.round(host.clientWidth||600)),H=W<500?190:230,L=W<500?44:52,R=10,T=12,B=26,iw=W-L-R,ih=H-T-B;
+ const vis=[['rev','Umsatz','#3a8ef0'],['pro','Gewinn','#2aa57a']].filter(([k])=>hmSeriesOn[k]);
+ const top=inNice(Math.max(1,...pts.flatMap(q=>vis.map(([k])=>q[k])))),bot=Math.min(0,...pts.map(q=>hmSeriesOn.pro?q.pro:0))<0?-inNice(-Math.min(...pts.map(q=>q.pro))):0;
+ const x=i=>L+(days===1?iw/2:i*iw/(days-1)),y=v=>T+ih-(v-bot)/(top-bot)*ih;
+ let g='';for(let i=0;i<=4;i++){const v=bot+(top-bot)*i/4;g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v).toFixed(1)+'" y2="'+y(v).toFixed(1)+'" class="'+(v===0?'zero':'grid')+'"/><text x="'+(L-8)+'" y="'+(y(v)+4).toFixed(1)+'" class="ax" text-anchor="end">'+inEuroShort(v)+'</text>'}
+ const every=Math.ceil(days/(W<500?4:7));let xl='';pts.forEach((q,i)=>{if(i%every===0)xl+='<text x="'+x(i).toFixed(1)+'" y="'+(H-7)+'" class="ax" text-anchor="middle">'+new Date(q.s).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})+'</text>'});
+ let lines='';for(const [k,,col] of vis){const d=pts.map((q,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(q[k]).toFixed(1)).join(' ');lines+='<path d="'+d+' L'+x(days-1).toFixed(1)+' '+y(bot).toFixed(1)+' L'+x(0).toFixed(1)+' '+y(bot).toFixed(1)+'Z" fill="'+col+'" opacity=".12"/><path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'}
+ const step=iw/Math.max(1,days-1);
+ host.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Umsatz und Gewinn kumuliert, letzte '+days+' Tage">'+g+lines+xl+'<line class="cross" x1="0" x2="0" y1="'+T+'" y2="'+(T+ih)+'" hidden/>'+vis.map(([k,,col])=>'<circle class="dot" data-k="'+k+'" r="4.5" fill="'+col+'" hidden/>').join('')+pts.map((q,i)=>'<rect class="hit" data-i="'+i+'" x="'+(x(i)-step/2).toFixed(1)+'" y="'+T+'" width="'+step.toFixed(1)+'" height="'+ih+'"/>').join('')+'</svg><div class="in-tip" hidden></div>';
+ const svg=host.querySelector('svg'),tip=host.querySelector('.in-tip'),cross=svg.querySelector('.cross');
+ svg.querySelectorAll('.hit').forEach(h=>{const show=()=>{const i=+h.dataset.i,q=pts[i];cross.setAttribute('x1',x(i));cross.setAttribute('x2',x(i));cross.hidden=false;svg.querySelectorAll('.dot').forEach(dt=>{dt.setAttribute('cx',x(i));dt.setAttribute('cy',y(q[dt.dataset.k]));dt.hidden=false});
+  tip.innerHTML='<b>bis '+new Date(q.s).toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'long'})+'</b><span><i class="sw rev"></i>Umsatz<em>'+euro(q.rev)+'</em></span><span><i class="sw pro"></i>Gewinn<em>'+euro(q.pro)+'</em></span><span><i></i>Verkäufe am Tag<em>'+q.n+'</em></span>';tip.hidden=false;const bw=host.getBoundingClientRect().width;tip.style.left=Math.max(4,Math.min(bw-tip.offsetWidth-4,x(i)/W*bw-tip.offsetWidth/2))+'px'};h.addEventListener('pointerenter',show);h.addEventListener('pointerdown',show)});
+ svg.addEventListener('pointerleave',()=>{cross.hidden=true;tip.hidden=true;svg.querySelectorAll('.dot').forEach(dt=>dt.hidden=true)});
+ const last=pts[pts.length-1]||{rev:0,pro:0},nSales=pts.reduce((n,q)=>n+q.n,0),nNew=all.filter(a=>{const t=Date.parse(a.createdAt||a.purchaseDate||'');return Number.isFinite(t)&&t>=start}).length;
+ $('hmLegend').innerHTML=[['rev','Umsatz',euro(last.rev),'#3a8ef0',true],['pro','Gewinn',euro(last.pro),'#2aa57a',true],['n','Verkäufe',String(nSales),null,false],['a','Neue Artikel',String(nNew),null,false]].map(([k,l,v,col,tg])=>tg?'<label class="hm-lg"><input type="checkbox" data-k="'+k+'"'+(hmSeriesOn[k]?' checked':'')+'><i style="background:'+col+'"></i><span>'+l+'</span><b>'+v+'</b></label>':'<div class="hm-lg"><i class="nil"></i><span>'+l+'</span><b>'+v+'</b></div>').join('');
+ $('hmLegend').querySelectorAll('input').forEach(c=>c.onchange=()=>{hmSeriesOn[c.dataset.k]=c.checked;if(!hmSeriesOn.rev&&!hmSeriesOn.pro){hmSeriesOn[c.dataset.k]=true;c.checked=true}hmRenderPerf(all,sales)})}
+function hmStock(){$('searchArticles').value='';TOP_GO.stock()}
+function hmRenderTasks(all,sales,avail){const stale=Number(stAll().staleDays)||60,days=Number(stAll().backupDays)||0,last=Date.parse(sxGet('rv_last_backup',''));
+ const T=[[avail.filter(a=>a.articleStatus==='Entwurf').length,'Entwürfe fertigstellen','Fotos, Texte oder Preise fehlen',()=>{hmStock();setTimeout(()=>{const b=document.querySelector('[data-stock-filter="draft"]');b&&b.click()},60)}],
+  [avail.filter(a=>a.articleStatus==='Bereit').length,'Bereite Artikel einstellen','Fertig, aber noch nicht online',()=>{hmStock();setTimeout(()=>{$('searchArticles').value='';v6ShowFilter('');renderLibrary()},60)}],
+  [all.filter(a=>a.sale&&!a.shippedAt).length,'Versand bestätigen','Verkauft, aber noch nicht als versendet markiert',()=>{hmStock();setTimeout(()=>v6ShowFilter('sale'),60)}],
+  [all.filter(a=>!a.archivedAt&&stockRemoveNeeded(a)).length,'Listings entfernen','Auf anderen Plattformen noch online',()=>{hmStock();setTimeout(()=>{const b=document.querySelector('[data-stock-filter="remove"]');b&&b.click()},60)}],
+  [avail.filter(a=>(v5Age(a)??-1)>stale).length,'Ladenhüter prüfen','Länger als '+stale+' Tage im Lager',()=>{hmStock();setTimeout(()=>{v6ShowFilter('');$('v5Sort').value='days';renderLibrary()},60)}],
+  [avail.filter(a=>v6Missing(a).length).length,'Angaben ergänzen','Artikel mit fehlenden Angaben',()=>{hmStock();setTimeout(()=>v6ShowFilter('incomplete'),60)}],
+  [days&&(!Number.isFinite(last)||Date.now()-last>days*DAY)&&all.some(a=>!String(a.id).startsWith('demo-'))?1:0,'Backup erstellen',Number.isFinite(last)?'Letztes Backup '+stFmtAgo(new Date(last).toISOString()):'Noch kein Backup',()=>$('backup').click()]].filter(t=>t[0]);
+ const root=$('hmTasks');root.replaceChildren();if(!T.length){root.innerHTML='<p class="hm-empty">Alles erledigt – nichts offen. 🎉</p>';return}
+ for(const [n,t,s,fn] of T.slice(0,5)){const b=document.createElement('button');b.type='button';b.className='hm-task';b.innerHTML='<span class="ck" aria-hidden="true"></span><span class="nm"><b>'+t+'</b><small>'+s+'</small></span><span class="bd">'+n+'</span>'+sxIcon('<path d="m9 5 7 7-7 7"/>');b.onclick=()=>{fn();window.scrollTo(0,0)};root.append(b)}}
+function hmRenderTrends(sales){const now=Date.now(),cur=sales.filter(a=>inSaleTime(a)>=now-30*DAY),prev=sales.filter(a=>{const t=inSaleTime(a);return t>=now-60*DAY&&t<now-30*DAY});
+ const key=a=>String(a.brand||a.category||'Ohne Marke').trim(),m=new Map();for(const a of cur){const k=key(a);if(!m.has(k))m.set(k,{n:0,rev:0,prev:0,wk:Array(6).fill(0)});const o=m.get(k);o.n++;o.rev+=Number(a.sale.price||0);const w=Math.min(5,Math.floor((now-inSaleTime(a))/(5*DAY)));o.wk[5-w]++}
+ for(const a of prev){const o=m.get(key(a));if(o)o.prev++}
+ const rows=[...m.entries()].sort((x,y)=>y[1].rev-x[1].rev).slice(0,4),root=$('hmTrends');
+ if(!rows.length){root.innerHTML='<p class="hm-empty">Sobald du in den letzten 30 Tagen verkaufst, siehst du hier deine stärksten Marken.</p>';return}
+ root.innerHTML=rows.map(([k,o])=>{const d=o.prev?Math.round((o.n-o.prev)/o.prev*100):null,max=Math.max(1,...o.wk),pts=o.wk.map((v,i)=>(i*12).toFixed(0)+','+(22-v/max*18).toFixed(1)).join(' ');
+  const pic=sales.find(a=>key(a)===k&&a.photos?.[0]?.src);return '<div class="hm-trend">'+(pic?'<img src="'+sxEsc(pic.photos[0].src)+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+sxEsc(k)+'</b><small>'+o.n+(o.n===1?' Verkauf':' Verkäufe')+' · '+euro(o.rev)+'</small></span><svg class="sp" viewBox="0 0 60 24" aria-hidden="true"><polyline points="'+pts+'" fill="none" stroke="#2aa57a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg><span class="dl '+(d===null?'new':d<0?'neg':'')+'">'+(d===null?'neu':(d>=0?'+':'')+d+' %')+'</span></div>'}).join('')}
+$('hmQuick').innerHTML=HM_QUICK.map(([k,ic,l])=>'<button type="button" class="bx-q hm-q" data-q="'+k+'"><span class="ic">'+sxIcon(ic)+'</span><span class="lb">'+l+'</span></button>').join('');
+$('hmQuick').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const k=b.dataset.q;if(k==='new'){article=blank();sxCoverMsg='';push();showStep(0)}else if(k==='purchases')TOP_GO.purchases();else hmOld(k)});
+$('hmPrompts').innerHTML='';for(const [l,q] of HM_PROMPTS){const b=document.createElement('button');b.type='button';b.textContent=l;b.onclick=()=>document.dispatchEvent(new CustomEvent('rv:ai-request',{detail:{message:q}}));$('hmPrompts').append(b)}
+$('hmPeriod').onclick=e=>{const b=e.target.closest('[data-p]');if(!b)return;sxSet('rv_home_period',b.dataset.p);hmRender()};
+$('hmPerfPeriod').onclick=e=>{const b=e.target.closest('[data-p]');if(!b)return;sxSet('rv_home_perf',b.dataset.p);hmRender()};
+document.querySelectorAll('#hmRoot [data-hm-go]').forEach(b=>b.onclick=()=>hmGo(b.dataset.hmGo));
+{const prevRH=renderHome;renderHome=async function(){await prevRH();await hmRender()}}
+{let rz=0,lw=0;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if($('home').classList.contains('hidden'))return;const w=$('hmChart').clientWidth;if(Math.abs(w-lw)>40){lw=w;hmRender()}},250)})}
 // Externe Datenänderungen (z. B. Beispielartikel laden/entfernen) neu anzeigen.
 window.addEventListener('rv:data-changed',()=>{renderLibrary().catch(()=>{});try{renderHome()}catch(e){}});
 })();

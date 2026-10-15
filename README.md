@@ -1,4 +1,6 @@
-# RV Studio V26 — Command Center
+# RV Studio V27 — Command Center
+
+Neu in V27 (Details: [UEBERGABE-V27.md](UEBERGABE-V27.md)): Startseite responsiv im gleichen Design mit Übersicht, neuesten Artikeln, Verkaufsverlauf, Kategorien, Performance-Diagramm, KI-Assistent, Aufgaben und Trends.
 
 Neu in V26 (Details: [UEBERGABE-V26.md](UEBERGABE-V26.md)): Kopfmenü mit Begrüßung, KI-Leiste und sechs Kacheln auf allen Seiten; unteres Menü und KI-Ball entfernt.
 

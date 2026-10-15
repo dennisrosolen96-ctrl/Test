@@ -26,6 +26,7 @@
 <link rel="stylesheet" href="/insights.css">
 <link rel="stylesheet" href="/chat.css">
 <link rel="stylesheet" href="/topnav.css">
+<link rel="stylesheet" href="/home.css">
 <link rel="preload" href="/fonts/command-sans-regular.otf" as="font" type="font/otf" crossorigin>
 <link rel="preload" href="/fonts/command-sans-bold.otf" as="font" type="font/otf" crossorigin>
 </head>
@@ -141,6 +142,69 @@
 </header>
 <main class="wrap">
 <section id="home" class="home lux-home">
+<div class="sx hm" id="hmRoot">
+<section class="sx-panel hm-over" aria-label="Verkaufs-Übersicht">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/></svg></span><div class="sx-tt"><h2 class="sx-title">Verkaufs-Übersicht</h2><span class="sx-sub">Live-Daten deines Business</span></div>
+<div class="sx-seg" id="hmPeriod" role="group" aria-label="Zeitraum"><button type="button" data-p="today">Heute</button><button type="button" data-p="7">7 Tage</button><button type="button" data-p="30">30 Tage</button><button type="button" data-p="all">Alle</button></div></div>
+<div class="hm-over-body">
+<div class="hm-kpis" id="hmKpis"></div>
+<div class="hm-globe" id="hmGlobe"></div>
+<div class="hm-right">
+<div class="hm-cat" id="hmCats"></div>
+<div class="hm-s2" id="hmActive"></div>
+<div class="hm-s2" id="hmWorth"></div>
+</div>
+</div>
+</section>
+<section class="sx-panel" aria-label="Schnellzugriff">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7Z" fill="currentColor" stroke="none"/></svg></span><div class="sx-tt"><h2 class="sx-title">Schnellzugriff</h2><span class="sx-sub">Häufige Aktionen – direkt starten</span></div></div>
+<div class="hm-quick" id="hmQuick"></div>
+</section>
+<div class="hm-two">
+<section class="sx-panel" aria-label="Neueste Artikel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></span><div class="sx-tt"><h2 class="sx-title">Neueste Artikel</h2><span class="sx-sub">Zuletzt hinzugefügt</span></div><button type="button" class="hm-more" data-hm-go="stock">Alle anzeigen<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+<div class="hm-list" id="hmNew"></div>
+</section>
+<section class="sx-panel" aria-label="Letzte Verkäufe">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/></svg></span><div class="sx-tt"><h2 class="sx-title">Verkaufsverlauf</h2><span class="sx-sub">Letzte Verkäufe</span></div><button type="button" class="hm-more" data-hm-go="insights">Alle anzeigen<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+<div class="hm-list" id="hmSales"></div>
+</section>
+</div>
+<section class="sx-panel" aria-label="Bestands-Übersicht">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg></span><div class="sx-tt"><h2 class="sx-title">Bestands-Übersicht</h2><span class="sx-sub">Deine Kategorien im Lager</span></div><button type="button" class="hm-more" data-hm-go="stock">Alle anzeigen<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+<div class="hm-cats" id="hmCatTiles"></div>
+</section>
+<section class="sx-panel" aria-label="Performance-Analyse">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><div class="sx-tt"><h2 class="sx-title">Performance-Analyse</h2><span class="sx-sub">Entwicklung deines Business</span></div>
+<div class="sx-seg" id="hmPerfPeriod" role="group" aria-label="Zeitraum"><button type="button" data-p="7">7 Tage</button><button type="button" data-p="30">30 Tage</button><button type="button" data-p="90">90 Tage</button></div></div>
+<div class="hm-perf">
+<div class="hm-chart" id="hmChart"></div>
+<div class="hm-legend" id="hmLegend"></div>
+</div>
+</section>
+<section class="sx-panel hm-ai" aria-label="KI-Assistent">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">KI-Assistent</h2><span class="sx-sub">Dein Partner für Preise, Texte und Strategien</span></div><span id="hmAiStateSlot"></span><button type="button" class="hm-more" data-hm-go="chat">Chat öffnen<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+<div class="hm-ai-body">
+<div class="hm-orb" id="hmOrb"></div>
+<div class="hm-ai-main">
+<div class="hm-bubble"><b id="hmAiHello">Hallo! 👋</b> Wie kann ich dir heute helfen?<span>Frag nach Preisen, Texten, Marktchancen oder deinem nächsten Schritt.</span></div>
+<div id="hmFeedSlot"></div>
+<div class="sx-chips hm-prompts" id="hmPrompts"></div>
+<div class="hm-entry" id="hmEntry"></div>
+</div>
+</div>
+</section>
+<div class="hm-two">
+<section class="sx-panel" aria-label="Aktive Aufgaben">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Aktive Aufgaben</h2><span class="sx-sub">Deine nächsten To-dos</span></div></div>
+<div class="hm-tasks" id="hmTasks"></div>
+</section>
+<section class="sx-panel" aria-label="Deine Trends">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 17l5-5 4 4 7-8"/><path d="M15 8h5v5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Deine Trends</h2><span class="sx-sub">Aus deinen Verkäufen · 30 Tage zum Vorzeitraum</span></div><button type="button" class="hm-more" data-hm-go="insights">Insights<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+<div class="hm-trends" id="hmTrends"></div>
+</section>
+</div>
+</div>
 <div class="v11" id="v11Root">
 <div class="v16-crown" aria-hidden="true">
 </div>
@@ -419,7 +483,7 @@
 <path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>
 </svg>
 </button>
-  <textarea id="homeAiInput" rows="1" aria-label="Frage an den RV-Assistenten" placeholder="Stelle eine Frage oder gib einen Befehl ein …"></textarea>
+  <textarea id="homeAiInput" rows="1" aria-label="Frage an den RV-Assistenten" placeholder="Frag deinen KI-Assistenten …"></textarea>
   <button id="homeAiSend" type="button" aria-label="Nachricht senden">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 <path d="M8 5.5v13l11-6.5z"/>
