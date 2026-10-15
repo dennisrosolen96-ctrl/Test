@@ -1039,11 +1039,11 @@
 <button id="navHome" class="selected" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10.5 9-7.5 9 7.5"/><path d="M5.5 8.6V21h13V8.6"/><path d="M10 21v-6h4v6"/></svg><span>Home</span></button>
 <button id="navFinance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 19.5h17"/><path d="m4.5 15 4.5-5 3.5 3 6.5-7.5"/><path d="M15 5.5h4v4"/></svg><span>Insights</span></button>
 <button id="navStock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2.8 8.5 4.6v9.2L12 21.2l-8.5-4.6V7.4z"/><path d="m3.5 7.4 8.5 4.7 8.5-4.7M12 12.1v9.1"/></svg><span>Bestand</span></button>
-<button id="navStudio" class="orb" aria-label="Neuen Artikel anlegen"></button>
+<button id="navChat" class="orb" aria-label="KI-Chat"></button>
 <button id="navSales"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4h2.6l2.2 10.5h10.6l2.1-7.5H6.3"/><circle cx="9.3" cy="19" r="1.6"/><circle cx="16.8" cy="19" r="1.6"/></svg><span>Verkauf</span></button>
 <button id="navPurchases"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 13H6L5 8Z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></svg><span>Einkauf</span></button>
-<button id="navChat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9.5L5 19.5V16H4z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01" stroke-width="2.4"/></svg><span>KI-Chat</span></button>
-<button id="navSettings" class="cc-nav-hidden" tabindex="-1" aria-hidden="true"><span>Einstellungen</span></button>
+<button id="navSettings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg><span>Profil</span></button>
+<button id="navStudio" class="cc-nav-hidden" tabindex="-1" aria-hidden="true"><span>Studio</span></button>
 </nav>
 <section id="finance" class="wrap hidden lux-finance-page">
 <div class="page-head finance-head">
@@ -1098,42 +1098,49 @@
 </div>
 </section>
 <section id="aiChat" class="wrap hidden lux-ai-page">
-<div class="page-head chat-head">
-<div>
-<div class="eyebrow">RV AI · ASSISTANT</div>
-<h1>Sprich mit RV AI.</h1>
-<p class="muted">Hier fühlt sich die KI wie ein eigener Bereich an. Frag nach Bestand, Gewinn, Entwürfen oder starte einen neuen Artikel.</p>
+<div id="ccChat" class="v11 cc-chat">
+<section class="v11-panel v11-hud red cc-chat-top" aria-label="KI-Assistent">
+<div class="v11-ph">
+<span class="hx"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="2"><path d="M5.5 19.5 12 4.5l6.5 15M8.6 14.2h6.8M12 4.5v4"/></svg></span>
+<div class="tt"><h1 class="v11-title">KI-Assistent</h1><span class="v11-sub">Dein intelligenter Partner für dein Reselling-Business</span></div>
 </div>
-<div class="chat-head-badge">
-<img src="/rv-logo.jpg" alt="RV">
+<div class="cc-chat-state">
+<span class="on" id="ccChatState" data-state="setup" role="status">Einrichten</span>
+<span class="v11-modes">
+<button type="button" data-ai-request="Analysiere meinen Bestand und meine Verkäufe">Analysieren</button>
+<button type="button" data-ai-request="Berate mich bei meinen nächsten Schritten">Beraten</button>
+<button type="button" data-ai-request="Wie kann ich mein Business optimieren?">Optimieren</button>
+</span>
 </div>
+<div class="cc-chat-grid">
+<div class="cc-side cc-glass v11-hud">
+<h2><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M13 3 5 13h6l-1 8 9-11h-6l0-7Z"/></svg>Schnelle Anfragen</h2>
+<button type="button" class="cc-q v11-hud gold chat-chip" data-chat-cmd="Bewerte meinen aktuellen Bestand"><span class="ic"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M3 12 12 3h8v8l-9 9-8-8Z"/><circle cx="16" cy="8" r="1.3"/></svg></span><span class="tx"><b>Artikel bewerten</b><small>Marktwert &amp; Nachfrage</small></span><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="m9 5 7 7-7 7"/></svg></button><button type="button" class="cc-q v11-hud gold chat-chip" data-chat-cmd="Erstelle einen Verkaufstext für meinen neuesten Artikel"><span class="ic"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M7 3h7l4 4v14H7V3Z"/><path d="M14 3v4h4M9.5 12h6M9.5 16h6"/></svg></span><span class="tx"><b>Verkaufstext erstellen</b><small>SEO-optimiert</small></span><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="m9 5 7 7-7 7"/></svg></button><button type="button" class="cc-q v11-hud gold chat-chip" data-chat-cmd="Gib mir eine Marktanalyse zu meinem Sortiment"><span class="ic"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M5 20V13M10 20V9M15 20V5M20 20V11" stroke-width="2.4"/></svg></span><span class="tx"><b>Marktanalyse</b><small>Trends &amp; Chancen</small></span><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="m9 5 7 7-7 7"/></svg></button><button type="button" class="cc-q v11-hud gold chat-chip" data-chat-cmd="Welche Preise soll ich anpassen?"><span class="ic"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M4 18l5-6 4 3 7-9"/><path d="M15 6h5v5"/></svg></span><span class="tx"><b>Preisempfehlung</b><small>Optimaler Verkaufspreis</small></span><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="m9 5 7 7-7 7"/></svg></button><button type="button" class="cc-q v11-hud gold chat-chip" data-chat-cmd="Wie kann ich mein Lager optimieren?"><span class="ic"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg></span><span class="tx"><b>Lager optimieren</b><small>Bestandsvorschläge</small></span><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="m9 5 7 7-7 7"/></svg></button><button type="button" class="cc-q v11-hud gold chat-chip" data-chat-cmd="Gib mir Ideen und Strategien für mein Reselling-Business"><span class="ic"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/></svg></span><span class="tx"><b>Ideen &amp; Strategien</b><small>Für mehr Umsatz</small></span><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="m9 5 7 7-7 7"/></svg></button>
 </div>
-<div class="chat-surface">
-<div class="chat-hero">
-<div>
-<small>RV AI · WORKSPACE</small>
-<strong>Frag mich alles zu deinem Studio.</strong>
-<p>Bestand, Entwürfe und Zahlen sind direkt zugänglich. Wenn deine KI verbunden ist, antwortet RV AI hier über OpenAI oder Claude.</p>
-</div>
-<div class="chat-mascot">
-<img src="/rv-robot-premium.png" alt="RV-Bot mit RV-Monogramm auf der Brust">
-</div>
-</div>
-<div id="chatFeed" class="chat-feed" aria-live="polite">
-</div>
-<div class="chat-prompts">
-<button type="button" class="chat-chip" data-chat-cmd="Zeig mir meine Entwürfe">Entwürfe prüfen</button>
-<button type="button" class="chat-chip" data-chat-cmd="Wie hoch ist mein Gewinn?">Gewinn prüfen</button>
-<button type="button" class="chat-chip" data-chat-cmd="Öffne den Bestand">Bestand öffnen</button>
-<button type="button" class="chat-chip" data-chat-cmd="Neuen Artikel anlegen">Neuen Artikel starten</button>
-</div>
-<div class="chat-entry">
-<textarea id="chatInput" class="rv-chat-input" rows="1" placeholder="Schreib mit RV AI …"></textarea>
-<div class="chat-actions">
-<button id="chatClear" type="button" class="btn secondary">Verlauf leeren</button>
-<button id="chatSend" type="button" class="btn">Senden</button>
+<div class="cc-chat-bot" id="ccChatBot" aria-hidden="true"></div>
+<div class="cc-side cc-glass v11-hud">
+<h2><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M5 20V13M10 20V9M15 20V5M20 20V11" stroke-width="2.4"/></svg>Aktuelle Insights</h2>
+<div id="ccChatIns" class="cc-ins"></div>
 </div>
 </div>
+</section>
+<section class="v11-panel v11-hud red cc-chat-talk" aria-label="Unterhaltung">
+<button id="chatClear" type="button" class="cc-clear">Verlauf leeren</button>
+<div class="cc-talk-row">
+<div class="cc-chat-avatar" id="ccChatAvatar" aria-hidden="true"></div>
+<div class="v11-bubble cc-greet"><time id="ccChatTime"></time><b>Hallo! 👋</b> Ich bin dein KI-Assistent. Wie kann ich dir heute helfen?<span>Zum Beispiel: Artikel bewerten, Verkaufstexte erstellen, Markttrends analysieren oder Strategien planen.</span></div>
+</div>
+<div id="chatFeed" class="chat-feed" aria-live="polite"></div>
+<div class="v11-prompts cc-pills"><button type="button" class="chat-chip" data-chat-cmd="Bewerte meinen aktuellen Bestand"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M3 12 12 3h8v8l-9 9-8-8Z"/><circle cx="16" cy="8" r="1.3"/></svg><span>Artikel bewerten</span></button><button type="button" class="chat-chip" data-chat-cmd="Erstelle einen Verkaufstext für meinen neuesten Artikel"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M7 3h7l4 4v14H7V3Z"/><path d="M14 3v4h4M9.5 12h6M9.5 16h6"/></svg><span>Verkaufstext erstellen</span></button><button type="button" class="chat-chip" data-chat-cmd="Gib mir eine Marktanalyse zu meinem Sortiment"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M5 20V13M10 20V9M15 20V5M20 20V11" stroke-width="2.4"/></svg><span>Marktanalyse</span></button><button type="button" class="chat-chip" data-chat-cmd="Welche Preise soll ich anpassen?"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M4 18l5-6 4 3 7-9"/><path d="M15 6h5v5"/></svg><span>Preisempfehlung</span></button><button type="button" class="chat-chip" data-chat-cmd="Wie kann ich mein Lager optimieren?"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg><span>Lager optimieren</span></button><button type="button" class="chat-chip" data-chat-cmd="Gib mir Ideen und Strategien für mein Reselling-Business"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/></svg><span>Ideen &amp; Strategien</span></button></div>
+<div class="cc-entry">
+<button type="button" class="cc-mic" id="ccChatMic" aria-label="Spracheingabe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+<div class="cc-field">
+<textarea id="chatInput" class="rv-chat-input" rows="1" aria-label="Frage an den KI-Assistenten" placeholder="Stelle eine Frage oder gib einen Befehl ein …"></textarea>
+<button type="button" class="cc-attach" id="ccChatAttach" aria-label="Foto anhängen und neuen Artikel starten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 11-8.5 8.5a5 5 0 0 1-7-7L13 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L14 7"/></svg></button>
+</div>
+<button id="chatSend" type="button" class="cc-send" aria-label="Nachricht senden"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></button>
+</div>
+</section>
 </div>
 </section>
 <section id="settingsPage" class="wrap hidden lux-settings-page">

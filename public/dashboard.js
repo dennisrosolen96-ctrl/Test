@@ -166,9 +166,11 @@ function insights(all,stock){
     :{t:'Lager-Hinweis',b:stock.some(function(a){return ageDays(a)===null})?'Für einige Artikel fehlt das Einkaufsdatum. Ergänze es für Lagerhinweise.':'Kein Artikel liegt mindestens 60 Tage im Bestand.',go:'stock',i:'cube'};
   var icons={bolt:'<path d="M13 3 5 13h6l-1 8 9-11h-6l0-7Z"/>',bars:'<path d="M5 20V12M10 20V8M15 20V4M20 20V10" stroke-width="2.2"/>',cube:'<path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>'};
   var host=$('v11-insights');if(!host)return;
+  var mirror=$('ccChatIns');
   host.innerHTML=[c1,c2,c3].map(function(c){
     return '<button type="button" class="v11-card v11-hud" data-go="'+c.go+'"><svg class="ci v11-ico" viewBox="0 0 24 24" aria-hidden="true">'+icons[c.i]+'</svg><span><b>'+c.t+'</b><p>'+c.b+'</p></span><svg class="ch v11-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>';
   }).join('');
+  if(mirror)mirror.innerHTML=host.innerHTML;
 }
 
 /* ---------- Navigation: die neuen Elemente lösen die bestehenden Schaltflächen aus ---------- */
@@ -206,13 +208,23 @@ function bind(){
   var sales=$('navSales');if(sales)sales.addEventListener('click',function(){click('navStock');setTimeout(function(){var tab=document.querySelector('[data-v5-tab="all"]');if(tab)tab.click();var f=document.querySelector('[data-stock-filter="sold"]');if(f)f.click();var e=$('navSales');if(e){document.querySelectorAll('#bottomnav button').forEach(function(b){b.classList.toggle('selected',b===e);if(b===e)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')})}},90)});
   var mic=document.querySelector('#v11Root .rv-crafted-chat-icon');if(mic){mic.addEventListener('click',listen)}
   var np=$('navPurchases');if(np)np.addEventListener('click',function(){actions.purchases();setTimeout(function(){document.querySelectorAll('#bottomnav button').forEach(function(b){var on=b===np;b.classList.toggle('selected',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')})},200)});
+  var cc=$('ccChat');
+  if(cc)cc.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('[data-go]');
+    if(b&&actions[b.getAttribute('data-go')]){actions[b.getAttribute('data-go')]();return}
+    var pr=e.target.closest&&e.target.closest('[data-ai-request]');
+    if(pr)document.dispatchEvent(new CustomEvent('rv:ai-request',{detail:{message:pr.getAttribute('data-ai-request')}}));
+  });
+  var cm=$('ccChatMic');if(cm)cm.addEventListener('click',function(){listen('chatInput')});
+  var ca=$('ccChatAttach');if(ca)ca.addEventListener('click',function(){click('homeAiAttach')});
+  var tm=$('ccChatTime');if(tm){var n=new Date();tm.textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')}
   var more=$('v11InsightsAll');if(more)more.addEventListener('click',function(){click('navFinance')});
 }
 
 /* ---------- Sprachaufnahme (nur wenn der Browser sie anbietet) ---------- */
-function listen(){
+function listen(target){
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  var ta=$('homeAiInput');if(!ta)return;
+  var ta=$(typeof target==='string'?target:'homeAiInput');if(!ta)return;
   if(!SR){ta.focus();ta.placeholder='Spracheingabe hier nicht unterstützt – bitte tippen.';return}
   try{
     var r=new SR();r.lang='de-DE';r.interimResults=false;r.maxAlternatives=1;
@@ -283,7 +295,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const gold=el.classList.contains('gold')||el.classList.contains('v11-m')||el.classList.contains('v11-cat')||el.classList.contains('v11-s2')||el.classList.contains('v11-card')||el.parentElement.classList.contains('v11-prompts');
     const red=el.classList.contains('red')||el.classList.contains('v11-ai')||el.classList.contains('v11-ins');
     const id=svg.dataset.uid||(svg.dataset.uid='cc'+(++serial));
-    const glass=el.classList.contains('v11-m')||el.classList.contains('v11-cat')||el.classList.contains('v11-s2');
+    const glass=el.classList.contains('cc-glass')||el.classList.contains('v11-m')||el.classList.contains('v11-cat')||el.classList.contains('v11-s2');
     const signature=[width,height,panel,nav,gold,red,glass].join(':');
     if(svg.dataset.size===signature)return;
     svg.dataset.size=signature;svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
@@ -423,7 +435,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const resize='ResizeObserver' in window?new ResizeObserver(entries=>entries.forEach(e=>draw(e.target))):null;
   function refresh(){
     for(const target of observed){if(!target.isConnected){if(resize)resize.unobserve(target);observed.delete(target)}}
-    document.querySelectorAll('#v11Root .v11-hud,#bottomnav').forEach(el=>{
+    document.querySelectorAll('#v11Root .v11-hud,#ccChat .v11-hud,#bottomnav').forEach(el=>{
       draw(el);if(!observed.has(el)){observed.add(el);if(resize)resize.observe(el)}
     });
   }
@@ -432,6 +444,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   if(!resize)window.addEventListener('resize',refresh,{passive:true});
   // The label shows successful provider contact, not just a configured URL.
   function aiState(state,message){
+    const cs=document.getElementById('ccChatState');
+    if(cs){cs.dataset.state=state;cs.textContent={ready:'Online',busy:'Anfrage …',setup:'Einrichten',error:'Prüfen'}[state]||'Einrichten';cs.title=message||''}
     const status=document.getElementById('v16AiState');
     if(status){status.dataset.state=state;status.textContent={ready:'Online',busy:'Anfrage …',setup:'Einrichten',error:'Prüfen'}[state]||'Einrichten';status.title=message||''}
     const pill=document.querySelector('#v11AiPill > span');
