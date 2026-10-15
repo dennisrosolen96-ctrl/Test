@@ -57,7 +57,7 @@
 
   /* Einstellungen-Karte */
   function card() {
-    var grid = document.querySelector('#settingsPage .settings-grid'); if (!grid || document.getElementById('rvAnimCard')) return;
+    var grid = document.getElementById('stAnimSlot') || document.querySelector('#settingsPage .settings-grid'); if (!grid || document.getElementById('rvAnimCard')) return;
     var c = document.createElement('aside'); c.className = 'settings-card rv-anim-card'; c.id = 'rvAnimCard';
     var h = '<div class="eyebrow">DARSTELLUNG</div><h2>Animationen</h2><p class="rvcloud-small">Wähle selbst, welche Effekte laufen. „Anwenden“ zeigt die Auswahl sofort, „Speichern“ behält sie auf diesem Gerät.</p><div class="rv-anim-list">';
     OPTS.forEach(function (o) {

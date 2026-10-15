@@ -1,4 +1,6 @@
-# RV Studio V22 — Command Center
+# RV Studio V23 — Command Center
+
+Neu in V23 (Details: [UEBERGABE-V23.md](UEBERGABE-V23.md)): Einstellungen als Kontrollzentrum mit Systemstatus, Profil & Shop, Plattform-Steuerung, Preisrundung, Verbindungstest, CSV-Export, Backup-Erinnerung und Speicherschutz.
 
 Neu in V22 (Details: [UEBERGABE-V22.md](UEBERGABE-V22.md)): Studio im Design der Startseite, automatisches Titelbild mit Freisteller, Texte ohne KI, Preisrechner für alle drei Plattformen, Veröffentlichen-Karten und Fertig-Check.
 

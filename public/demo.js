@@ -307,21 +307,24 @@
     }
   };
   function syncButton() {
-    var b = document.getElementById('rvDemoRemove'); if (!b) return;
+    var bs = document.querySelectorAll('.rv-demo-btn'); if (!bs.length) return;
     open(function (db) {
       var k = db.transaction('articles', 'readonly').objectStore('articles').getAllKeys();
-      k.onsuccess = function () { var has = (k.result || []).some(isDemo); b.dataset.mode = has ? 'remove' : 'load'; b.textContent = has ? 'Beispielartikel entfernen' : L.length + ' Beispielartikel laden'; b.hidden = false; db.close(); };
+      k.onsuccess = function () { var has = (k.result || []).some(isDemo); Array.prototype.forEach.call(bs, function (b) { b.dataset.mode = has ? 'remove' : 'load'; b.textContent = has ? 'Beispielartikel entfernen' : L.length + ' Beispielartikel laden'; b.hidden = false; }); db.close(); };
     });
   }
   function button() {
-    var row = document.querySelector('.bx-demo-slot') || document.querySelector('.lux-stock-action-row');
-    if (!row || document.getElementById('rvDemoRemove')) return;
-    var b = document.createElement('button'); b.type = 'button'; b.id = 'rvDemoRemove'; b.className = 'v6-small-btn'; b.hidden = true;
-    b.addEventListener('click', function () {
-      if (b.dataset.mode === 'load') { window.RVDemo.load(); return; }
-      if (confirm('Die Beispielartikel löschen? Deine eigenen Artikel bleiben erhalten.')) window.RVDemo.remove();
+    var slots = document.querySelectorAll('.bx-demo-slot');
+    Array.prototype.forEach.call(slots, function (row, i) {
+      if (row.querySelector('.rv-demo-btn')) return;
+      var b = document.createElement('button'); b.type = 'button'; b.id = i ? 'rvDemoRemove' + (i + 1) : 'rvDemoRemove'; b.className = 'v6-small-btn sx-btn rv-demo-btn'; b.hidden = true;
+      b.addEventListener('click', function () {
+        if (b.dataset.mode === 'load') { window.RVDemo.load(); return; }
+        if (confirm('Die Beispielartikel löschen? Deine eigenen Artikel bleiben erhalten.')) window.RVDemo.remove();
+      });
+      row.appendChild(b);
     });
-    row.appendChild(b); syncButton();
+    syncButton();
   }
   function start() { button(); setTimeout(seed, 300); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();

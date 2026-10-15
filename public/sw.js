@@ -1,5 +1,5 @@
-const CACHE='rv-studio-v22-1';
-const FILES=['/','/index.html','/app.css','/dashboard.css','/fx.css','/ref.css','/theme.css','/bestand.css','/studio.css','/pages.css','/perf.css','/anim.css','/app.js','/dashboard.js','/fx.js','/demo.js','/cutout.js','/anim.js',
+const CACHE='rv-studio-v23-1';
+const FILES=['/','/index.html','/app.css','/dashboard.css','/fx.css','/ref.css','/theme.css','/bestand.css','/studio.css','/settings.css','/pages.css','/perf.css','/anim.css','/app.js','/dashboard.js','/fx.js','/demo.js','/cutout.js','/anim.js',
   '/vendor/jszip.min.js','/fonts/command-sans-regular.otf','/fonts/command-sans-bold.otf',
   '/rv-logo.jpg','/rv-ai-mascot.png','/rv-robot-premium.png','/rv-white.png',
   '/rv-mark-cropped.png','/rv-studio-script.png','/icons/icon-192.png','/icons/icon-512.png',

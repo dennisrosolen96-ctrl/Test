@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="/anim.css">
 <link rel="stylesheet" href="/bestand.css">
 <link rel="stylesheet" href="/studio.css">
+<link rel="stylesheet" href="/settings.css">
 <link rel="preload" href="/fonts/command-sans-regular.otf" as="font" type="font/otf" crossorigin>
 <link rel="preload" href="/fonts/command-sans-bold.otf" as="font" type="font/otf" crossorigin>
 </head>
@@ -1141,98 +1142,124 @@
 </section>
 </div>
 </section>
-<section id="settingsPage" class="wrap hidden lux-settings-page">
-<div class="page-head settings-head">
-<div>
-<div class="eyebrow">CONTROL CENTER</div>
-<h1>Einstellungen.</h1>
-<p class="muted">Cloud, Backup, Wiederherstellung und Sicherheitsinfos an einem Ort.</p>
+<section id="settingsPage" class="wrap hidden sx st">
+<div class="sx-top">
+<span class="sx-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></span>
+<div class="sx-greet"><h1>Einstellungen</h1><p id="stSubtitle">Dein Kontrollzentrum für Shop, Studio und Daten</p></div>
 </div>
-<div class="settings-mark">
-<img src="/rv-white.png" alt="RV">
+<section class="sx-panel st-status" aria-label="Systemstatus">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span><div class="sx-tt"><h2 class="sx-title">Systemstatus</h2><span class="sx-sub">Live auf diesem Gerät</span></div></div>
+<div class="st-metrics" id="stMetrics"></div>
+</section>
+<nav class="st-nav" aria-label="Bereiche">
+<button type="button" data-st="stProfil"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span><span class="lb">Profil &amp; Shop</span></button>
+<button type="button" data-st="stVerkauf"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><span class="lb">Verkauf</span></button>
+<button type="button" data-st="stStudio"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span class="lb">Studio</span></button>
+<button type="button" data-st="stKi"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><span class="lb">KI</span></button>
+<button type="button" data-st="stCloud"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M7 18a5 5 0 1 1 .9-9.9A6 6 0 0 1 19 10a4 4 0 0 1-1 8z"/></svg></span><span class="lb">Cloud &amp; Geräte</span></button>
+<button type="button" data-st="stDaten"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span><span class="lb">Daten &amp; Backup</span></button>
+<button type="button" data-st="stDarstellung"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M12 4a8 8 0 0 1 0 16"/></svg></span><span class="lb">Darstellung</span></button>
+<button type="button" data-st="stInfo"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg></span><span class="lb">Über die App</span></button>
+</nav>
+
+<section class="sx-panel st-sec" id="stProfil">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span><div class="sx-tt"><h2 class="sx-title">Profil &amp; Shop</h2><span class="sx-sub">Persönliche Begrüßung und dein Stil in allen Texten</span></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Dein Vorname</span><input data-st-key="name" placeholder="z. B. Dennis" autocomplete="given-name"></label>
+<label class="sx-field"><span>Shop- oder Verkäufername</span><input data-st-key="shop" placeholder="z. B. RV Vintage"></label>
 </div>
-</div>
-<div class="settings-grid">
-<aside class="settings-card">
-<div class="eyebrow">SYNC</div>
-<h2>Geräte verbinden</h2>
-<p class="rvcloud-small">Ein gemeinsamer Bestand auf Android und Mac. Verbindungskennwort nur auf deinen Geräten eingeben.</p>
-<label for="rvCloudPassword">Cloud-Sync-Kennwort</label>
-<input id="rvCloudPassword" type="password" autocomplete="new-password" placeholder="Dein RV_SYNC_PASSWORD">
-<div class="settings-btns">
-<button id="rvCloudConnect" type="button">Cloud verbinden</button>
-<button id="rvCloudSync" class="secondary" type="button">Jetzt synchronisieren</button>
-<button id="rvCloudDisconnect" class="secondary" type="button">Trennen</button>
-</div>
-<p class="rvcloud-small" id="rvCloudStatus" role="status" aria-live="polite">Nicht verbunden · Artikel bleiben lokal, bis du dich verbindest.</p>
-<section id="rvConflictSection" class="rvconflicts" hidden>
-<h3>⚠️ Versionskonflikte <span id="rvConflictCount">
-</span>
-</h3>
-<p class="rvcon-notice">Die Änderung bleibt auf diesem Gerät gespeichert. Vor einer Entscheidung ein Backup auf beiden Geräten erstellen.</p>
-<div id="rvConflictList">
+<label class="sx-field"><span>Abschlusstext in jedem Listing</span><textarea data-st-key="closing" class="st-short"></textarea></label>
+<label class="sx-field"><span>Eigene Hashtags für Instagram</span><input data-st-key="tags" placeholder="#rvvintage #secondhandberlin"></label>
+<label class="sx-field"><span>Beschreibungsvorlage für die KI</span><textarea id="stTemplate"></textarea></label>
+<p class="sx-hint">Begrüßung auf der Startseite, Texte „Ohne KI“ und Hashtags nutzen diese Angaben sofort.</p>
+</section>
+
+<section class="sx-panel st-sec" id="stVerkauf">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Verkauf &amp; Plattformen</h2><span class="sx-sub">Wo du verkaufst und wie Preise entstehen</span></div></div>
+<div class="sx-field"><span>Aktive Plattformen</span><div class="st-toggles" id="stPlatforms"></div></div>
+<div class="sx-field"><span>Preisrundung im Preisrechner</span><div class="sx-seg" id="stRounding" role="group" aria-label="Preisrundung"><button type="button" data-v="59">Endung 5 / 9</button><button type="button" data-v="90">Endung ,90</button><button type="button" data-v="int">Ganze Euro</button></div></div>
+<div class="sx-field"><span>Gebühren &amp; Verhandlungspuffer pro Plattform</span><div class="sx-fees" id="stFees"></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Eigene Versandkosten (Vorschlag beim Verkauf)</span><span class="sx-input-wrap"><input data-st-key="shipping" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0,00"><i>€</i></span></label>
+<label class="sx-field"><span>Artikel gilt als Ladenhüter ab</span><span class="sx-input-wrap"><input data-st-key="staleDays" type="number" min="7" step="1" placeholder="60"><i>Tagen</i></span></label>
 </div>
 </section>
-</aside>
-<aside class="settings-card">
-<div class="eyebrow">KI</div>
-<h2>Provider & Verbindung</h2>
-<p class="rvcloud-small">Wähle deinen Anbieter und nutze denselben Server wie für die Cloud-Version. So wirkt RV Studio wie eine einzige verbundene App.</p>
-<label for="settingsAiProvider">KI-Anbieter</label>
-<select id="settingsAiProvider">
-<option value="openai">OpenAI</option>
-<option value="claude">Claude</option>
-</select>
-<label for="settingsAiEndpoint">KI-Server</label>
-<input id="settingsAiEndpoint" type="url" placeholder="https://deine-rv-app.pages.dev">
-<div class="settings-list">
-<div>
-<small>Chat</small>
-<strong id="settingsAiChatState">Nicht verbunden</strong>
+
+<section class="sx-panel st-sec" id="stStudio">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Studio &amp; Titelbild</h2><span class="sx-sub">Standards für jeden neuen Artikel</span></div></div>
+<label class="sx-switch"><input type="checkbox" id="stCoverAuto"><span></span>Titelbild nach dem Hochladen automatisch erstellen</label>
+<div class="sx-field"><span>Standard-Hintergrund für Titelbilder</span><div class="sx-swatches" id="stBg"></div></div>
+<div class="sx-field"><span>Freisteller</span><div class="sx-seg" id="stEngine" role="group" aria-label="Freisteller"><button type="button" data-engine="auto">Automatisch</button><button type="button" data-engine="server">KI-Server</button><button type="button" data-engine="device">Auf dem Gerät</button><button type="button" data-engine="original">Original</button></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Präfix der Artikelnummer</span><input data-st-key="skuPrefix" placeholder="RV" maxlength="8"></label>
+<label class="sx-field"><span>Status neuer Artikel</span><select data-st-key="defaultStatus"><option>Entwurf</option><option>Bereit</option><option>Online</option></select></label>
 </div>
-<div>
-<small>Listings</small>
-<strong id="settingsAiListingState">Nicht verbunden</strong>
+</section>
+
+<section class="sx-panel st-sec" id="stKi">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">KI &amp; Server</h2><span class="sx-sub">Anbieter, Server und Verbindungstest</span></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>KI-Anbieter</span><select id="settingsAiProvider"><option value="openai">OpenAI</option><option value="claude">Claude</option></select></label>
+<label class="sx-field"><span>KI-Server</span><input id="settingsAiEndpoint" type="url" placeholder="https://deine-rv-app.pages.dev"></label>
+<label class="sx-field"><span>RV-Passwort (nur für diese Sitzung)</span><input id="stAiToken" type="password" autocomplete="current-password" placeholder="Cloud-/App-Passwort"></label>
 </div>
-<div>
-<small>Provider</small>
-<strong id="settingsAiProviderLabel">OpenAI</strong>
+<div class="st-list">
+<div><small>Chat</small><strong id="settingsAiChatState">Nicht verbunden</strong></div>
+<div><small>Listings</small><strong id="settingsAiListingState">Nicht verbunden</strong></div>
+<div><small>Anbieter</small><strong id="settingsAiProviderLabel">OpenAI</strong></div>
 </div>
+<div class="sx-row">
+<button type="button" class="sx-cta sx-cta-sm" id="stAiTest"><span class="sx-cta-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span><span class="sx-cta-tx"><b>Verbindung testen</b></span></button>
+<button type="button" class="sx-btn" id="settingsAiApply">Übernehmen</button>
+<button type="button" class="sx-btn" id="settingsAiUseCloud">Diese App als Server</button>
 </div>
-<div class="settings-btns">
-<button id="settingsAiApply" type="button">KI übernehmen</button>
-<button id="settingsAiUseCloud" class="secondary" type="button">Cloud-URL nutzen</button>
+<div class="st-checks" id="stAiResult"></div>
+<p class="sx-hint">API-Schlüssel liegen nur auf dem Server (OPENAI_API_KEY bzw. ANTHROPIC_API_KEY, optional PHOTOROOM_API_KEY oder REMOVE_BG_API_KEY für den Freisteller).</p>
+</section>
+
+<section class="sx-panel st-sec" id="stCloud">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M7 18a5 5 0 1 1 .9-9.9A6 6 0 0 1 19 10a4 4 0 0 1-1 8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Cloud &amp; Geräte</h2><span class="sx-sub">Ein gemeinsamer Bestand auf Handy und Mac</span></div></div>
+<label class="sx-field" for="rvCloudPassword"><span>Cloud-Sync-Kennwort</span><input id="rvCloudPassword" type="password" autocomplete="new-password" placeholder="Dein RV_SYNC_PASSWORD"></label>
+<div class="sx-row">
+<button type="button" class="sx-cta sx-cta-sm" id="rvCloudConnect"><span class="sx-cta-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M9 7H6a4 4 0 0 0 0 8h3M15 7h3a4 4 0 0 1 0 8h-3M8 11h8"/></svg></span><span class="sx-cta-tx"><b>Cloud verbinden</b></span></button>
+<button type="button" class="sx-btn" id="rvCloudSync">Jetzt synchronisieren</button>
+<button type="button" class="sx-btn" id="rvCloudDisconnect">Trennen</button>
 </div>
-</aside>
-<aside class="settings-card">
-<div class="eyebrow">SICHERUNG</div>
-<h2>Backup & Import</h2>
-<p class="rvcloud-small">Erstelle ein JSON-Backup oder spiele einen vorhandenen Export wieder ein.</p>
-<div class="settings-btns stack">
-<button id="settingsBackup" type="button">Backup erstellen</button>
-<label class="settings-import">
-<span>Backup importieren</span>
-<input id="settingsRestore" type="file" accept="application/json">
-</label>
+<p class="sx-hint st-cloudstate" id="rvCloudStatus" role="status" aria-live="polite">Nicht verbunden · Artikel bleiben lokal, bis du dich verbindest.</p>
+<section id="rvConflictSection" class="rvconflicts" hidden>
+<h3>⚠️ Versionskonflikte <span id="rvConflictCount"></span></h3>
+<p class="rvcon-notice">Die Änderung bleibt auf diesem Gerät gespeichert. Vor einer Entscheidung ein Backup auf beiden Geräten erstellen.</p>
+<div id="rvConflictList"></div>
+</section>
+<p class="sx-hint">Das Kennwort wird nur für diese Sitzung gemerkt. Synchronisiert wird automatisch alle 30 Sekunden und sobald das Gerät wieder online ist.</p>
+</section>
+
+<section class="sx-panel st-sec" id="stDaten">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span><div class="sx-tt"><h2 class="sx-title">Daten &amp; Backup</h2><span class="sx-sub">Sichern, exportieren, wiederherstellen</span></div></div>
+<div class="st-actions">
+<button type="button" class="st-action" id="settingsBackup"><span class="mi"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg></span><span><b>Backup herunterladen</b><small>Alle Artikel inkl. Fotos als JSON</small></span></button>
+<label class="st-action"><span class="mi"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 20V8M7 13l5-5 5 5M5 4h14"/></svg></span><span><b>Backup importieren</b><small>JSON-Datei wiederherstellen</small></span><input id="settingsRestore" type="file" accept="application/json" hidden></label>
+<button type="button" class="st-action" id="stCsv"><span class="mi"><svg class="sx-ico" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><span><b>Tabelle exportieren</b><small>CSV für Excel, Numbers, Steuer</small></span></button>
+<button type="button" class="st-action" id="stPersist"><span class="mi"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><span><b>Speicher schützen</b><small id="stPersistState">Browser darf Daten nicht automatisch löschen</small></span></button>
 </div>
-<div class="settings-list">
-<div>
-<small>App-Modell</small>
-<strong>RV Studio Cloud</strong>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Backup-Erinnerung</span><select data-st-key="backupDays"><option value="0">Aus</option><option value="7">Nach 7 Tagen</option><option value="14">Nach 14 Tagen</option><option value="30">Nach 30 Tagen</option></select></label>
+<div class="sx-field"><span>Beispielartikel</span><div class="sx-row bx-demo-slot st-demo-slot"></div></div>
 </div>
-<div>
-<small>Version</small>
-<strong>V20 · Blue Glass Command Center</strong>
-</div>
-<div>
-<small>Design</small>
-<strong>Blue Glass · Gold · Bokeh</strong>
-</div>
-</div>
-</aside>
-</div>
-<div id="settingsExtras" class="settings-backup-extra">
-</div>
+<div id="settingsExtras" class="st-extras"></div>
+</section>
+
+<section class="sx-panel st-sec" id="stDarstellung">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M12 4a8 8 0 0 1 0 16"/></svg></span><div class="sx-tt"><h2 class="sx-title">Darstellung &amp; Animationen</h2><span class="sx-sub">Effekte nach Geschmack und Akku</span></div></div>
+<div class="sx-field"><span>Startansicht der Bestandsliste</span><div class="sx-seg" id="stStockView" role="group" aria-label="Bestandsansicht"><button type="button" data-v="grid">Raster</button><button type="button" data-v="list">Liste</button></div></div>
+<div id="stAnimSlot"></div>
+</section>
+
+<section class="sx-panel st-sec" id="stInfo">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg></span><div class="sx-tt"><h2 class="sx-title">Über die App</h2><span class="sx-sub">Version, Speicher und Installation</span></div></div>
+<div class="st-list" id="stInfoList"></div>
+<div class="sx-row"><button type="button" class="sx-btn" id="stInstall" hidden>App auf diesem Gerät installieren</button><button type="button" class="sx-btn" id="stReload">Neueste Version laden</button></div>
+</section>
 </section>
 <div id="editor" class="editor hidden">
 <div class="editor-top">
