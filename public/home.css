@@ -17,7 +17,8 @@ html body:has(#home:not(.hidden)) main.wrap { zoom:1 !important; max-width:1000p
 .hm .st-m.has-spark .tx { padding-right:70px; }
 .hm .st-m .bx-spark { position:absolute; right:8px; bottom:8px; width:68px; height:28px; }
 .hm-globe { position:relative; aspect-ratio:1; width:100%; display:grid; place-items:center; }
-.hm-globe .v15-globe-wrap { position:relative !important; inset:auto !important; left:auto !important; top:auto !important; transform:none !important; width:100% !important; height:100% !important; margin:0 !important; }
+.hm-globe .v15-globe-wrap { position:relative !important; inset:auto !important; left:auto !important; top:auto !important; transform:translateX(7%) !important; width:100% !important; height:100% !important; margin:0 !important; }
+/* Der Globus ist intern auf 43 % ausgerichtet (Bild, Ringe, Erde) – als Ganzes um 7 % verschieben, damit er mittig steht */
 .hm-globe .v11-globe { width:100% !important; height:auto !important; }
 .hm-cat { padding:11px 12px 12px; border-radius:16px; background:var(--sx-card); box-shadow:var(--sx-card-sh); border:1px solid transparent; }
 .hm-cat .hd { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
@@ -174,3 +175,8 @@ label.hm-lg { cursor:pointer; }
   #hmAiStateSlot { margin-left:44px; }
   .hm .hm-ai .sx-ph .hm-more { margin-left:auto; }
 }
+.hm-globe .v15-globe-orbit { inset:12% auto auto 5% !important; width:76% !important; height:76% !important; }
+/* V29: Globus-Effekte auf eigene Ebenen legen – Neuzeichnen bleibt im Globus, das Panel flackert nicht mit */
+.hm-over { isolation:isolate; }
+.hm-globe :is(.cc-globe-bg, .cc-globe-hud, .cc-globe-gold, .v11-globe, .cc-earth) { will-change:transform; backface-visibility:hidden; }
+.hm-globe .cc-sweep { mix-blend-mode:normal !important; }

@@ -1,4 +1,6 @@
-# RV Studio V28 — Command Center
+# RV Studio V29 — Command Center
+
+Neu in V29 (Details: [UEBERGABE-V29.md](UEBERGABE-V29.md)): Flackern durch das Randlicht behoben (neues, flüssiges Lauflicht), Globus auf der Startseite exakt mittig.
 
 Neu in V28 (Details: [UEBERGABE-V28.md](UEBERGABE-V28.md)): Animationen laufen wieder überall, auch bei Energiesparmodus; neuer Hauptschalter „Bewegung“, alle Animations-Schalter wirken auf allen Seiten.
 
