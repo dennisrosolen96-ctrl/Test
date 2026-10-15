@@ -71,7 +71,7 @@
   function glowSprite(rgb) {
     var c = doc.createElement('canvas'); c.width = c.height = 32;
     var g = c.getContext('2d'), gr = g.createRadialGradient(16, 16, 0, 16, 16, 16);
-    gr.addColorStop(0, 'rgba(255,255,240,1)'); gr.addColorStop(0.18, 'rgba(' + rgb + ',0.95)');
+    gr.addColorStop(0, 'rgba(240,255,255,1)'); gr.addColorStop(0.18, 'rgba(' + rgb + ',0.95)');
     gr.addColorStop(0.5, 'rgba(' + rgb + ',0.28)'); gr.addColorStop(1, 'rgba(' + rgb + ',0)');
     g.fillStyle = gr; g.fillRect(0, 0, 32, 32);
     return c;
@@ -128,14 +128,14 @@
     ctx.clearRect(0, 0, s, s);
     // Kugel
     var g = ctx.createRadialGradient(cx - R * 0.32, cy - R * 0.38, R * 0.05, cx, cy, R);
-    g.addColorStop(0, 'rgba(34,14,6,0.98)'); g.addColorStop(0.5, 'rgba(12,5,3,0.99)'); g.addColorStop(1, 'rgba(6,3,2,1)');
+    g.addColorStop(0, 'rgba(6,18,34,0.98)'); g.addColorStop(0.5, 'rgba(3,6,12,0.99)'); g.addColorStop(1, 'rgba(2,3,6,1)');
     ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fillStyle = g; ctx.fill();
     var lc = this.lon0 + t * this.speed, ct = Math.cos(this.tilt), st = Math.sin(this.tilt);
     // Gradnetz
     // Ozean als feines Punktraster wie in der Referenz
     if (this.ocean) {
       var oc = this.ocean, od = Math.max(0.8, s / 420);
-      ctx.fillStyle = 'rgba(255,150,70,0.11)';
+      ctx.fillStyle = 'rgba(70,150,255,0.11)';
       for (var oi = 0; oi < oc.length; oi++) {
         var op = oc[oi], ocl = Math.cos(op[1]), odl = op[0] - (this.lon0 + t * this.speed);
         var ox = ocl * Math.sin(odl), oy = Math.sin(op[1]), oz = ocl * Math.cos(odl);
@@ -144,7 +144,7 @@
         ctx.fillRect(cx + ox * R - od / 2, cy - oy2 * R - od / 2, od, od);
       }
     }
-    ctx.lineWidth = Math.max(0.6, s / 520); ctx.strokeStyle = this.hd ? 'rgba(255,140,60,0.12)' : 'rgba(255,140,60,0.17)';
+    ctx.lineWidth = Math.max(0.6, s / 520); ctx.strokeStyle = this.hd ? 'rgba(60,140,255,0.12)' : 'rgba(60,140,255,0.17)';
     var la, lo, x, y, z, y2, z2, first;
     var gstep = this.hd ? 15 : 30;
     for (la = this.hd ? -75 : -60; la <= (this.hd ? 75 : 60); la += gstep) {
@@ -180,12 +180,12 @@
       var bi = Math.min(4, Math.max(0, Math.floor(light * 5)));
       buckets[bi].push(cx + x * R, cy - y2 * R);
     }
-    var cols = ['rgba(205,112,44,0.55)', 'rgba(236,146,60,0.74)', 'rgba(255,182,92,0.88)', 'rgba(255,212,134,0.96)', 'rgba(255,238,184,1)'];
+    var cols = ['rgba(44,112,205,0.55)', 'rgba(60,146,236,0.74)', 'rgba(92,182,255,0.88)', 'rgba(134,212,255,0.96)', 'rgba(184,238,255,1)'];
     var dsz = Math.max(1.1, s / (this.hd ? 300 : 250)) * this.dot, gsz = dsz * 2.6;
     ctx.globalCompositeOperation = 'lighter';
     for (var b = 2; b < 5; b++) {
       var ga = buckets[b]; if (!ga.length) continue;
-      ctx.fillStyle = 'rgba(255,120,40,' + (0.02 + b * 0.015) + ')';
+      ctx.fillStyle = 'rgba(40,140,255,' + (0.02 + b * 0.015) + ')';
       for (i = 0; i < ga.length; i += 2) ctx.fillRect(ga[i] - gsz / 2, ga[i + 1] - gsz / 2, gsz, gsz);
     }
     for (var b2 = 0; b2 < 5; b2++) {
@@ -196,7 +196,7 @@
     ctx.globalCompositeOperation = 'source-over';
     // Städte-Lichter
     if (this.lights) {
-      if (!SPRITE_RED) { SPRITE_RED = glowSprite('255,70,40'); SPRITE_GOLD = glowSprite('255,190,90'); }
+      if (!SPRITE_RED) { SPRITE_RED = glowSprite('255,150,60'); SPRITE_GOLD = glowSprite('255,215,150'); }
       for (i = 0; i < this.hot.length; i++) {
         var h = this.hot[i], hp = h.p, hc = Math.cos(hp[1]), hd = hp[0] - lc;
         x = hc * Math.sin(hd); y = Math.sin(hp[1]); z = hc * Math.cos(hd);
@@ -212,10 +212,10 @@
     if (this.hd) this.drawHd(t, ctx, s, cx, cy, R, lc, ct, st);
     // Lichtrand und Glanz
     var rim = ctx.createRadialGradient(cx, cy, R * 0.72, cx, cy, R);
-    rim.addColorStop(0, 'rgba(255,110,30,0)'); rim.addColorStop(0.75, 'rgba(255,110,30,0.06)'); rim.addColorStop(0.93, 'rgba(255,140,50,0.38)'); rim.addColorStop(1, 'rgba(255,225,160,0.9)');
+    rim.addColorStop(0, 'rgba(30,140,255,0)'); rim.addColorStop(0.75, 'rgba(30,140,255,0.06)'); rim.addColorStop(0.93, 'rgba(50,140,255,0.38)'); rim.addColorStop(1, 'rgba(160,225,255,0.9)');
     ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fillStyle = rim; ctx.fill();
     var sh = ctx.createRadialGradient(cx - R * 0.42, cy - R * 0.48, 0, cx - R * 0.42, cy - R * 0.48, R * 0.75);
-    sh.addColorStop(0, 'rgba(255,220,170,0.16)'); sh.addColorStop(1, 'rgba(255,220,170,0)');
+    sh.addColorStop(0, 'rgba(170,220,255,0.16)'); sh.addColorStop(1, 'rgba(170,220,255,0)');
     ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fill();
   };
 
@@ -229,7 +229,7 @@
     ctx.globalCompositeOperation = 'lighter';
     // Warmer Lichtkern hinter Europa (oben Mitte)
     var hx = cx, hy = cy - R * 0.42, hg = ctx.createRadialGradient(hx, hy, 0, hx, hy, R * 0.75);
-    hg.addColorStop(0, 'rgba(255,214,150,0.30)'); hg.addColorStop(0.35, 'rgba(255,150,60,0.12)'); hg.addColorStop(1, 'rgba(255,120,40,0)');
+    hg.addColorStop(0, 'rgba(150,214,255,0.30)'); hg.addColorStop(0.35, 'rgba(60,150,255,0.12)'); hg.addColorStop(1, 'rgba(40,140,255,0)');
     ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fillStyle = hg; ctx.fill();
     // Routen als leuchtende Bögen mit wanderndem Lichtpunkt
     ctx.lineCap = 'round';
@@ -245,7 +245,7 @@
         var lon = Math.atan2(vy, vx), lat = Math.asin(Math.max(-1, Math.min(1, vz)));
         pts.push(proj(lon, lat, 1 + 0.16 * om / 3 * Math.sin(Math.PI * f)));
       }
-      var col = ro.red ? '255,70,40' : '255,190,100';
+      var col = ro.red ? '255,150,60' : '255,215,150';
       ctx.lineWidth = Math.max(0.8, s / 340);
       ctx.strokeStyle = 'rgba(' + col + ',0.42)';
       ctx.beginPath(); var on = false;
@@ -268,15 +268,15 @@
       var fx = cx + Math.cos(ang) * R * 0.985, fy = cy + Math.sin(ang) * R * 0.985, L = s * 0.06 * tw;
       ctx.globalAlpha = tw;
       ctx.drawImage(i % 2 ? SPRITE_RED : SPRITE_GOLD, fx - L / 2, fy - L / 2, L, L);
-      ctx.strokeStyle = 'rgba(255,230,190,0.75)'; ctx.lineWidth = Math.max(0.6, s / 700);
+      ctx.strokeStyle = 'rgba(190,230,255,0.75)'; ctx.lineWidth = Math.max(0.6, s / 700);
       ctx.beginPath(); ctx.moveTo(fx - L * 0.9, fy); ctx.lineTo(fx + L * 0.9, fy); ctx.moveTo(fx, fy - L * 0.6); ctx.lineTo(fx, fy + L * 0.6); ctx.stroke();
     }
     ctx.globalAlpha = 1;
     // Scharfe, glühende Lichtkante
-    ctx.shadowColor = 'rgba(255,140,50,0.9)'; ctx.shadowBlur = s / 40;
-    ctx.strokeStyle = 'rgba(255,200,130,0.85)'; ctx.lineWidth = Math.max(1, s / 260);
+    ctx.shadowColor = 'rgba(50,140,255,0.9)'; ctx.shadowBlur = s / 40;
+    ctx.strokeStyle = 'rgba(130,200,255,0.85)'; ctx.lineWidth = Math.max(1, s / 260);
     ctx.beginPath(); ctx.arc(cx, cy, R * 0.992, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
-    ctx.strokeStyle = 'rgba(255,90,40,0.6)';
+    ctx.strokeStyle = 'rgba(40,140,255,0.6)';
     ctx.beginPath(); ctx.arc(cx, cy, R * 0.992, Math.PI * 0.1, Math.PI * 0.9); ctx.stroke();
     ctx.restore();
   };
@@ -294,16 +294,16 @@
     var bg = svgEl('svg', { viewBox: '-50 -50 200 200', class: 'cc-globe-bg', 'aria-hidden': 'true' });
     var bd = svgEl('defs', {});
     var rg = svgEl('radialGradient', { id: 'ccHalo', cx: '43', cy: '50', r: '62', gradientUnits: 'userSpaceOnUse' });
-    [['0', '#ff4a20', '.30'], ['.42', '#c8250f', '.20'], ['.7', '#5a0c05', '.10'], ['1', '#000', '0']].forEach(function (q) { rg.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
+    [['0', '#208cff', '.30'], ['.42', '#0f6ec8', '.20'], ['.7', '#05315a', '.10'], ['1', '#000', '0']].forEach(function (q) { rg.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
     bd.appendChild(rg); bg.appendChild(bd);
     bg.appendChild(svgEl('circle', { cx: '43', cy: '50', r: '62', fill: 'url(#ccHalo)' }));
     [[50, '.22', '.25', ''], [56, '.16', '.2', '.6 1.8'], [63, '.12', '.18', ''], [71, '.08', '.15', '2 3']].forEach(function (q) {
-      bg.appendChild(svgEl('circle', { cx: '43', cy: '50', r: String(q[0]), fill: 'none', stroke: '#ff9a50', 'stroke-opacity': q[1], 'stroke-width': q[2], 'stroke-dasharray': q[3] }));
+      bg.appendChild(svgEl('circle', { cx: '43', cy: '50', r: String(q[0]), fill: 'none', stroke: '#509aff', 'stroke-opacity': q[1], 'stroke-width': q[2], 'stroke-dasharray': q[3] }));
     });
-    bg.appendChild(svgEl('path', { d: 'M-40 50 H134 M43 -36 V136 M-19 -12 L105 112 M105 -12 L-19 112', stroke: '#ff7a3a', 'stroke-opacity': '.10', 'stroke-width': '.25', fill: 'none' }));
+    bg.appendChild(svgEl('path', { d: 'M-40 50 H134 M43 -36 V136 M-19 -12 L105 112 M105 -12 L-19 112', stroke: '#3a8cff', 'stroke-opacity': '.10', 'stroke-width': '.25', fill: 'none' }));
     var ticks = '';
     for (var a = 0; a < 360; a += 6) { var rad = a * Math.PI / 180, r1 = a % 30 ? 52 : 50.5; ticks += 'M' + (43 + Math.cos(rad) * r1).toFixed(2) + ' ' + (50 + Math.sin(rad) * r1).toFixed(2) + ' L' + (43 + Math.cos(rad) * 53.5).toFixed(2) + ' ' + (50 + Math.sin(rad) * 53.5).toFixed(2) + ' '; }
-    bg.appendChild(svgEl('path', { d: ticks, stroke: '#ffb070', 'stroke-opacity': '.28', 'stroke-width': '.3', fill: 'none' }));
+    bg.appendChild(svgEl('path', { d: ticks, stroke: '#70b0ff', 'stroke-opacity': '.28', 'stroke-width': '.3', fill: 'none' }));
     // Rote Lichtbögen schwingen um die Erde (Drehung um die Globusmitte im SVG-Raum)
     function turn(g, values, dur, spline) {
       if (reduce) return g;
@@ -312,40 +312,40 @@
       g.appendChild(at); return g;
     }
     var swA = turn(svgEl('g', {}), '-35 43 50;55 43 50;-35 43 50', '7s', true);
-    swA.appendChild(svgEl('path', { d: 'M43 -6 A56 56 0 0 1 91.5 22', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.9', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.85' }));
-    swA.appendChild(svgEl('circle', { cx: '91.5', cy: '22', r: '1', fill: '#ffd9a0', class: 'cc-orbit-dot' }));
+    swA.appendChild(svgEl('path', { d: 'M43 -6 A56 56 0 0 1 91.5 22', fill: 'none', stroke: '#258cff', 'stroke-width': '.9', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.85' }));
+    swA.appendChild(svgEl('circle', { cx: '91.5', cy: '22', r: '1', fill: '#a0d9ff', class: 'cc-orbit-dot' }));
     var swB = turn(svgEl('g', {}), '30 43 50;-60 43 50;30 43 50', '9s', true);
-    swB.appendChild(svgEl('path', { d: 'M-5.5 78 A56 56 0 0 1 -12.6 42.3', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.7', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.75' }));
+    swB.appendChild(svgEl('path', { d: 'M-5.5 78 A56 56 0 0 1 -12.6 42.3', fill: 'none', stroke: '#258cff', 'stroke-width': '.7', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.75' }));
     var swC = turn(svgEl('g', {}), '0 43 50;360 43 50', '14s', false);
-    swC.appendChild(svgEl('path', { d: 'M90 70 A51 51 0 0 1 60 98', fill: 'none', stroke: '#ff5a30', 'stroke-width': '.7', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.8' }));
-    swC.appendChild(svgEl('circle', { cx: '60', cy: '98', r: '.9', fill: '#fff0c8', class: 'cc-orbit-dot' }));
+    swC.appendChild(svgEl('path', { d: 'M90 70 A51 51 0 0 1 60 98', fill: 'none', stroke: '#308cff', 'stroke-width': '.7', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.8' }));
+    swC.appendChild(svgEl('circle', { cx: '60', cy: '98', r: '.9', fill: '#c8f0ff', class: 'cc-orbit-dot' }));
     var swD = turn(svgEl('g', {}), '360 43 50;0 43 50', '19s', false);
-    swD.appendChild(svgEl('path', { d: 'M-3 22 A60 60 0 0 1 22 -6', fill: 'none', stroke: '#ff3a25', 'stroke-width': '.55', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.65', 'stroke-dasharray': '5 1.5 1 1.5' }));
+    swD.appendChild(svgEl('path', { d: 'M-3 22 A60 60 0 0 1 22 -6', fill: 'none', stroke: '#258cff', 'stroke-width': '.55', 'stroke-linecap': 'round', class: 'cc-glowline', opacity: '.65', 'stroke-dasharray': '5 1.5 1 1.5' }));
     // Weitere HUD-Details: Speichen, Datenbögen, Knoten, Lichtstreifen, drehender Segmentring
     var spokes = '';
     for (var sa = 0; sa < 360; sa += 15) { var sr = sa * Math.PI / 180; spokes += 'M' + (43 + Math.cos(sr) * 50).toFixed(2) + ' ' + (50 + Math.sin(sr) * 50).toFixed(2) + ' L' + (43 + Math.cos(sr) * 78).toFixed(2) + ' ' + (50 + Math.sin(sr) * 78).toFixed(2) + ' '; }
-    bg.appendChild(svgEl('path', { d: spokes, stroke: '#ff8a4a', 'stroke-opacity': '.09', 'stroke-width': '.22', fill: 'none' }));
+    bg.appendChild(svgEl('path', { d: spokes, stroke: '#4a8cff', 'stroke-opacity': '.09', 'stroke-width': '.22', fill: 'none' }));
     function arcD(r, a0, a1) { var p0 = a0 * Math.PI / 180, p1 = a1 * Math.PI / 180; return 'M' + (43 + Math.cos(p0) * r).toFixed(2) + ' ' + (50 + Math.sin(p0) * r).toFixed(2) + ' A' + r + ' ' + r + ' 0 0 1 ' + (43 + Math.cos(p1) * r).toFixed(2) + ' ' + (50 + Math.sin(p1) * r).toFixed(2); }
-    [[58, 200, 228, '#ffc070', 1.4, '.55'], [58, 300, 312, '#ffc070', 1.4, '.5'], [58, 20, 34, '#ff4a2c', 1.4, '.6'], [58, 118, 150, '#ffc070', 1.1, '.4'],
-     [66, 250, 290, '#ff4a2c', .5, '.55'], [66, 60, 95, '#ffb070', .45, '.45'], [74, 160, 205, '#ffb070', .35, '.35'], [74, 330, 352, '#ff4a2c', .6, '.5'],
-     [47.5, 95, 140, '#ffe0a0', .9, '.55'], [47.5, 250, 268, '#ff4a2c', 1.1, '.7']].forEach(function (q) {
-      bg.appendChild(svgEl('path', { d: arcD(q[0], q[1], q[2]), fill: 'none', stroke: q[3], 'stroke-width': String(q[4]), 'stroke-opacity': q[5], 'stroke-linecap': 'butt', class: q[3] === '#ff4a2c' ? 'cc-glowline' : '' }));
+    [[58, 200, 228, '#70c0ff', 1.4, '.55'], [58, 300, 312, '#70c0ff', 1.4, '.5'], [58, 20, 34, '#2c8cff', 1.4, '.6'], [58, 118, 150, '#70c0ff', 1.1, '.4'],
+     [66, 250, 290, '#2c8cff', .5, '.55'], [66, 60, 95, '#70b0ff', .45, '.45'], [74, 160, 205, '#70b0ff', .35, '.35'], [74, 330, 352, '#2c8cff', .6, '.5'],
+     [47.5, 95, 140, '#a0e0ff', .9, '.55'], [47.5, 250, 268, '#2c8cff', 1.1, '.7']].forEach(function (q) {
+      bg.appendChild(svgEl('path', { d: arcD(q[0], q[1], q[2]), fill: 'none', stroke: q[3], 'stroke-width': String(q[4]), 'stroke-opacity': q[5], 'stroke-linecap': 'butt', class: q[3] === '#2c8cff' ? 'cc-glowline' : '' }));
     });
     [[50, 40], [50, 175], [50, 290], [58, 228], [66, 95], [74, 352], [56, 330]].forEach(function (q, k) {
       var na = q[1] * Math.PI / 180;
-      bg.appendChild(svgEl('circle', { cx: (43 + Math.cos(na) * q[0]).toFixed(2), cy: (50 + Math.sin(na) * q[0]).toFixed(2), r: '.7', fill: k % 2 ? '#ffd9a0' : '#ff5a3a', class: 'cc-orbit-dot cc-spark cc-spark-' + (k % 4) }));
+      bg.appendChild(svgEl('circle', { cx: (43 + Math.cos(na) * q[0]).toFixed(2), cy: (50 + Math.sin(na) * q[0]).toFixed(2), r: '.7', fill: k % 2 ? '#a0d9ff' : '#3a8cff', class: 'cc-orbit-dot cc-spark cc-spark-' + (k % 4) }));
     });
     var lgS = svgEl('linearGradient', { id: 'ccStreak', x1: '0', y1: '0', x2: '1', y2: '0' });
-    [['0', '0'], ['.5', '.9'], ['1', '0']].forEach(function (q) { lgS.appendChild(svgEl('stop', { offset: q[0], 'stop-color': '#ff5a30', 'stop-opacity': q[1] })); });
+    [['0', '0'], ['.5', '.9'], ['1', '0']].forEach(function (q) { lgS.appendChild(svgEl('stop', { offset: q[0], 'stop-color': '#308cff', 'stop-opacity': q[1] })); });
     bd.appendChild(lgS);
     [['M-10 18 L60 -2', '.35'], ['M30 104 L104 74', '.3'], ['M-14 92 L36 112', '.25'], ['M70 -8 L118 30', '.3']].forEach(function (q) {
       bg.appendChild(svgEl('path', { d: q[0], stroke: 'url(#ccStreak)', 'stroke-width': q[1], fill: 'none', class: 'cc-glowline' }));
     });
     var segRing = turn(svgEl('g', {}), '0 43 50;360 43 50', '40s', false);
-    segRing.appendChild(svgEl('circle', { cx: '43', cy: '50', r: '61', fill: 'none', stroke: '#ffb070', 'stroke-opacity': '.3', 'stroke-width': '.7', 'stroke-dasharray': '4 1.4 .8 1.4' }));
+    segRing.appendChild(svgEl('circle', { cx: '43', cy: '50', r: '61', fill: 'none', stroke: '#70b0ff', 'stroke-opacity': '.3', 'stroke-width': '.7', 'stroke-dasharray': '4 1.4 .8 1.4' }));
     bg.appendChild(segRing);
     var segRing2 = turn(svgEl('g', {}), '360 43 50;0 43 50', '28s', false);
-    segRing2.appendChild(svgEl('circle', { cx: '43', cy: '50', r: '69', fill: 'none', stroke: '#ff4a2c', 'stroke-opacity': '.28', 'stroke-width': '.4', 'stroke-dasharray': '10 4 2 4' }));
+    segRing2.appendChild(svgEl('circle', { cx: '43', cy: '50', r: '69', fill: 'none', stroke: '#2c8cff', 'stroke-opacity': '.28', 'stroke-width': '.4', 'stroke-dasharray': '10 4 2 4' }));
     bg.appendChild(segRing2);
     bg.appendChild(swA); bg.appendChild(swB); bg.appendChild(swC); bg.appendChild(swD);
     var sparks = turn(svgEl('g', {}), '0 43 50;360 43 50', '60s', false);
@@ -354,7 +354,7 @@
     for (var sp = 0; sp < 70; sp++) {
       var ang = rnd() * 6.2832, dist = 36 + rnd() * 50;
       var sx = 43 + Math.cos(ang) * dist * 1.25, sy = 50 + Math.sin(ang) * dist * 0.95;
-      sparks.appendChild(svgEl('circle', { cx: sx.toFixed(2), cy: sy.toFixed(2), r: (0.35 + rnd() * 0.7).toFixed(2), fill: rnd() < 0.7 ? '#ff4a30' : '#ffc27a', class: 'cc-spark cc-spark-' + (sp % 4) }));
+      sparks.appendChild(svgEl('circle', { cx: sx.toFixed(2), cy: sy.toFixed(2), r: (0.35 + rnd() * 0.7).toFixed(2), fill: rnd() < 0.7 ? '#308cff' : '#7ac2ff', class: 'cc-spark cc-spark-' + (sp % 4) }));
     }
     wrap.insertBefore(bg, wrap.firstChild);
     earths.push(e);
@@ -363,35 +363,35 @@
     var svg = svgEl('svg', { viewBox: '0 0 100 100', class: 'cc-globe-hud', 'aria-hidden': 'true' });
     var defs = svgEl('defs', {});
     var lg = svgEl('linearGradient', { id: 'ccSweepG', x1: '0', y1: '0', x2: '1', y2: '0' });
-    lg.appendChild(svgEl('stop', { offset: '0', 'stop-color': '#ff5a30', 'stop-opacity': '0' }));
-    lg.appendChild(svgEl('stop', { offset: '1', 'stop-color': '#ffb070', 'stop-opacity': '.55' }));
+    lg.appendChild(svgEl('stop', { offset: '0', 'stop-color': '#308cff', 'stop-opacity': '0' }));
+    lg.appendChild(svgEl('stop', { offset: '1', 'stop-color': '#70b0ff', 'stop-opacity': '.55' }));
     defs.appendChild(lg); svg.appendChild(defs);
     var g1 = svgEl('g', { class: 'cc-spin-a' });
-    g1.appendChild(svgEl('circle', { cx: '43', cy: '50', r: '38.5', fill: 'none', stroke: '#ffb070', 'stroke-opacity': '.45', 'stroke-width': '.35', 'stroke-dasharray': '1.2 2.4' }));
-    g1.appendChild(svgEl('path', { d: 'M43 8.5 A41.5 41.5 0 0 1 78.9 29.2', fill: 'none', stroke: '#ff4a2c', 'stroke-width': '.9', 'stroke-linecap': 'round', class: 'cc-glowline' }));
-    g1.appendChild(svgEl('path', { d: 'M7.1 70.8 A41.5 41.5 0 0 1 2.2 44.7', fill: 'none', stroke: '#ffb070', 'stroke-width': '.6', 'stroke-linecap': 'round' }));
+    g1.appendChild(svgEl('circle', { cx: '43', cy: '50', r: '38.5', fill: 'none', stroke: '#70b0ff', 'stroke-opacity': '.45', 'stroke-width': '.35', 'stroke-dasharray': '1.2 2.4' }));
+    g1.appendChild(svgEl('path', { d: 'M43 8.5 A41.5 41.5 0 0 1 78.9 29.2', fill: 'none', stroke: '#2c8cff', 'stroke-width': '.9', 'stroke-linecap': 'round', class: 'cc-glowline' }));
+    g1.appendChild(svgEl('path', { d: 'M7.1 70.8 A41.5 41.5 0 0 1 2.2 44.7', fill: 'none', stroke: '#70b0ff', 'stroke-width': '.6', 'stroke-linecap': 'round' }));
     var g2 = svgEl('g', { class: 'cc-spin-b' });
-    g2.appendChild(svgEl('path', { d: 'M82.5 50 A39.5 39.5 0 0 1 57 86.9', fill: 'none', stroke: '#ff6a3a', 'stroke-width': '.7', 'stroke-linecap': 'round', 'stroke-dasharray': '6 2 1 2' }));
-    g2.appendChild(svgEl('path', { d: 'M16 21.3 A39.5 39.5 0 0 1 31 12.3', fill: 'none', stroke: '#ffd08a', 'stroke-width': '.5' }));
+    g2.appendChild(svgEl('path', { d: 'M82.5 50 A39.5 39.5 0 0 1 57 86.9', fill: 'none', stroke: '#3a8cff', 'stroke-width': '.7', 'stroke-linecap': 'round', 'stroke-dasharray': '6 2 1 2' }));
+    g2.appendChild(svgEl('path', { d: 'M16 21.3 A39.5 39.5 0 0 1 31 12.3', fill: 'none', stroke: '#8ad0ff', 'stroke-width': '.5' }));
     var sweep = svgEl('g', { class: 'cc-sweep' });
     sweep.appendChild(svgEl('path', { d: 'M43 50 L43 16.5 A33.5 33.5 0 0 1 66.7 26.3 Z', fill: 'url(#ccSweepG)', opacity: '.33' }));
     var orbitPath = 'M-2 53 A45 10.5 0 1 0 88 53 A45 10.5 0 1 0 -2 53';
     var orbit = svgEl('g', { transform: 'rotate(-14 43 53)' });
-    orbit.appendChild(svgEl('path', { d: 'M-2 53 A45 10.5 0 0 1 88 53', fill: 'none', stroke: '#ff3a25', 'stroke-opacity': '.35', 'stroke-width': '.4' }));
-    orbit.appendChild(svgEl('path', { d: 'M88 53 A45 10.5 0 0 1 -2 53', fill: 'none', stroke: '#ff5a30', 'stroke-width': '.95', 'stroke-linecap': 'round', class: 'cc-glowline' }));
-    orbit.appendChild(svgEl('path', { d: 'M76 59.5 A45 10.5 0 0 1 26 63', fill: 'none', stroke: '#ffd9a0', 'stroke-width': '.35', 'stroke-linecap': 'round', opacity: '.85' }));
-    var dot = svgEl('circle', { r: '1.15', fill: '#fff0c8', class: 'cc-orbit-dot' });
+    orbit.appendChild(svgEl('path', { d: 'M-2 53 A45 10.5 0 0 1 88 53', fill: 'none', stroke: '#258cff', 'stroke-opacity': '.35', 'stroke-width': '.4' }));
+    orbit.appendChild(svgEl('path', { d: 'M88 53 A45 10.5 0 0 1 -2 53', fill: 'none', stroke: '#308cff', 'stroke-width': '.95', 'stroke-linecap': 'round', class: 'cc-glowline' }));
+    orbit.appendChild(svgEl('path', { d: 'M76 59.5 A45 10.5 0 0 1 26 63', fill: 'none', stroke: '#a0d9ff', 'stroke-width': '.35', 'stroke-linecap': 'round', opacity: '.85' }));
+    var dot = svgEl('circle', { r: '1.15', fill: '#c8f0ff', class: 'cc-orbit-dot' });
     if (!reduce) {
       var am = svgEl('animateMotion', { dur: '7.5s', repeatCount: 'indefinite', path: orbitPath });
       dot.appendChild(am);
     } else { dot.setAttribute('cx', '88'); dot.setAttribute('cy', '53'); }
     orbit.appendChild(dot);
     svg.appendChild(sweep); svg.appendChild(g1); svg.appendChild(g2); svg.appendChild(orbit);
-    [[36.5, '6s', false, '#ff4a2c'], [44, '8.5s', true, '#ff3a25'], [40, '11s', false, '#ff7a40']].forEach(function (q, i) {
+    [[36.5, '6s', false, '#2c8cff'], [44, '8.5s', true, '#258cff'], [40, '11s', false, '#408cff']].forEach(function (q, i) {
       var r = q[0], g = svgEl('g', {});
       var a0 = -Math.PI / 2, a1 = a0 + 0.9;
       g.appendChild(svgEl('path', { d: 'M' + (43 + Math.cos(a0) * r).toFixed(2) + ' ' + (50 + Math.sin(a0) * r).toFixed(2) + ' A' + r + ' ' + r + ' 0 0 1 ' + (43 + Math.cos(a1) * r).toFixed(2) + ' ' + (50 + Math.sin(a1) * r).toFixed(2), fill: 'none', stroke: q[3], 'stroke-width': '.75', 'stroke-linecap': 'round', class: 'cc-glowline cc-comet-tail' }));
-      g.appendChild(svgEl('circle', { cx: (43 + Math.cos(a1) * r).toFixed(2), cy: (50 + Math.sin(a1) * r).toFixed(2), r: '.95', fill: '#fff0d0', class: 'cc-orbit-dot' }));
+      g.appendChild(svgEl('circle', { cx: (43 + Math.cos(a1) * r).toFixed(2), cy: (50 + Math.sin(a1) * r).toFixed(2), r: '.95', fill: '#d0f0ff', class: 'cc-orbit-dot' }));
       if (!reduce) {
         var from = q[2] ? 360 : 0, to = q[2] ? 0 : 360, off = i * 120;
         g.appendChild(svgEl('animateTransform', { attributeName: 'transform', type: 'rotate', values: (from + off) + ' 43 50;' + (to + off) + ' 43 50', dur: q[1], repeatCount: 'indefinite' }));
@@ -421,73 +421,73 @@
     function rot(g, from, to, dur) { if (!reduce) g.appendChild(svgEl('animateTransform', { attributeName: 'transform', type: 'rotate', values: from + ' ' + C + ' ' + Y + ';' + to + ' ' + C + ' ' + Y, dur: dur, repeatCount: 'indefinite' })); return g; }
     function arc(r, a0, a1) { var p0 = a0 * Math.PI / 180, p1 = a1 * Math.PI / 180; return 'M' + (C + Math.cos(p0) * r).toFixed(2) + ' ' + (Y + Math.sin(p0) * r).toFixed(2) + ' A' + r + ' ' + r + ' 0 0 1 ' + (C + Math.cos(p1) * r).toFixed(2) + ' ' + (Y + Math.sin(p1) * r).toFixed(2); }
     var d = A('defs', {});
-    grad('radialGradient', 'h', { cx: C, cy: Y, r: 98, gradientUnits: 'userSpaceOnUse' }, [['0', '#ff4a20', '.42'], ['.45', '#c8250f', '.2'], ['.75', '#5a0c05', '.08'], ['1', '#000', '0']]);
-    grad('radialGradient', 's', { cx: '.36', cy: '.28', r: '.8' }, [['0', '#5a3326'], ['.25', '#24130e'], ['.6', '#0b0605'], ['1', '#000']]);
-    grad('linearGradient', 'r', { x1: '0', y1: '0', x2: '1', y2: '1' }, [['0', '#fff0c8'], ['.3', '#e0a050'], ['.6', '#7a3a1a'], ['1', '#ff6a3a']]);
-    grad('radialGradient', 'p', {}, [['0', '#ffffff'], ['.22', '#ffe6d6'], ['.5', '#ff4a2c'], ['.8', '#c4100a'], ['1', '#5a0402', '0']]);
-    grad('linearGradient', 'b', { x1: '0', y1: '0', x2: '0', y2: '1' }, [['0', '#ff3a20', '0'], ['.5', '#ff3a20', '.25'], ['1', '#ff8a50', '.6']]);
-    grad('radialGradient', 'f', {}, [['0', '#ffe2b0', '.95'], ['.35', '#ff4a20', '.7'], ['1', '#ff2a10', '0']]);
+    grad('radialGradient', 'h', { cx: C, cy: Y, r: 98, gradientUnits: 'userSpaceOnUse' }, [['0', '#208cff', '.42'], ['.45', '#0f6ec8', '.2'], ['.75', '#05315a', '.08'], ['1', '#000', '0']]);
+    grad('radialGradient', 's', { cx: '.36', cy: '.28', r: '.8' }, [['0', '#26335a'], ['.25', '#0e1324'], ['.6', '#05060b'], ['1', '#000']]);
+    grad('linearGradient', 'r', { x1: '0', y1: '0', x2: '1', y2: '1' }, [['0', '#c8f0ff'], ['.3', '#50a0e0'], ['.6', '#1a437a'], ['1', '#3a8cff']]);
+    grad('radialGradient', 'p', {}, [['0', '#ffffff'], ['.22', '#d6e6ff'], ['.5', '#2c8cff'], ['.8', '#0a6bc4'], ['1', '#02315a', '0']]);
+    grad('linearGradient', 'b', { x1: '0', y1: '0', x2: '0', y2: '1' }, [['0', '#208cff', '0'], ['.5', '#208cff', '.25'], ['1', '#508cff', '.6']]);
+    grad('radialGradient', 'f', {}, [['0', '#b0e2ff', '.95'], ['.35', '#208cff', '.7'], ['1', '#108cff', '0']]);
     var cp = svgEl('clipPath', { id: id + 'c' }); cp.appendChild(svgEl('circle', { cx: C, cy: Y, r: R })); d.appendChild(cp);
     var fl = svgEl('filter', { id: id + 'g', x: '-50%', y: '-50%', width: '200%', height: '200%' }); fl.appendChild(svgEl('feGaussianBlur', { stdDeviation: '2.2' })); d.appendChild(fl);
     // Kraftfeld wie beim Globus
     if (opt.field !== false) {
       A('circle', { cx: C, cy: Y, r: 98, fill: 'url(#' + id + 'h)', class: 'cc-field-halo' });
       var tk = ''; for (var a = 0; a < 360; a += 6) { var t = a * Math.PI / 180, r0 = a % 30 ? 86 : 83.5; tk += 'M' + (C + Math.cos(t) * r0).toFixed(1) + ' ' + (Y + Math.sin(t) * r0).toFixed(1) + ' L' + (C + Math.cos(t) * 88.5).toFixed(1) + ' ' + (Y + Math.sin(t) * 88.5).toFixed(1) + ' '; }
-      A('path', { d: tk, stroke: '#ffb070', 'stroke-opacity': '.35', 'stroke-width': '.5', fill: 'none' });
-      A('circle', { cx: C, cy: Y, r: 93, fill: 'none', stroke: '#ffb070', 'stroke-opacity': '.3', 'stroke-width': '1', 'stroke-dasharray': '8 3 1.6 3' }, rot(A('g', {}), 0, 360, '32s'));
-      A('circle', { cx: C, cy: Y, r: 76, fill: 'none', stroke: '#ff4a2c', 'stroke-opacity': '.35', 'stroke-width': '.8', 'stroke-dasharray': '18 7 4 7' }, rot(A('g', {}), 360, 0, '22s'));
+      A('path', { d: tk, stroke: '#70b0ff', 'stroke-opacity': '.35', 'stroke-width': '.5', fill: 'none' });
+      A('circle', { cx: C, cy: Y, r: 93, fill: 'none', stroke: '#70b0ff', 'stroke-opacity': '.3', 'stroke-width': '1', 'stroke-dasharray': '8 3 1.6 3' }, rot(A('g', {}), 0, 360, '32s'));
+      A('circle', { cx: C, cy: Y, r: 76, fill: 'none', stroke: '#2c8cff', 'stroke-opacity': '.35', 'stroke-width': '.8', 'stroke-dasharray': '18 7 4 7' }, rot(A('g', {}), 360, 0, '22s'));
       [[90, 250, 300, '7s', true], [90, 110, 150, '9s', false], [80, 330, 20, '5.5s', true]].forEach(function (q, k) {
         var g = rot(A('g', {}), q[4] ? 0 : 360, q[4] ? 360 : 0, q[3]);
-        A('path', { d: arc(q[0], q[1], q[2]), fill: 'none', stroke: k === 1 ? '#ffb070' : '#ff3a25', 'stroke-width': k === 1 ? '1.2' : '1.7', 'stroke-linecap': 'round', class: 'cc-glowline' }, g);
-        var e = q[2] * Math.PI / 180; A('circle', { cx: (C + Math.cos(e) * q[0]).toFixed(1), cy: (Y + Math.sin(e) * q[0]).toFixed(1), r: '1.8', fill: '#fff0d0', class: 'cc-orbit-dot' }, g);
+        A('path', { d: arc(q[0], q[1], q[2]), fill: 'none', stroke: k === 1 ? '#70b0ff' : '#258cff', 'stroke-width': k === 1 ? '1.2' : '1.7', 'stroke-linecap': 'round', class: 'cc-glowline' }, g);
+        var e = q[2] * Math.PI / 180; A('circle', { cx: (C + Math.cos(e) * q[0]).toFixed(1), cy: (Y + Math.sin(e) * q[0]).toFixed(1), r: '1.8', fill: '#d0f0ff', class: 'cc-orbit-dot' }, g);
       });
       var sp = rot(A('g', {}), 0, 360, '60s'), seed = 5;
       function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
-      for (var i = 0; i < 24; i++) { var an = rnd() * 6.283, ds = 70 + rnd() * 26; A('circle', { cx: (C + Math.cos(an) * ds).toFixed(1), cy: (Y + Math.sin(an) * ds).toFixed(1), r: (0.6 + rnd() * 1).toFixed(2), fill: rnd() < 0.7 ? '#ff4a30' : '#ffc27a', class: 'cc-spark cc-spark-' + (i % 4) }, sp); }
+      for (var i = 0; i < 24; i++) { var an = rnd() * 6.283, ds = 70 + rnd() * 26; A('circle', { cx: (C + Math.cos(an) * ds).toFixed(1), cy: (Y + Math.sin(an) * ds).toFixed(1), r: (0.6 + rnd() * 1).toFixed(2), fill: rnd() < 0.7 ? '#308cff' : '#7ac2ff', class: 'cc-spark cc-spark-' + (i % 4) }, sp); }
     }
     // Hologramm-Sockel mit Lichtstrahl
     if (opt.pedestal) {
       var py = 212;
       A('rect', { x: C - 16, y: Y + R - 8, width: 32, height: py - (Y + R - 8), fill: 'url(#' + id + 'b)', class: 'cc-beam' });
-      A('path', { d: 'M' + C + ' ' + (Y + R) + ' V' + py, stroke: '#ffd0a0', 'stroke-width': '.8', opacity: '.8', class: 'cc-beam' });
-      A('ellipse', { cx: C, cy: py + 6, rx: 82, ry: 15, fill: '#060303', stroke: '#3a2416', 'stroke-width': '1' });
-      A('ellipse', { cx: C, cy: py, rx: 82, ry: 15, fill: '#0c0605', stroke: '#e0a050', 'stroke-width': '1.2' });
-      A('ellipse', { cx: C, cy: py, rx: 82, ry: 15, fill: 'none', stroke: '#ff5a30', 'stroke-width': '4', opacity: '.5', filter: 'url(#' + id + 'g)' });
-      A('ellipse', { cx: C, cy: py, rx: 64, ry: 11.5, fill: 'none', stroke: '#ff3a25', 'stroke-width': '1.6', 'stroke-dasharray': '10 5 3 5', class: 'cc-ped-dash cc-glowline' });
-      A('ellipse', { cx: C, cy: py, rx: 46, ry: 8.2, fill: 'none', stroke: '#ffb070', 'stroke-width': '1', 'stroke-dasharray': '2 2', class: 'cc-ped-dash cc-ped-rev' });
+      A('path', { d: 'M' + C + ' ' + (Y + R) + ' V' + py, stroke: '#a0d0ff', 'stroke-width': '.8', opacity: '.8', class: 'cc-beam' });
+      A('ellipse', { cx: C, cy: py + 6, rx: 82, ry: 15, fill: '#030306', stroke: '#16243a', 'stroke-width': '1' });
+      A('ellipse', { cx: C, cy: py, rx: 82, ry: 15, fill: '#05060c', stroke: '#50a0e0', 'stroke-width': '1.2' });
+      A('ellipse', { cx: C, cy: py, rx: 82, ry: 15, fill: 'none', stroke: '#308cff', 'stroke-width': '4', opacity: '.5', filter: 'url(#' + id + 'g)' });
+      A('ellipse', { cx: C, cy: py, rx: 64, ry: 11.5, fill: 'none', stroke: '#258cff', 'stroke-width': '1.6', 'stroke-dasharray': '10 5 3 5', class: 'cc-ped-dash cc-glowline' });
+      A('ellipse', { cx: C, cy: py, rx: 46, ry: 8.2, fill: 'none', stroke: '#70b0ff', 'stroke-width': '1', 'stroke-dasharray': '2 2', class: 'cc-ped-dash cc-ped-rev' });
       A('ellipse', { cx: C, cy: py, rx: 30, ry: 5.4, fill: 'url(#' + id + 'f)', class: 'cc-field-halo' });
       var ticks = ''; for (var tx = -70; tx <= 70; tx += 7) ticks += 'M' + (C + tx) + ' ' + (py + 14 + Math.abs(tx) * -0.04) + ' v4 ';
-      A('path', { d: ticks, stroke: '#ffb070', 'stroke-width': '1.2', opacity: '.6' });
-      A('path', { d: 'M18 ' + (py - 18) + ' l-7 6 l7 6 M182 ' + (py - 18) + ' l7 6 l-7 6', stroke: '#ff3a25', 'stroke-width': '2', fill: 'none', class: 'cc-glowline' });
+      A('path', { d: ticks, stroke: '#70b0ff', 'stroke-width': '1.2', opacity: '.6' });
+      A('path', { d: 'M18 ' + (py - 18) + ' l-7 6 l7 6 M182 ' + (py - 18) + ' l7 6 l-7 6', stroke: '#258cff', 'stroke-width': '2', fill: 'none', class: 'cc-glowline' });
     }
     // Schwebender Kopf
     var fg = A('g', { class: 'cc-rbot-float' });
     var tilt = A('g', { class: 'cc-rbot-tilt', style: 'transform-origin:' + C + 'px ' + Y + 'px' }, fg);
     var orx = R * 1.5, ory = R * 0.3;
-    A('path', { d: 'M' + (C - orx) + ' ' + Y + ' A' + orx + ' ' + ory + ' 0 0 1 ' + (C + orx) + ' ' + Y, fill: 'none', stroke: '#ff5a30', 'stroke-width': '1.6', opacity: '.55', transform: 'rotate(-8 ' + C + ' ' + Y + ')', class: 'cc-glowline' }, tilt);
-    A('circle', { cx: C, cy: Y, r: R + 3, fill: '#ff3a20', opacity: '.35', filter: 'url(#' + id + 'g)' }, tilt);
+    A('path', { d: 'M' + (C - orx) + ' ' + Y + ' A' + orx + ' ' + ory + ' 0 0 1 ' + (C + orx) + ' ' + Y, fill: 'none', stroke: '#308cff', 'stroke-width': '1.6', opacity: '.55', transform: 'rotate(-8 ' + C + ' ' + Y + ')', class: 'cc-glowline' }, tilt);
+    A('circle', { cx: C, cy: Y, r: R + 3, fill: '#208cff', opacity: '.35', filter: 'url(#' + id + 'g)' }, tilt);
     A('circle', { cx: C, cy: Y, r: R, fill: 'url(#' + id + 's)' }, tilt);
     var pl = A('g', { 'clip-path': 'url(#' + id + 'c)' }, tilt);
-    [0.55, 0].forEach(function (k) { A('ellipse', { cx: C, cy: Y - R * 0.05, rx: R * (0.25 + k), ry: R * 1.02, fill: 'none', stroke: '#ff8a50', 'stroke-opacity': '.18', 'stroke-width': '.7' }, pl); });
-    [-0.62, -0.3, 0.55].forEach(function (k) { A('ellipse', { cx: C, cy: Y + R * k, rx: R, ry: R * 0.22, fill: 'none', stroke: '#ff8a50', 'stroke-opacity': '.16', 'stroke-width': '.7' }, pl); });
+    [0.55, 0].forEach(function (k) { A('ellipse', { cx: C, cy: Y - R * 0.05, rx: R * (0.25 + k), ry: R * 1.02, fill: 'none', stroke: '#508cff', 'stroke-opacity': '.18', 'stroke-width': '.7' }, pl); });
+    [-0.62, -0.3, 0.55].forEach(function (k) { A('ellipse', { cx: C, cy: Y + R * k, rx: R, ry: R * 0.22, fill: 'none', stroke: '#508cff', 'stroke-opacity': '.16', 'stroke-width': '.7' }, pl); });
     A('path', { d: 'M' + (C - R) + ' ' + (Y - R * 0.18) + ' Q' + C + ' ' + (Y - R * 0.5) + ' ' + (C + R) + ' ' + (Y - R * 0.18), fill: 'none', stroke: '#000', 'stroke-width': '2.4', opacity: '.8' }, pl);
-    A('ellipse', { cx: C, cy: Y + R * 0.08, rx: R * 0.82, ry: R * 0.48, fill: '#030101', opacity: '.88', stroke: '#4a1c10', 'stroke-width': '1' }, pl);
-    A('rect', { x: C - R * 0.16, y: Y - R + 3, width: R * 0.32, height: 3.4, rx: 1.5, fill: '#ff3a20', class: 'cc-rbot-cap' }, pl);
+    A('ellipse', { cx: C, cy: Y + R * 0.08, rx: R * 0.82, ry: R * 0.48, fill: '#010103', opacity: '.88', stroke: '#10284a', 'stroke-width': '1' }, pl);
+    A('rect', { x: C - R * 0.16, y: Y - R + 3, width: R * 0.32, height: 3.4, rx: 1.5, fill: '#208cff', class: 'cc-rbot-cap' }, pl);
     A('ellipse', { cx: C - R * 0.36, cy: Y - R * 0.5, rx: R * 0.32, ry: R * 0.14, fill: '#fff', opacity: '.13', transform: 'rotate(-28 ' + (C - R * 0.36) + ' ' + (Y - R * 0.5) + ')' }, pl);
     var eyes = A('g', { class: 'cc-rbot-eyes', style: 'transform-origin:' + C + 'px ' + Y + 'px' }, tilt);
     [-1, 1].forEach(function (sd) {
       var ex = C + sd * R * 0.36;
-      A('circle', { cx: ex, cy: Y, r: R * 0.25, fill: '#140303', stroke: '#ff3a20', 'stroke-width': '1.3', class: 'cc-glowline' }, eyes);
-      A('circle', { cx: ex, cy: Y, r: R * 0.185, fill: 'none', stroke: '#ff7a50', 'stroke-width': '.6', opacity: '.8' }, eyes);
+      A('circle', { cx: ex, cy: Y, r: R * 0.25, fill: '#030b14', stroke: '#208cff', 'stroke-width': '1.3', class: 'cc-glowline' }, eyes);
+      A('circle', { cx: ex, cy: Y, r: R * 0.185, fill: 'none', stroke: '#508cff', 'stroke-width': '.6', opacity: '.8' }, eyes);
       var pu = A('g', { class: 'cc-rbot-pupil' }, eyes);
-      A('circle', { cx: ex, cy: Y, r: R * 0.2, fill: '#ff2a10', opacity: '.55', filter: 'url(#' + id + 'g)' }, pu);
+      A('circle', { cx: ex, cy: Y, r: R * 0.2, fill: '#108cff', opacity: '.55', filter: 'url(#' + id + 'g)' }, pu);
       A('circle', { cx: ex, cy: Y, r: R * 0.16, fill: 'url(#' + id + 'p)' }, pu);
     });
-    A('path', { d: 'M' + (C - R * 0.08) + ' ' + (Y + R * 0.02) + ' L' + C + ' ' + (Y + R * 0.16) + ' L' + (C + R * 0.08) + ' ' + (Y + R * 0.02), fill: 'none', stroke: '#ffc070', 'stroke-width': '1.6', 'stroke-linejoin': 'round', class: 'cc-glowline' }, tilt);
-    A('circle', { cx: C, cy: Y + R * 0.4, r: '1.8', fill: '#ffd08a', class: 'cc-rbot-mouth' }, tilt);
-    A('circle', { cx: C, cy: Y, r: R, fill: 'none', stroke: '#ff5a30', 'stroke-width': '4', opacity: '.45', filter: 'url(#' + id + 'g)' }, tilt);
+    A('path', { d: 'M' + (C - R * 0.08) + ' ' + (Y + R * 0.02) + ' L' + C + ' ' + (Y + R * 0.16) + ' L' + (C + R * 0.08) + ' ' + (Y + R * 0.02), fill: 'none', stroke: '#70c0ff', 'stroke-width': '1.6', 'stroke-linejoin': 'round', class: 'cc-glowline' }, tilt);
+    A('circle', { cx: C, cy: Y + R * 0.4, r: '1.8', fill: '#8ad0ff', class: 'cc-rbot-mouth' }, tilt);
+    A('circle', { cx: C, cy: Y, r: R, fill: 'none', stroke: '#308cff', 'stroke-width': '4', opacity: '.45', filter: 'url(#' + id + 'g)' }, tilt);
     A('circle', { cx: C, cy: Y, r: R, fill: 'none', stroke: 'url(#' + id + 'r)', 'stroke-width': '1.6' }, tilt);
-    A('path', { d: 'M' + (C + orx) + ' ' + Y + ' A' + orx + ' ' + ory + ' 0 0 1 ' + (C - orx) + ' ' + Y, fill: 'none', stroke: '#ffb070', 'stroke-width': '2', transform: 'rotate(-8 ' + C + ' ' + Y + ')', class: 'cc-glowline' }, tilt);
+    A('path', { d: 'M' + (C + orx) + ' ' + Y + ' A' + orx + ' ' + ory + ' 0 0 1 ' + (C - orx) + ' ' + Y, fill: 'none', stroke: '#70b0ff', 'stroke-width': '2', transform: 'rotate(-8 ' + C + ' ' + Y + ')', class: 'cc-glowline' }, tilt);
     host.appendChild(S);
     host.classList.add('cc-rbot-host');
     botLife(host);
@@ -575,7 +575,7 @@
         p.y -= p.v * dt; if (p.y < -0.02) { p.y = 1.02; p.x = Math.random(); }
         var x = (p.x + Math.sin(t * 0.6 + p.ph) * 0.01) * w, y = p.y * h;
         var a = (0.25 + 0.5 * Math.max(0, Math.sin(t * 1.7 + p.ph))) * Math.min(1, p.y * 1.4);
-        ctx.fillStyle = p.red ? 'rgba(255,80,40,' + a + ')' : 'rgba(255,190,110,' + a + ')';
+        ctx.fillStyle = p.red ? 'rgba(40,140,255,' + a + ')' : 'rgba(110,190,255,' + a + ')';
         ctx.beginPath(); ctx.arc(x, y, p.r * dpr, 0, 6.2832); ctx.fill();
       }
     };

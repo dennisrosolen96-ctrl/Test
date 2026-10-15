@@ -1,0 +1,171 @@
+/* RV Studio – Theme „Blue Glass“: gleicher Aufbau, neue Farben und Formen.
+   Abgerundete Glasflächen statt Panzerrahmen, Blau als Akzent, warme Lichter als Kontrast. */
+:root {
+  --bg-0:#040914; --bg-1:#081428; --glass:rgba(22,36,64,.46); --glass-2:rgba(30,48,84,.52);
+  --line:rgba(150,190,255,.20); --line-hi:rgba(170,210,255,.38);
+  --blue:#3d9bff; --blue-hi:#7cc4ff; --blue-glow:rgba(61,155,255,.55);
+  --txt:#eef4ff; --muted:#a9b8d4; --gold:#ffc46a;
+  --cc-font:'Segoe UI','Inter','Roboto','Helvetica Neue',system-ui,-apple-system,sans-serif;
+  --cc-text:var(--txt); --cc-muted:var(--muted); --cc-cream:var(--txt);
+}
+
+/* ---------- Hintergrund ---------- */
+body:has(#home:not(.hidden)), body:has(#aiChat:not(.hidden)) {
+  background:
+    radial-gradient(ellipse 60% 35% at 50% 38%, rgba(40,90,180,.22), transparent 70%),
+    radial-gradient(ellipse 40% 30% at 8% 70%, rgba(60,110,200,.14), transparent 70%),
+    radial-gradient(ellipse 40% 30% at 95% 55%, rgba(255,170,90,.06), transparent 70%),
+    linear-gradient(180deg, var(--bg-1), var(--bg-0) 60%) fixed !important;
+  color:var(--txt);
+}
+.cc-frame, .cc-embers, .cc-glint, .cc-edge-strip, .cc-edge-corner { display:none !important; }
+body:has(#home:not(.hidden)) main.wrap { padding:22px 16px 128px !important; max-width:1000px; }
+body:has(#aiChat:not(.hidden)) #aiChat { padding:22px 16px 128px !important; max-width:1000px; }
+
+/* ---------- Glasflächen statt Metallrahmen ---------- */
+.hud-frame { display:none !important; }
+.v11-hud { clip-path:none !important; }
+.v11 { gap:12px; }
+.v11-panel {
+  border-radius:24px; padding:18px 16px 16px !important;
+  background:linear-gradient(160deg, rgba(36,56,98,.48), rgba(14,24,46,.55)) !important;
+  border:1px solid var(--line) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10), inset 0 0 30px rgba(80,140,255,.05), 0 10px 30px rgba(0,0,0,.35);
+  -webkit-backdrop-filter:blur(14px) saturate(1.2); backdrop-filter:blur(14px) saturate(1.2);
+}
+.v11-tile, .v11-q, .v11-m, .v11-cat, .v11-s2, .v11-card, .cc-side, .cc-chat .cc-q, .v11-pill {
+  border:1px solid var(--line) !important;
+  background:linear-gradient(160deg, rgba(48,70,115,.42), rgba(16,26,50,.50)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 6px 18px rgba(0,0,0,.28);
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+}
+.v11-tile, .v11-q { border-radius:18px; }
+.v11-m, .v11-s2, .v11-cat { border-radius:16px; }
+.v11-card { border-radius:16px; }
+.cc-side { border-radius:20px; }
+.cc-chat .cc-q { border-radius:14px; }
+.v11-pill { border-radius:999px; }
+
+/* ---------- Typografie ---------- */
+.v11, .cc-chat, .lux-bottomnav { font-family:var(--cc-font); }
+.v11-greet b { background:none !important; -webkit-background-clip:border-box; background-clip:border-box; color:var(--txt) !important;
+  filter:none !important; font:600 30px/1.1 var(--cc-font) !important; letter-spacing:0 !important; text-shadow:0 0 14px rgba(120,180,255,.25); }
+.v11-greet span { color:#b8c8e6 !important; font-family:var(--cc-font) !important; }
+.v11-title { color:var(--txt) !important; text-shadow:none !important; letter-spacing:.01em !important; font-family:var(--cc-font) !important; font-weight:600 !important; }
+.v11-sub { color:var(--muted) !important; font-family:var(--cc-font) !important; }
+.v11 *, .cc-chat * { font-family:var(--cc-font); }
+
+/* ---------- Abschnitts-Symbole: blaue Leuchtkreise ---------- */
+.v11-ph .hx, .v11-ai .v11-ph .hx, .cc-chat .v11-ph .hx {
+  clip-path:none !important; border-radius:50% !important; width:38px !important; height:38px !important; padding:8px !important;
+  color:#e8f3ff !important; border:1px solid rgba(140,200,255,.55) !important;
+  background:radial-gradient(circle at 50% 40%, rgba(80,160,255,.55), rgba(20,50,110,.6) 70%) !important;
+  box-shadow:0 0 14px var(--blue-glow), inset 0 0 8px rgba(160,210,255,.4) !important; filter:none !important;
+}
+
+/* ---------- Kopfzeile ---------- */
+.v11-pill .dot { filter:drop-shadow(0 0 6px var(--blue)); }
+.v11-pill span { color:var(--txt) !important; }
+.v11-bell { border:1px solid var(--line-hi) !important; background:radial-gradient(circle at 50% 30%, rgba(60,90,150,.6), rgba(10,18,36,.8)) !important;
+  box-shadow:0 0 12px rgba(61,155,255,.25), inset 0 1px 0 rgba(255,255,255,.12) !important; color:var(--txt) !important; }
+.v11-bell.has-tasks i { background:#ff4d5e !important; box-shadow:0 0 8px #ff4d5e !important; }
+
+/* ---------- Kacheln und Schnellzugriff ---------- */
+.v11-tile .ic, .v11-tile:first-child .ic, .v11-q .ic, .v11-q.red .ic { color:#f4f8ff !important; filter:drop-shadow(0 0 6px rgba(140,200,255,.55)) !important; }
+.v11-tile .lb, .v11-q .lb { color:var(--txt) !important; }
+.v11-tile .bd { background:var(--blue) !important; box-shadow:0 0 10px var(--blue) !important; color:#fff !important; }
+.v11-q.red { background:linear-gradient(160deg, rgba(48,70,115,.42), rgba(16,26,50,.50)) !important; }
+
+/* ---------- Verkaufs-Übersicht ---------- */
+.v11-seg { border:1px solid var(--line-hi) !important; background:rgba(10,20,40,.55) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.08) !important; }
+.v11-seg button { color:var(--muted) !important; }
+.v11-seg button + button { border-left-color:rgba(150,190,255,.18) !important; }
+.v11-seg button[aria-pressed='true'] { color:#fff !important; background:radial-gradient(ellipse at 50% 0, rgba(70,150,255,.55), rgba(20,60,140,.55)) !important;
+  box-shadow:inset 0 0 0 1px rgba(150,210,255,.8), 0 0 12px var(--blue-glow) !important; animation:none !important; }
+.v11-m .mi, .v11-s2 .mi { border:1px solid rgba(255,196,106,.35) !important; border-radius:12px !important;
+  background:radial-gradient(circle at 30% 20%, rgba(255,200,120,.16), rgba(14,22,40,.7) 70%) !important; color:var(--gold) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08) !important; }
+.v11-m .mi .v11-ico, .v11-s2 .mi .v11-ico { filter:drop-shadow(0 0 4px rgba(255,190,90,.7)) !important; }
+.v11-m .lbl, .v11-s2 .lbl { color:#c6d3ea !important; }
+.v11-m .val, .v11-s2 .val { color:#fff !important; text-shadow:none !important; font-weight:600 !important; }
+.v11-m .dl:not(.nil):not(.neg) { color:#35e0a0 !important; text-shadow:0 0 6px rgba(53,224,160,.45) !important; }
+.v11-m svg.spark polyline { stroke:#5fb4ff !important; filter:drop-shadow(0 0 3px rgba(80,170,255,.95)) !important; }
+.v11-m svg.spark stop { stop-color:#3d9bff !important; }
+.v11-cat .hd b { color:var(--txt) !important; }
+.v11-cat .nm { color:#d6e2f6; }
+.v11-cat .tr { background:rgba(120,160,230,.16) !important; border-radius:6px !important; }
+.v11-cat .tr s, .v11-cat .row:first-child .tr s { background:linear-gradient(90deg,#2f8cff,#8fd0ff) !important; box-shadow:0 0 8px rgba(80,170,255,.6) !important; border-radius:6px !important; }
+.v11-cat .pc, .v11-cat .row:first-child .pc { color:#dbe8ff !important; }
+
+/* ---------- KI-Assistent ---------- */
+.v11-ai .on, .cc-chat-state .on { color:var(--txt) !important; }
+.v11-modes button { border:1px solid var(--line-hi) !important; background:rgba(14,24,46,.6) !important; color:var(--txt) !important; }
+.v11-bubble { border:1px solid var(--line-hi) !important; border-radius:16px !important;
+  background:linear-gradient(160deg, rgba(40,60,100,.55), rgba(16,26,50,.6)) !important; color:var(--txt) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1) !important; }
+.v11-bubble span { color:#a9b8d4 !important; }
+.v11-bubble::before { background:rgba(30,48,84,.95) !important; border-color:var(--line-hi) !important; }
+.v11-prompts button, .cc-pills .chat-chip { border:1px solid var(--line-hi) !important; border-radius:12px !important;
+  background:linear-gradient(160deg, rgba(40,62,104,.5), rgba(14,24,46,.6)) !important; color:var(--txt) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08) !important; }
+.v11-prompts .v11-ico { color:#d8e8ff !important; }
+body:has(#home:not(.hidden)) .v11-ai .rv-crafted-chat textarea, .cc-chat #chatInput {
+  border:1px solid var(--line-hi) !important; border-radius:999px !important; background:rgba(10,18,36,.7) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06) !important; color:var(--txt) !important; }
+body:has(#home:not(.hidden)) .v11-ai .rv-crafted-chat-icon, .cc-mic {
+  border:1px solid rgba(140,200,255,.6) !important; background:radial-gradient(circle at 50% 35%, rgba(70,150,255,.55), rgba(16,40,90,.75)) !important;
+  box-shadow:0 0 14px var(--blue-glow) !important; color:#fff !important; }
+body:has(#home:not(.hidden)) .v11-ai .rv-crafted-chat #homeAiSend, .cc-send {
+  border:1px solid rgba(255,255,255,.45) !important; background:radial-gradient(circle at 50% 35%, rgba(255,255,255,.35), rgba(60,90,150,.6)) !important;
+  box-shadow:0 0 14px rgba(140,190,255,.45), inset 0 1px 0 rgba(255,255,255,.4) !important; color:#fff !important; animation:none !important; }
+
+/* ---------- Einblicke: warmer Glanz wie in der Vorlage ---------- */
+.v11-card { background:linear-gradient(150deg, rgba(110,80,50,.38), rgba(30,30,44,.55) 60%, rgba(16,24,44,.6)) !important; border-color:rgba(255,210,150,.22) !important; }
+.v11-card b { color:#fff !important; }
+.v11-card p { color:#c9d3e6 !important; }
+.v11-card p em { color:#ffb15c !important; }
+.v11-card .ci { color:#fff !important; filter:drop-shadow(0 0 4px rgba(255,200,130,.6)) !important; }
+.v11-card .ch, .v11-ins .more svg { color:#d8e4ff !important; }
+.v11-ins .more { color:var(--txt) !important; }
+.v15-more-tools { border:1px solid var(--line) !important; border-radius:16px !important; background:var(--glass) !important; color:var(--txt) !important; }
+
+/* ---------- Menü unten: Glas-Leiste ---------- */
+.lux-bottomnav { left:50% !important; transform:translateX(-50%) !important; width:min(calc(100% - 24px), 980px) !important; bottom:10px !important;
+  border-radius:36px !important; border:1px solid var(--line-hi) !important;
+  background:linear-gradient(160deg, rgba(40,60,104,.62), rgba(12,22,44,.78)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14), 0 10px 30px rgba(0,0,0,.5) !important;
+  -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+  padding:6px 10px calc(6px + env(safe-area-inset-bottom,0px)) !important; overflow:visible !important; }
+.lux-bottomnav > .hud-frame { display:none !important; }
+.lux-bottomnav button:not(.orb) { min-height:58px !important; border-radius:24px !important; color:#dfe8f8 !important; }
+.lux-bottomnav button span { color:inherit !important; font-family:var(--cc-font) !important; font-size:12.5px !important; text-shadow:none !important; }
+.lux-bottomnav button:not(.orb) svg { color:inherit !important; filter:none !important; }
+.lux-bottomnav button:not(.orb)::before { clip-path:none !important; border-radius:22px; inset:3px 4px !important;
+  background:radial-gradient(ellipse 80% 90% at 50% 60%, rgba(60,150,255,.55), rgba(30,90,200,.25) 70%) !important;
+  box-shadow:inset 0 0 0 1px rgba(140,200,255,.55), 0 0 16px rgba(61,155,255,.45) !important; }
+.lux-bottomnav button.selected { color:#fff !important; }
+.lux-bottomnav button.selected svg { color:#fff !important; filter:drop-shadow(0 0 6px #6fb8ff) !important; }
+.lux-bottomnav button.selected span { color:#fff !important; text-shadow:0 0 8px rgba(120,190,255,.8) !important; }
+.lux-bottomnav button:not(.orb).selected::after { display:none !important; }
+.lux-bottomnav button.cc-tap:not(.orb) svg, .lux-bottomnav button.cc-tap:not(.orb) span { color:#fff !important; }
+.lux-bottomnav .orb { margin-top:-34px !important; }
+.lux-bottomnav .orb svg.cc-rbot { filter:drop-shadow(0 0 10px rgba(61,155,255,.7)) !important; }
+
+/* ---------- KI-Chat-Seite ---------- */
+.cc-side h2 { color:var(--txt) !important; text-shadow:none !important; text-transform:none !important; letter-spacing:0 !important; font-weight:600 !important; }
+.cc-side h2 .v11-ico { color:var(--blue-hi) !important; filter:drop-shadow(0 0 4px var(--blue)) !important; }
+.cc-q .ic { border:1px solid rgba(255,196,106,.35) !important; border-radius:10px !important; color:var(--gold) !important; background:rgba(14,22,40,.6) !important; }
+.cc-q b { color:#fff !important; } .cc-q small { color:var(--muted) !important; }
+.cc-q > .v11-ico { color:#cfe0ff !important; }
+.cc-chat .chat-msg.assistant div { background:linear-gradient(160deg, rgba(40,60,100,.55), rgba(16,26,50,.6)) !important; border:1px solid var(--line-hi) !important; border-radius:16px !important; }
+.cc-chat .chat-msg.user div { background:linear-gradient(160deg, rgba(60,140,255,.55), rgba(30,80,180,.55)) !important; border:1px solid rgba(150,210,255,.6) !important; border-radius:16px !important; box-shadow:0 0 12px rgba(61,155,255,.3) !important; }
+.cc-clear { color:var(--muted) !important; }
+.cc-attach { color:#c3d2ea !important; }
+
+/* Bildreste aus dem alten Design ins Blau drehen */
+.v15-globe-wrap .v11-globe, .v11-pill .dot, .v11-avatar { filter:hue-rotate(200deg) saturate(1.15) !important; }
+.v11-pill { width:236px !important; }
+.v11-pill span { font-size:13px !important; line-height:1.25 !important; }
+.v11-ai .v11-ph { padding-right:310px !important; }
+@media(max-width:999px) { .v11-ai .v11-ph { padding-right:290px !important; } }
+html:has(#home:not(.hidden)), html:has(#aiChat:not(.hidden)) { background:#040914; }
