@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="/perf.css">
 <link rel="stylesheet" href="/anim.css">
 <link rel="stylesheet" href="/bestand.css">
+<link rel="stylesheet" href="/studio.css">
 <link rel="preload" href="/fonts/command-sans-regular.otf" as="font" type="font/otf" crossorigin>
 <link rel="preload" href="/fonts/command-sans-bold.otf" as="font" type="font/otf" crossorigin>
 </head>
@@ -581,190 +582,177 @@
 <button type="button" id="homeAiClear" class="hidden" aria-hidden="true" tabindex="-1">
 </button>
 </section>
-<div class="steps hidden" id="steps">
-<div class="step active">01 / FOTOS</div>
-<div class="step">02 / OPENAI</div>
-<div class="step">03 / STUDIO</div>
-<div class="step">04 / PREISE</div>
+<div class="steps sx-head hidden" id="steps">
+<div class="sx-top">
+<span class="sx-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+<div class="sx-greet"><h1>Studio</h1><p id="sxSubtitle">Neuer Artikel</p></div>
+<button type="button" class="sx-pill" id="sxNewArticle"><span class="sx-pill-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span class="sx-pill-tx"><b>Neuer Artikel</b><small>Studio leeren</small></span></button>
 </div>
-<section id="s0" class="hidden">
-<div class="eyebrow">Schritt 1 von 4 · Quick Capture</div>
-<h1>Fotos rein. KI macht den Rest.</h1>
-<p class="muted">Du gibst nur Dinge ein, die die KI nicht zuverlässig wissen kann: EK, Maße, Zustand und Mängel.</p>
-
-<div class="panel">
-  <label class="dropzone" for="upload">
-<span>＋</span>
-<b>PRODUKTFOTOS HINZUFÜGEN</b>
-<small>Front · Rücken · Labels · Details</small>
+<nav class="sx-steps" aria-label="Schritte">
+<button type="button" class="step active" data-sx-step="0"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span class="lb">Fotos</span><small>Schritt 1</small></button>
+<button type="button" class="step" data-sx-step="1"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M5 17l.8 2 2 .8-2 .8L5 23l-.8-2.4-2-.8 2-.8zM19 15l.6 1.4 1.4.6-1.4.6L19 19l-.6-1.4-1.4-.6 1.4-.6z"/></svg></span><span class="lb">Details<span class="lx"> &amp; Texte</span></span><small>Schritt 2</small></button>
+<button type="button" class="step" data-sx-step="2"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg></span><span class="lb">Bilder</span><small>Schritt 3</small></button>
+<button type="button" class="step" data-sx-step="3"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><span class="lb">Preis<span class="lx"> &amp; Online</span></span><small>Schritt 4</small></button>
+</nav>
+</div>
+<section id="s0" class="hidden sx">
+<div class="sx-split">
+<section class="sx-panel sx-photos">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Produktfotos</h2><span class="sx-sub">Front · Rücken · Etikett · Details</span></div></div>
+<label class="sx-drop" for="upload" id="sxDrop">
+<span class="sx-drop-orb"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span>
+<b>Fotos hinzufügen</b>
+<small>Antippen oder hierher ziehen · das erste Foto wird zum Titelbild</small>
 </label>
-  <input class="hidden" id="upload" type="file" accept="image/*" multiple>
-  <div class="photo-grid" id="photos">
-</div>
-  <p class="muted" id="photoCount">
-</p>
-</div>
-
-<div class="panel">
-  <h2>NUR DEINE ANGABEN</h2>
-  <div class="manual-grid">
-    <div>
-<label class="field">Einkaufspreis (€)</label>
-<input class="inp" id="cost" type="number" step="0.01" min="0" placeholder="12,00">
-</div>
-    <div>
-<label class="field">Maße</label>
-<input class="inp" id="measurements" placeholder="z. B. Brust 51 · Länge 70 cm">
-</div>
-  </div>
-
-  <label class="field">Zustand · <span id="conditionLabel">noch nicht gewählt</span>
-</label>
-  <div class="condition-scale" id="conditionScale">
-    <button type="button" data-v="1">1</button>
-<button type="button" data-v="2">2</button>
-<button type="button" data-v="3">3</button>
-<button type="button" data-v="4">4</button>
-<button type="button" data-v="5">5</button>
-    <button type="button" data-v="6">6</button>
-<button type="button" data-v="7">7</button>
-<button type="button" data-v="8">8</button>
-<button type="button" data-v="9">9</button>
-<button type="button" data-v="10">10</button>
-  </div>
-  <input id="condition" class="hidden" value="">
-
-  <label class="field">Mängel</label>
-  <textarea class="inp" id="notes" placeholder="Nur vorhandene Mängel eintragen – ansonsten leer lassen"></textarea>
-
-  <button class="btn wide ai-primary" id="aiBtn">✦ ARTIKEL MIT KI ERKENNEN</button>
-  <p class="status" id="aiStatus">
-</p>
-  <p class="ai-note">Die KI erkennt Marke, Artikelart, Farbe, Größe/Material/Herstellungsland nur soweit auf den Fotos belegbar. Sie darf deine Maße, deinen Zustand und deine Mängel nicht verändern.</p>
-</div>
-
-<!-- Hidden compatibility fields; filled by AI -->
-<input class="hidden" id="sku">
-<input class="hidden" id="brand">
-<input class="hidden" id="size">
-<input class="hidden" id="category">
-<input class="hidden" id="chest">
-<input class="hidden" id="length">
-<input class="hidden" id="material">
-<input class="hidden" id="color">
-<input class="hidden" id="country">
-<input class="hidden" id="model">
+<input class="hidden" id="upload" type="file" accept="image/*" multiple>
+<input class="hidden" id="sxCamera" type="file" accept="image/*" capture="environment">
+<div class="sx-row"><button type="button" class="sx-btn" id="sxCameraBtn"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Kamera</button><span class="sx-hint" id="photoCount"></span></div>
+<div class="sx-thumbs" id="photos"></div>
 </section>
-<section id="s1" class="hidden">
-<div class="eyebrow">Schritt 2 von 4 · KI-Ergebnis</div>
-<h1>Erkannt. Kurz prüfen.</h1>
-<p class="muted">Nur korrigieren, wenn die KI etwas falsch gelesen hat. Deine manuellen Angaben bleiben unverändert.</p>
-<div class="panel">
-<h2>ERKANNTE PRODUKTDATEN</h2>
-<div class="detected-grid" id="detectedGrid">
+<section class="sx-panel sx-cover-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Titelbild</h2><span class="sx-sub">Automatisch freigestellt – passend zum Bestand</span></div></div>
+<div class="sx-cover" id="sxCover"></div>
+<div class="sx-row sx-center"><button type="button" class="sx-btn" id="sxCoverRedo">Neu erstellen</button><button type="button" class="sx-btn" data-sx-go="2">Anpassen</button></div>
+</section>
 </div>
-<p class="ai-note">„Nicht erkannt“ bedeutet bewusst: Die KI konnte es auf den Fotos nicht sicher belegen.</p>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13 7 4 4"/></svg></span><div class="sx-tt"><h2 class="sx-title">Deine Angaben</h2><span class="sx-sub">Nur was die KI nicht sicher wissen kann</span></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Einkaufspreis</span><span class="sx-input-wrap"><input class="inp" id="cost" type="number" inputmode="decimal" step="0.01" min="0" placeholder="12,00"><i>€</i></span></label>
+<label class="sx-field"><span>Maße</span><input class="inp" id="measurements" placeholder="z. B. Brust 51 · Länge 70 cm"></label>
 </div>
-<div class="panel">
-<h2>Deine Beschreibungsvorlage</h2>
-<textarea class="inp" id="template" style="min-height:165px" placeholder="So sollen meine Listings aussehen..."></textarea>
-<p class="muted">Deine Vorlage wird auf diesem Gerät gespeichert und für neue Artikel wiederverwendet. Die KI verwendet deine RV-Struktur und erfindet keine Maße.</p>
-<button class="btn secondary" id="saveTemplate">Vorlage merken</button>
+<div class="sx-field"><span>Zustand · <b id="conditionLabel">noch nicht gewählt</b></span>
+<div class="condition-scale sx-scale" id="conditionScale">
+<button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button><button type="button" data-v="8">8</button><button type="button" data-v="9">9</button><button type="button" data-v="10">10</button>
+</div></div>
+<input id="condition" class="hidden" value="">
+<label class="sx-field"><span>Mängel</span><textarea class="inp" id="notes" placeholder="Nur vorhandene Mängel eintragen – sonst „Keine Mängel“ antippen"></textarea></label>
+<div class="sx-chips" id="sxDefectChips"><button type="button" data-defect="Keine Mängel">Keine Mängel</button><button type="button" data-defect="Leichte Gebrauchsspuren">Gebrauchsspuren</button><button type="button" data-defect="Leichtes Pilling">Pilling</button><button type="button" data-defect="Kleiner Fleck">Kleiner Fleck</button><button type="button" data-defect="Leicht verwaschen">Verwaschen</button><button type="button" data-defect="Kleines Loch">Kleines Loch</button></div>
+<div class="sx-ai-row">
+<button type="button" class="sx-cta" id="aiBtn"><span class="sx-cta-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><span class="sx-cta-tx"><b>Mit KI erkennen</b><small>Marke, Größe, Texte für alle 3 Plattformen</small></span></button>
+<button type="button" class="sx-btn" id="sxNoAi">Ohne KI weiter</button>
 </div>
-<div class="panel">
-<h2>KI VERBINDEN</h2>
-<p class="muted">Hier verbindest du RV Studio mit deiner KI. Für eine sichere Einrichtung bleibt der eigentliche API-Schlüssel auf dem Server – nicht in der App.</p>
-<label class="field">KI-Anbieter</label>
-<select class="inp" id="aiProvider">
-<option value="openai">OpenAI</option>
-<option value="claude">Claude</option>
-</select>
-<label class="field">KI-Server (HTTPS)</label>
-<input class="inp" id="endpoint" placeholder="https://deine-rv-app.pages.dev">
-<label class="field">RV-Studio-Passwort</label>
-<input class="inp" id="token" type="password" placeholder="Cloud-/App-Passwort">
-<div class="notice">Empfohlen: dieselbe Cloud-App als KI-Server verwenden. Dann brauchst du nur deine App-URL und dein RV-Passwort. Ein direktes Login mit OpenAI/Claude-Konto in der HTML-App ist nicht vorgesehen – sicher ist die Verbindung über deinen Server.</div>
+<p class="status sx-status" id="aiStatus"></p>
+<p class="ai-note sx-note">Die KI erkennt Marke, Artikelart, Farbe, Größe, Material und Herstellungsland nur, soweit es auf den Fotos belegbar ist. Deine Maße, dein Zustand und deine Mängel bleiben unverändert.</p>
+</section>
+</section>
+<section id="s1" class="hidden sx">
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Produktdaten</h2><span class="sx-sub">Von der KI erkannt – antippen zum Korrigieren</span></div><span class="sx-score" id="sxDataScore"></span></div>
+<div class="sx-fields sx-four">
+<label class="sx-field"><span>Marke</span><input class="inp" id="brand" list="sxBrandList" placeholder="z. B. Nike"></label>
+<label class="sx-field"><span>Modell / Linie</span><input class="inp" id="model" placeholder="z. B. Tech Fleece"></label>
+<label class="sx-field"><span>Kategorie</span><input class="inp" id="category" list="sxCatList" placeholder="z. B. Jacken"></label>
+<label class="sx-field"><span>Größe</span><input class="inp" id="size" placeholder="z. B. M"></label>
+<label class="sx-field"><span>Farbe</span><input class="inp" id="color" placeholder="z. B. Schwarz"></label>
+<label class="sx-field"><span>Material</span><input class="inp" id="material" placeholder="laut Etikett"></label>
+<label class="sx-field"><span>Made in</span><input class="inp" id="country" placeholder="laut Etikett"></label>
+<label class="sx-field"><span>Artikelnummer</span><span class="sx-input-wrap"><input class="inp" id="sku" placeholder="RV-0001"><button type="button" class="sx-mini" id="sxSkuGen" title="Nummer erzeugen">Auto</button></span></label>
 </div>
-<div class="panel">
-<h2>Listing-Texte</h2>
-<div class="platforms" id="listingTabs">
+<input class="hidden" id="chest"><input class="hidden" id="length">
+<datalist id="sxCatList"><option value="Jacken"><option value="Hoodies &amp; Pullover"><option value="Shirts &amp; Tops"><option value="Hosen"><option value="Kleider &amp; Röcke"><option value="Sneaker &amp; Schuhe"><option value="Accessoires"><option value="Taschen"></datalist>
+<datalist id="sxBrandList"></datalist>
+<div id="detectedGrid" hidden></div>
+</section>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h9"/></svg></span><div class="sx-tt"><h2 class="sx-title">Listing-Texte</h2><span class="sx-sub">Pro Plattform optimiert</span></div><button type="button" class="sx-btn" id="sxLocalTexts">Ohne KI erstellen</button></div>
+<div class="platforms sx-seg" id="listingTabs" role="group" aria-label="Plattform">
 <button class="tab on" data-platform="ebay">eBay</button>
 <button class="tab" data-platform="vinted">Vinted</button>
 <button class="tab" data-platform="instagram">Instagram</button>
 </div>
-<label class="field">Titel</label>
-<input class="inp" id="listingTitle">
-<label class="field">Beschreibung</label>
-<textarea class="inp" id="listingDescription" style="min-height:190px"></textarea>
-<div class="row" style="margin-top:12px">
-<button class="btn secondary" id="copyTitle">Titel kopieren</button>
-<button class="btn secondary" id="copyDescription">Beschreibung kopieren</button>
+<label class="sx-field"><span>Titel <em class="sx-count" id="sxTitleCount"></em></span><input class="inp" id="listingTitle"></label>
+<div class="sx-checks" id="sxTitleChecks"></div>
+<label class="sx-field"><span>Beschreibung <em class="sx-count" id="sxDescCount"></em></span><textarea class="inp" id="listingDescription"></textarea></label>
+<div class="sx-chips sx-tags" id="sxTags"></div>
+<div class="sx-row">
+<button type="button" class="sx-btn" id="copyTitle">Titel kopieren</button>
+<button type="button" class="sx-btn" id="copyDescription">Beschreibung kopieren</button>
+<button type="button" class="sx-btn" id="sxCopyAll">Alles kopieren</button>
+</div>
+</section>
+<details class="sx-panel sx-fold">
+<summary class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span><div class="sx-tt"><h2 class="sx-title">Beschreibungsvorlage</h2><span class="sx-sub">Dein Stil für alle Texte</span></div><svg class="sx-ico sx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+<textarea class="inp" id="template" placeholder="So sollen meine Listings aussehen..."></textarea>
+<p class="sx-hint">Wird auf diesem Gerät gespeichert und für neue Artikel wiederverwendet. Maße werden nie erfunden.</p>
+<button type="button" class="sx-btn" id="saveTemplate">Vorlage merken</button>
+</details>
+<details class="sx-panel sx-fold">
+<summary class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M9 7H6a4 4 0 0 0 0 8h3M15 7h3a4 4 0 0 1 0 8h-3M8 11h8"/></svg></span><div class="sx-tt"><h2 class="sx-title">KI-Verbindung</h2><span class="sx-sub">Anbieter, Server und Passwort</span></div><svg class="sx-ico sx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>KI-Anbieter</span><select class="inp" id="aiProvider"><option value="openai">OpenAI</option><option value="claude">Claude</option></select></label>
+<label class="sx-field"><span>KI-Server (HTTPS)</span><input class="inp" id="endpoint" placeholder="https://deine-rv-app.pages.dev"></label>
+<label class="sx-field"><span>RV-Studio-Passwort</span><input class="inp" id="token" type="password" placeholder="Cloud-/App-Passwort"></label>
+</div>
+<p class="sx-hint">Der API-Schlüssel bleibt auf dem Server. In der App brauchst du nur App-URL und RV-Passwort.</p>
+</details>
+</section>
+<section id="s2" class="hidden sx">
+<section class="sx-panel sx-studio">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Titelbild-Studio</h2><span class="sx-sub">Freigestellt auf Studio-Hintergrund – wie im Bestand</span></div></div>
+<div class="sx-studio-body">
+<div class="sx-cover sx-cover-lg" id="sxCoverLarge"></div>
+<div class="sx-studio-ctrl">
+<div class="sx-field"><span>Hintergrund</span><div class="sx-swatches" id="sxSwatches"></div></div>
+<div class="sx-field"><span>Ausgangsfoto</span><div class="sx-srcs" id="sxSources"></div></div>
+<div class="sx-field"><span>Freisteller</span><div class="sx-seg" id="sxEngine" role="group" aria-label="Freisteller">
+<button type="button" data-engine="auto">Automatisch</button><button type="button" data-engine="server">KI-Server</button><button type="button" data-engine="device">Auf dem Gerät</button><button type="button" data-engine="original">Original</button>
+</div></div>
+<label class="sx-field" id="sxTolWrap"><span>Feinheit <em class="sx-count" id="sxTolVal"></em></span><input type="range" id="sxTol" min="0" max="40" step="1" value="0"></label>
+<label class="sx-switch"><input type="checkbox" id="sxAutoCover"><span></span>Titelbild nach dem Hochladen automatisch erstellen</label>
+<div class="sx-row"><button type="button" class="sx-cta sx-cta-sm" id="sxCoverMake"><span class="sx-cta-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><span class="sx-cta-tx"><b>Titelbild erstellen</b></span></button><button type="button" class="sx-btn" id="sxCoverRemove">Entfernen</button></div>
+<p class="sx-hint" id="sxCoverStatus"></p>
 </div>
 </div>
 </section>
-<section id="s2" class="hidden">
-<div class="eyebrow">Schritt 3 von 4</div>
-<h1>Jedes Detail zählt.</h1>
-<p class="muted">Öffne jedes Foto im Vollbild. Zuschnitt, Bildposition und Filter sind für jedes Foto einzeln einstellbar.</p>
-<div class="panel">
-<div class="photo-grid" id="editPhotos">
-</div>
-<button class="btn secondary wide" id="addMore">+ Weitere Fotos hinzufügen</button>
-</div>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg></span><div class="sx-tt"><h2 class="sx-title">Alle Fotos</h2><span class="sx-sub">Reihenfolge, Zuschnitt und Filter</span></div><button type="button" class="sx-btn" id="sxAutoEnhance">Automatisch optimieren</button></div>
+<div class="sx-thumbs sx-thumbs-edit" id="editPhotos"></div>
+<button type="button" class="sx-btn" id="addMore">+ Weitere Fotos</button>
 </section>
-<section id="s3" class="hidden">
-<div class="eyebrow">Schritt 4 von 4</div>
-<h1>Drei Plattformen. Drei Preise.</h1>
-<p class="muted">Jede Plattform erhält ihren eigenen Verkaufspreis. Alle Angaben werden zusammen mit dem Artikel gespeichert.</p>
-<div class="panel">
-<div class="grid2">
-<div>
-<label class="field">eBay (€)</label>
-<input class="inp" id="priceEbay" type="number" step="0.01" min="0" placeholder="39,90">
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></span><div class="sx-tt"><h2 class="sx-title">So sehen Käufer dein erstes Foto</h2><span class="sx-sub">Vorschau im Format der Plattformen</span></div></div>
+<div class="sx-preview" id="sxPreview"></div>
+</section>
+</section>
+<section id="s3" class="hidden sx">
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="6" ry="2.5"/><path d="M6 6v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V6M6 10v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4M6 14v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4"/></svg></span><div class="sx-tt"><h2 class="sx-title">Preise</h2><span class="sx-sub">Ein Wunschbetrag – drei passende Plattformpreise</span></div></div>
+<div class="sx-target">
+<label class="sx-field"><span>Wunschbetrag (bei dir ankommend)</span><span class="sx-input-wrap"><input class="inp" id="sxTarget" type="number" inputmode="decimal" min="0" step="1" placeholder="z. B. 45"><i>€</i></span></label>
+<button type="button" class="sx-cta sx-cta-sm" id="sxApplyPrices"><span class="sx-cta-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="sx-cta-tx"><b>Preise berechnen</b></span></button>
 </div>
-<div>
-<label class="field">Vinted (€)</label>
-<input class="inp" id="priceVinted" type="number" step="0.01" min="0" placeholder="34,90">
+<p class="sx-hint sx-history" id="sxPriceHint"></p>
+<div class="sx-prices">
+<div class="sx-price" data-p="ebay"><span class="lbl">eBay</span><span class="sx-input-wrap"><input class="inp" id="priceEbay" type="number" inputmode="decimal" step="0.01" min="0" placeholder="39,90"><i>€</i></span><span class="dl" id="sxProfit_ebay"></span></div>
+<div class="sx-price" data-p="vinted"><span class="lbl">Vinted</span><span class="sx-input-wrap"><input class="inp" id="priceVinted" type="number" inputmode="decimal" step="0.01" min="0" placeholder="34,90"><i>€</i></span><span class="dl" id="sxProfit_vinted"></span></div>
+<div class="sx-price" data-p="instagram"><span class="lbl">Instagram</span><span class="sx-input-wrap"><input class="inp" id="priceInstagram" type="number" inputmode="decimal" step="0.01" min="0" placeholder="32,90"><i>€</i></span><span class="dl" id="sxProfit_instagram"></span></div>
 </div>
-<div>
-<label class="field">Instagram (€)</label>
-<input class="inp" id="priceInstagram" type="number" step="0.01" min="0" placeholder="32,90">
+<details class="sx-subfold"><summary>Gebühren &amp; Verhandlungspuffer</summary><div class="sx-fees" id="sxFees"></div><p class="sx-hint">Trage die Gebühren ein, die bei dir als Verkäufer anfallen (z. B. gewerblich bei eBay). Der Puffer lässt Raum für Preisvorschläge. Wird auf diesem Gerät gespeichert.</p></details>
+</section>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg></span><div class="sx-tt"><h2 class="sx-title">Lager</h2><span class="sx-sub">Wo der Artikel liegt und woher er kommt</span></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Lagerplatz</span><input class="inp" id="location" list="sxLocList" placeholder="z. B. Regal A1"></label>
+<label class="sx-field"><span>Status</span><select class="inp" id="articleStatus"><option>Entwurf</option><option>Bereit</option><option>Online</option><option>Verkauft</option></select></label>
+<label class="sx-field"><span>Einkaufsdatum</span><input class="inp" id="purchaseDate" type="date"></label>
+<label class="sx-field"><span>Bezugsquelle</span><input class="inp" id="source" list="sxSrcList" placeholder="z. B. Flohmarkt"></label>
 </div>
-<div>
-<label class="field">Einkaufspreis</label>
-<div class="inp" style="opacity:.75">Bereits bei Fotos erfasst</div>
+<div class="sx-chips" id="sxLocChips"></div>
+<datalist id="sxLocList"></datalist><datalist id="sxSrcList"></datalist>
+</section>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 15c-1.5 1.3-2 4-2 6 2 0 4.7-.5 6-2M14 6l4 4M9 15l-3-3c1.5-4.5 6-9 13-9 0 7-4.5 11.5-9 13z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Veröffentlichen</h2><span class="sx-sub">Text kopieren, Plattform öffnen, Fotos teilen</span></div></div>
+<div class="sx-publish" id="sxPublish"></div>
+</section>
+<section class="sx-panel sx-finish">
+<div class="sx-ready" id="sxReady"></div>
+<div class="sx-row sx-finish-row">
+<button type="button" class="sx-cta" id="saveArticle"><span class="sx-cta-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span><span class="sx-cta-tx"><b>Im Bestand speichern</b><small>Titelbild erscheint im Bestand</small></span></button>
+<button type="button" class="sx-btn" id="exportArticle">Bilder &amp; Texte als ZIP</button>
 </div>
-</div>
-<div class="grid2">
-<div>
-<label class="field">Einkaufsdatum</label>
-<input class="inp" id="purchaseDate" type="date">
-</div>
-<div>
-<label class="field">Bezugsquelle</label>
-<input class="inp" id="source" placeholder="z. B. Flohmarkt">
-</div>
-</div>
-<label class="field">Lagerplatz</label>
-<input class="inp" id="location" placeholder="Box A / Fach 3">
-<label class="field">Status</label>
-<select class="inp" id="articleStatus">
-<option>Entwurf</option>
-<option>Bereit</option>
-<option>Online</option>
-<option>Verkauft</option>
-</select>
-</div>
-<div class="panel">
-<h2>Abschließen</h2>
-<button class="btn wide" id="saveArticle">Artikel lokal speichern</button>
-<div style="height:10px">
-</div>
-<button class="btn secondary wide" id="exportArticle">Bilder & Listings als ZIP exportieren</button>
-<p class="status" id="saveStatus">
-</p>
-<p class="muted">Lokal bedeutet: nur auf diesem Gerät. Bitte regelmäßig ein Backup erstellen.</p>
-</div>
+<p class="status sx-status" id="saveStatus"></p>
+</section>
 </section>
 <section id="s4" class="hidden lux-stock-view bx">
 <div class="bx-top">
@@ -902,9 +890,9 @@
 </details>
 </section>
 </main>
-<div class="footer hidden" id="nav">
-<button class="btn secondary" id="back">Zurück</button>
-<button class="btn" id="next">Weiter →</button>
+<div class="footer sx-nav hidden" id="nav">
+<button class="sx-btn" id="back">Zurück</button>
+<button class="sx-next" id="next">Weiter →</button>
 </div>
 <section id="stockSheet" class="stock-sheet hidden" aria-label="Artikelakte">
 <div class="sheet-header">
@@ -1277,6 +1265,8 @@
 </div>
 </div>
 <script src="/vendor/jszip.min.js">
+</script>
+<script src="/cutout.js">
 </script>
 <script src="/app.js">
 </script>

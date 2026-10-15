@@ -1,4 +1,6 @@
-# RV Studio V21 — Command Center
+# RV Studio V22 — Command Center
+
+Neu in V22 (Details: [UEBERGABE-V22.md](UEBERGABE-V22.md)): Studio im Design der Startseite, automatisches Titelbild mit Freisteller, Texte ohne KI, Preisrechner für alle drei Plattformen, Veröffentlichen-Karten und Fertig-Check.
 
 Neu in V21 (Details: [UEBERGABE-V21.md](UEBERGABE-V21.md)): Bestand komplett im Design der Startseite, Status-Ring, Analyse mit Ladenhütern, neue Artikelkarten und 30 Beispielartikel (Kleidung) mit Titelbild.
 
@@ -75,6 +77,8 @@ npx wrangler@4 pages deploy public --project-name rv-studio-cloud
 | `ANTHROPIC_API_KEY` | Alternativ für Claude-Chat-/Listinganfragen. |
 | `AI_PROVIDER` | Optional: `openai` oder `claude`; die Auswahl in der App kann dies pro Anfrage übersteuern. |
 | `OPENAI_MODEL` | Optional; vorhandener Backend-Standard `gpt-4.1-mini`. |
+| `PHOTOROOM_API_KEY` | Optional: Profi-Freisteller fürs Titelbild (Photoroom). |
+| `REMOVE_BG_API_KEY` | Optional: alternativ remove.bg. Ohne beide stellt die App direkt auf dem Gerät frei. |
 | `ANTHROPIC_MODEL` | Optional; vorhandener Backend-Standard `claude-3-5-sonnet-latest`. Ein für dein Konto verfügbares Modell verwenden. |
 
 Secrets im Cloudflare-Dashboard für die gewünschte Umgebung setzen. Alternativ interaktiv mit Wrangler, zum Beispiel:

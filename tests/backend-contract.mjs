@@ -166,6 +166,23 @@ try {
       assert.deepEqual(result,{detected:{},ebay:{title:'',description:''},vinted:{title:'',description:''},instagram:{title:'',description:''}});
     }
   });
+  await test('Freisteller: ohne Dienst 501, mit Photoroom/remove.bg PNG als Data-URL, Schlüssel nur serverseitig', async () => {
+    const info=await expectStatus(await call('GET','cutout'),200);assert.deepEqual(info,{available:false,provider:''});
+    await expectStatus(await call('POST','cutout',{image:'data:image/jpeg;base64,/9j/2Q=='}),501);
+    const png=new Uint8Array([137,80,78,71,13,10,26,10]);
+    for (const [key,host,header] of [['PHOTOROOM_API_KEY','sdk.photoroom.com','x-api-key'],['REMOVE_BG_API_KEY','api.remove.bg','X-Api-Key']]) {
+      let seen=null;
+      globalThis.fetch = async (url, options) => { seen={url:String(url),key:options.headers[header]}; return new Response(png,{status:200,headers:{'Content-Type':'image/png'}}); };
+      const cutEnv={...env,[key]:'qa-cutout-key'};
+      await expectStatus(await call('POST','cutout',{image:'data:image/png;base64,'},{env:cutEnv}),400);
+      const r=await expectStatus(await call('POST','cutout',{image:'data:image/jpeg;base64,/9j/2Q=='},{env:cutEnv}),200);
+      assert.ok(seen.url.includes(host));assert.equal(seen.key,'qa-cutout-key');
+      assert.equal(r.image,'data:image/png;base64,iVBORw0KGgo=');assert.ok(!JSON.stringify(r).includes('qa-cutout-key'));
+    }
+    globalThis.fetch = async () => new Response('limit',{status:402});
+    await expectStatus(await call('POST','cutout',{image:'data:image/jpeg;base64,/9j/2Q=='},{env:{...env,REMOVE_BG_API_KEY:'k'}}),502);
+    await expectStatus(await call('POST','cutout',{image:'data:image/jpeg;base64,/9j/2Q=='},{headers:{'X-RV-Password':'wrong'}}),401);
+  });
 } finally { globalThis.fetch = originalFetch; }
 
 const report={scope:'Isolierte API-Vertragstests mit in-memory D1/R2 und gemocktem KI-fetch. Keine echten Cloudflare- oder Provider-Zugriffe.',passed:tests.length,failed:0,knownLimits:['Ungültiges vom Provider erzeugtes Listing-JSON liefert aktuell HTTP 200 mit leeren Listings; der Test dokumentiert diesen bestehenden API-Vertrag.','D1/R2-Doubles prüfen den API-Vertrag, nicht echte Cloudflare-SQL-/Storage-Ausführung oder Parallelzugriffe.'],tests};

@@ -63,7 +63,7 @@ $('aiBtn').onclick=async()=>{
  const btn=$('aiBtn');btn.disabled=true;$('aiStatus').textContent=(rvProviderNames[provider]||'KI')+' prüft Fotos, Labels und Produktdetails …';
  try{
    const images=[];
-   for(const p of article.photos.slice(0,8)){const c=document.createElement('canvas'),im=await imageFrom(p.src),scale=Math.min(1,1600/Math.max(im.width,im.height));c.width=Math.max(1,Math.round(im.width*scale));c.height=Math.max(1,Math.round(im.height*scale));c.getContext('2d').drawImage(im,0,0,c.width,c.height);images.push(c.toDataURL('image/jpeg',.86))}
+   for(const p of article.photos.filter(x=>!x.cover).slice(0,8)){const c=document.createElement('canvas'),im=await imageFrom(p.src),scale=Math.min(1,1600/Math.max(im.width,im.height));c.width=Math.max(1,Math.round(im.width*scale));c.height=Math.max(1,Math.round(im.height*scale));c.getContext('2d').drawImage(im,0,0,c.width,c.height);images.push(c.toDataURL('image/jpeg',.86))}
    const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),90000);let res;
    try{res=await fetch(url+'/api/listing',{method:'POST',headers:{'Content-Type':'application/json','X-RV-Password':token,'X-RV-Provider':provider},body:JSON.stringify({provider,images,fields:{sku:article.sku,condition:article.condition,notes:article.notes,measurements:article.measurements},template:$('template').value}),signal:ctrl.signal})}finally{clearTimeout(timeout)}
    let j=await res.json();if(!res.ok)throw Error([j.error,j.detail].filter(Boolean).join(' ')||'Serverfehler');
@@ -75,7 +75,7 @@ $('aiBtn').onclick=async()=>{
  }catch(e){$('aiStatus').textContent='KI nicht erreichbar: '+e.message}
  finally{btn.disabled=false}
 }
-async function saveArticle(){pull();try{await store('readwrite',s=>s.put(article));$('saveStatus').textContent='✓ Artikel lokal gespeichert';await renderHome();showHome();alert('Artikel im Bestand gespeichert!')}catch(e){$('saveStatus').textContent='Speichern fehlgeschlagen: '+e.message}}
+async function saveArticle(){pull();try{await store('readwrite',s=>s.put(article));await renderHome();sxAfterSave()}catch(e){$('saveStatus').textContent='Speichern fehlgeschlagen: '+e.message}}
 $('saveArticle').onclick=saveArticle;
 let stockFilter='all',stockSelectedId=null;
 const stockText=(v)=>String(v??'');
@@ -783,6 +783,249 @@ window.addEventListener('load',()=>{rvRenderConflicts();if('serviceWorker'in nav
 });
 
 (async()=>{const extra=$('settingsExtras');if(extra&&$('v7BackupPanel'))extra.append($('v7BackupPanel'));try{db=await dbOpen()}catch(e){alert('Lokaler Speicher ist in diesem Browser nicht verfügbar: '+e.message)}article=blank();$('template').value=localStorage.getItem('fsflow_template')||'RV STIL: Erstelle einen präzisen, suchoptimierten Titel mit Marke, Kleidungsart, Größe, Farben und belegten Besonderheiten. Beschreibung mit genau diesen Überschriften: 🥇 DAS STÜCK, 📐 MAẞE & PASSFORM, 👀 ZUSTAND, ⚠️ MÄNGEL, 👕 STYLING, 📦 VERSAND & ANGEBOTE, 🏷️ ARTIKELNUMMER. Beschreibe das konkrete Stück lebendig, aber sachlich. Brustweite und Länge nur aus meinen Eingaben. Keine unbelegten Material-, Alters-, Herkunfts- oder Zustandsbehauptungen. Bei nicht sichtbaren Mängeln vorsichtig formulieren. Abschlusstext: Schneller, sorgfältig verpackter Versand. Faire Preisvorschläge sind willkommen. Bei Fragen zur Passform schreib mir einfach.';push();showHome()})();
+// ===================== Studio V22: Titelbild-Automatik, Texte, Preise, Veröffentlichen =====================
+const SX_PLATFORMS=[['ebay','eBay','eB','https://www.ebay.de/sl/sell'],['vinted','Vinted','V','https://www.vinted.de/items/new'],['instagram','Instagram','IG','https://www.instagram.com/']];
+const SX_TITLE_MAX={ebay:80};
+const SX_FEES_DEFAULT={ebay:{pct:0,fix:0,buf:10},vinted:{pct:0,fix:0,buf:15},instagram:{pct:0,fix:0,buf:5}};
+const sxGet=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch{return d}};
+const sxSet=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
+const sxIcon=d=>'<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true">'+d+'</svg>';
+let sxCoverBusy=false,sxCoverMsg='',sxServerCutout=null,sxCutCache=null;
+const sxSources=()=>article.photos.filter(p=>!p.cover);
+const sxCover=()=>article.photos[0]&&article.photos[0].cover?article.photos[0]:null;
+function sxEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function sxToast(text){let t=$('sxToast');if(!t){t=document.createElement('div');t.id='sxToast';t.setAttribute('role','status');t.style.cssText='position:fixed;left:50%;bottom:170px;transform:translateX(-50%);z-index:60;padding:12px 18px;border-radius:999px;font:500 14px Segoe UI,Inter,system-ui,sans-serif;color:#fff0d6;background:radial-gradient(ellipse at 50% 0,rgba(255,160,80,.35),rgba(40,22,10,.92));box-shadow:inset 0 0 0 1.5px #ffb060,0 0 18px rgba(255,150,60,.5),0 12px 30px rgba(0,0,0,.5);transition:opacity .3s;pointer-events:none';document.body.append(t)}t.textContent=text;t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity='0',2200)}
+async function sxCopy(text,btn){try{await navigator.clipboard.writeText(text)}catch{prompt('Zum Kopieren markieren:',text);return}if(btn){const old=btn.innerHTML;btn.textContent='✓ Kopiert';setTimeout(()=>btn.innerHTML=old,1500)}else sxToast('✓ Kopiert')}
+
+/* ---------- Fotos ---------- */
+async function sxAddFiles(files){
+ const list=[...files].filter(f=>f&&f.type&&f.type.startsWith('image/'));if(!list.length)return;
+ const hadSources=sxSources().length;
+ $('photoCount').textContent='Fotos werden geladen …';
+ for(const f of list){try{const src=await shrink(await fileToData(f));article.photos.push({src,edit:defaults(),ratio:'1'})}catch{alert('Foto konnte nicht geladen werden: '+f.name)}}
+ renderPhotos();
+ if(sxGet('rv_cover_auto','1')==='1'&&!sxCover()&&!hadSources)sxMakeCover({source:0});
+}
+$('upload').onchange=async e=>{await sxAddFiles(e.target.files);e.target.value=''};
+$('sxCamera').onchange=async e=>{await sxAddFiles(e.target.files);e.target.value=''};
+$('sxCameraBtn').onclick=()=>$('sxCamera').click();
+{const drop=$('sxDrop');['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,()=>drop.classList.remove('drag')));drop.addEventListener('drop',e=>{e.preventDefault();sxAddFiles(e.dataTransfer.files)})}
+function sxMove(i,d){const j=i+d;if(j<0||j>=article.photos.length||article.photos[j].cover||article.photos[i].cover)return;[article.photos[i],article.photos[j]]=[article.photos[j],article.photos[i]];renderPhotos()}
+renderPhotos=function(){
+ if(!article)return;
+ const n=sxSources().length;
+ $('photoCount').textContent=n?n+(n===1?' Foto':' Fotos')+(sxCover()?' · Titelbild erstellt':''):'Noch keine Fotos ausgewählt';
+ for(const id of ['photos','editPhotos']){
+  const el=$(id);el.replaceChildren();let k=0;
+  article.photos.forEach((p,i)=>{
+   const d=document.createElement('div');d.className='sx-thumb'+(p.cover?' cover':'');
+   const img=document.createElement('img');img.src=p.src;img.alt=p.cover?'Titelbild':'Foto '+(k+1);img.loading='lazy';if(p.edit)img.style.filter=filter({...defaults(),...p.edit,blur:0});
+   const tag=document.createElement('span');tag.className='tag'+(p.cover?'':' n');tag.textContent=p.cover?'★ Titelbild':String(++k);
+   const bar=document.createElement('div');bar.className='bar';
+   const acts=[];
+   if(id==='editPhotos'&&!p.cover)acts.push(['←','Nach vorne',()=>sxMove(i,-1)],['→','Nach hinten',()=>sxMove(i,1)]);
+   acts.push([sxIcon('<path d="M4 20h4L19 9l-4-4L4 16z"/>'),'Bearbeiten',()=>openEditor(i)],['×','Entfernen',()=>{if(!confirm(p.cover?'Titelbild entfernen?':'Foto entfernen?'))return;article.photos.splice(i,1);if(p.cover)article.coverSettings=null;renderPhotos()}]);
+   for(const [t,label,fn] of acts){const b=document.createElement('button');b.type='button';b.innerHTML=t;b.title=label;b.setAttribute('aria-label',label);b.onclick=fn;bar.append(b)}
+   d.append(img,tag,bar);el.append(d);
+  });
+ }
+ sxRenderCoverViews();
+};
+$('addMore').onclick=()=>$('upload').click();
+
+/* ---------- Titelbild ---------- */
+async function sxServerCut(src){
+ if(sxServerCutout===false)throw Error('kein Freisteller-Dienst eingerichtet');
+ if(sxCutCache&&sxCutCache.src===src)return sxCutCache.png;
+ const token=rvAiPassword();if(!token)throw Error('RV-Passwort fehlt');
+ const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),45000);let res;
+ try{res=await fetch(getAiEndpoint()+'/api/cutout',{method:'POST',headers:{'Content-Type':'application/json','X-RV-Password':token},body:JSON.stringify({image:src}),signal:ctrl.signal})}finally{clearTimeout(timer)}
+ const j=await res.json().catch(()=>({}));
+ if(res.status===501||res.status===404){sxServerCutout=false;throw Error('kein Freisteller-Dienst eingerichtet')}
+ if(!res.ok||!j.image)throw Error(j.error||('Fehler '+res.status));
+ sxServerCutout=true;sxCutCache={src,png:j.image};return j.image;
+}
+async function sxMakeCover(opts={}){
+ const srcs=sxSources();if(!srcs.length){sxCoverMsg='Bitte zuerst Fotos hochladen.';sxRenderCoverViews();return}
+ if(sxCoverBusy)return;
+ const prev=article.coverSettings||{};let si=opts.source??prev.source??0;if(si>=srcs.length)si=0;
+ const engine=sxGet('rv_cutout_engine','auto'),bg=opts.bg||prev.bg||sxGet('rv_cover_bg','sand'),tol=Number(opts.tolerance??prev.tolerance??0)||0;
+ sxCoverBusy=true;sxCoverMsg=engine==='original'?'Titelbild wird zugeschnitten …':'Hintergrund wird entfernt …';sxRenderCoverViews();
+ try{
+  let cutoutPng=null,note='';
+  if(engine==='server'||(engine==='auto'&&rvAiPassword()&&sxServerCutout!==false)){try{cutoutPng=await sxServerCut(srcs[si].src)}catch(e){if(engine==='server')note='KI-Server: '+e.message+'. Auf dem Gerät freigestellt.'}}
+  const r=await RVCutout.makeCover(srcs[si].src,{engine:engine==='original'?'original':'cutout',bg,tolerance:tol,cutoutPng});
+  const cover={src:r.src,edit:defaults(),ratio:'0.8',cover:true};
+  if(sxCover())article.photos[0]=cover;else article.photos.unshift(cover);
+  const warning=r.warning||note;
+  article.coverSettings={bg,source:si,tolerance:tol,engine:r.engine,warning,autoTolerance:r.tolerance||null,at:new Date().toISOString()};
+  sxCoverMsg=warning||({server:'Mit KI-Server freigestellt.',device:'Auf dem Gerät freigestellt – ohne Upload.',original:'Originalfoto im Titelbild-Format zugeschnitten.'}[r.engine]||'');
+ }catch(e){sxCoverMsg='Titelbild konnte nicht erstellt werden: '+e.message}
+ finally{sxCoverBusy=false;renderPhotos()}
+}
+function sxCoverHtml(){
+ const c=sxCover(),s=article.coverSettings||{};
+ if(c){const label={server:'KI freigestellt',device:'Freigestellt',original:'Original'}[s.engine]||'Titelbild';return '<img src="'+sxEsc(c.src)+'" alt="Titelbild"><span class="badge'+(s.warning?' warn':'')+'"><i></i>'+label+'</span>'}
+ return '<div class="empty">'+sxIcon('<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/>')+(sxCoverBusy?'Hintergrund wird entfernt …':sxSources().length?'Noch kein Titelbild – „Neu erstellen“ antippen':'Lade Fotos hoch – das Titelbild entsteht automatisch')+'</div>';
+}
+function sxRenderCoverViews(){
+ if(!article)return;
+ for(const id of ['sxCover','sxCoverLarge']){const el=$(id);if(!el)continue;el.innerHTML=sxCoverHtml();el.classList.toggle('busy',sxCoverBusy)}
+ const s=article.coverSettings||{},bg=s.bg||sxGet('rv_cover_bg','sand'),engine=sxGet('rv_cutout_engine','auto');
+ const sw=$('sxSwatches');sw.replaceChildren();for(const [key,[a,b,name]] of Object.entries(RVCutout.BACKDROPS)){const btn=document.createElement('button');btn.type='button';btn.title=name;btn.setAttribute('aria-label','Hintergrund '+name);btn.style.background='linear-gradient(180deg,'+a+','+b+')';btn.classList.toggle('on',key===bg);btn.onclick=()=>{sxSet('rv_cover_bg',key);article.coverSettings={...(article.coverSettings||{}),bg:key};if(sxCover())sxMakeCover({bg:key});else sxRenderCoverViews()};sw.append(btn)}
+ const src=$('sxSources');src.replaceChildren();sxSources().forEach((p,i)=>{const btn=document.createElement('button');btn.type='button';btn.setAttribute('aria-label','Foto '+(i+1)+' als Ausgangsfoto');btn.classList.toggle('on',i===(s.source||0));btn.innerHTML='<img src="'+sxEsc(p.src)+'" alt="">';btn.onclick=()=>sxMakeCover({source:i});src.append(btn)});
+ $('sxEngine').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.engine===engine));
+ $('sxTolWrap').style.display=engine==='original'||engine==='server'?'none':'';
+ $('sxTol').value=s.tolerance||0;$('sxTolVal').textContent=s.tolerance?String(s.tolerance):('Automatisch'+(s.autoTolerance?' ('+s.autoTolerance+')':''));
+ $('sxAutoCover').checked=sxGet('rv_cover_auto','1')==='1';
+ $('sxCoverStatus').textContent=sxCoverMsg||(engine==='server'?'Nutzt Photoroom oder remove.bg über deinen Server (Secret PHOTOROOM_API_KEY oder REMOVE_BG_API_KEY).':engine==='auto'?'Automatisch: KI-Server, falls eingerichtet – sonst direkt auf dem Gerät.':'');
+ $('sxCoverMake').disabled=sxCoverBusy||!sxSources().length;$('sxCoverRemove').disabled=!sxCover();$('sxCoverRedo').disabled=sxCoverBusy||!sxSources().length;
+ sxRenderPreview();
+}
+function sxRenderPreview(){if(!article)return;const first=article.photos[0],root=$('sxPreview');root.replaceChildren();
+ for(const [name,ratio,label] of [['eBay','1/1','1:1'],['Vinted','3/4','3:4'],['Instagram','4/5','4:5']]){const f=document.createElement('figure');f.innerHTML='<div class="fr" style="aspect-ratio:'+ratio+'">'+(first?'<img src="'+sxEsc(first.src)+'" alt="">':'')+'</div><figcaption>'+name+'<small>'+label+'</small></figcaption>';if(first&&first.edit)f.querySelector('img').style.filter=filter({...defaults(),...first.edit,blur:0});root.append(f)}}
+$('sxCoverRedo').onclick=()=>sxMakeCover();$('sxCoverMake').onclick=()=>sxMakeCover();
+$('sxCoverRemove').onclick=()=>{if(!sxCover())return;article.photos.shift();article.coverSettings=null;sxCoverMsg='';renderPhotos()};
+$('sxEngine').onclick=e=>{const b=e.target.closest('[data-engine]');if(!b)return;sxSet('rv_cutout_engine',b.dataset.engine);if(b.dataset.engine!=='auto')sxServerCutout=b.dataset.engine==='server'?null:sxServerCutout;if(sxCover())sxMakeCover();else sxRenderCoverViews()};
+$('sxTol').oninput=()=>{$('sxTolVal').textContent=+$('sxTol').value?$('sxTol').value:'Automatisch'};
+$('sxTol').onchange=()=>{article.coverSettings={...(article.coverSettings||{}),tolerance:+$('sxTol').value};sxMakeCover({tolerance:+$('sxTol').value})};
+$('sxAutoCover').onchange=()=>sxSet('rv_cover_auto',$('sxAutoCover').checked?'1':'0');
+$('sxAutoEnhance').onclick=async()=>{
+ const list=sxSources();if(!list.length){sxToast('Noch keine Fotos');return}
+ for(const p of list){try{const im=await imageFrom(p.src),c=document.createElement('canvas'),s=64/Math.max(im.width,im.height);c.width=Math.max(1,Math.round(im.width*s));c.height=Math.max(1,Math.round(im.height*s));const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(im,0,0,c.width,c.height);const d=ctx.getImageData(0,0,c.width,c.height).data,lum=[];for(let i=0;i<d.length;i+=4)lum.push(.2126*d[i]+.7152*d[i+1]+.0722*d[i+2]);lum.sort((a,b)=>a-b);
+  const lo=lum[Math.floor(lum.length*.02)],hi=lum[Math.floor(lum.length*.98)],mean=lum.reduce((a,b)=>a+b,0)/lum.length;
+  p.edit={...defaults(),...p.edit,contrast:Math.round(Math.max(100,Math.min(130,100*235/Math.max(60,hi-lo)*.85))),brightness:Math.round(Math.max(96,Math.min(124,100*138/Math.max(40,mean)))),saturation:106};
+ }catch{}}
+ renderPhotos();sxToast('✓ '+list.length+(list.length===1?' Foto':' Fotos')+' optimiert');
+};
+
+/* ---------- Angaben ---------- */
+$('sxDefectChips').onclick=e=>{const b=e.target.closest('[data-defect]');if(!b)return;const v=b.dataset.defect,cur=$('notes').value.trim();
+ if(v==='Keine Mängel')$('notes').value='Keine Mängel';else{const parts=cur.split(/,\s*/).filter(x=>x&&x!=='Keine Mängel');if(!parts.includes(v))parts.push(v);$('notes').value=parts.join(', ')}article.notes=$('notes').value;sxPaintDefects()};
+function sxPaintDefects(){const cur=$('notes').value;$('sxDefectChips').querySelectorAll('button').forEach(b=>b.classList.toggle('on',cur.split(/,\s*/).includes(b.dataset.defect)))}
+$('notes').addEventListener('input',sxPaintDefects);
+$('sxNoAi').onclick=()=>{pull();const empty=platforms.every(k=>!article.listings[k].title&&!article.listings[k].description);showStep(1);if(empty&&(article.brand||article.category))sxLocalListings(true)};
+$('sxNewArticle').onclick=()=>{if(article.photos.length&&!confirm('Neuen Artikel beginnen? Nicht gespeicherte Änderungen gehen verloren.'))return;article=blank();sxCoverMsg='';activePlatform='ebay';push();showStep(0)};
+document.querySelectorAll('#steps [data-sx-step]').forEach(b=>b.onclick=()=>{pull();showStep(+b.dataset.sxStep)});
+document.querySelectorAll('[data-sx-go]').forEach(b=>b.onclick=()=>{pull();showStep(+b.dataset.sxGo)});
+
+/* ---------- Produktdaten & Texte ---------- */
+function sxRenderDataScore(){const keys=['brand','model','category','size','color','material','sku'],n=keys.filter(k=>$(k).value.trim()).length;$('sxDataScore').innerHTML='<b>'+n+'/'+keys.length+'</b> Angaben <i><s style="width:'+Math.round(n/keys.length*100)+'%"></s></i>'}
+renderDetected=function(){sxRenderDataScore()};
+['brand','model','category','size','color','material','country','sku'].forEach(k=>$(k).addEventListener('input',()=>{article[k]=$(k).value;sxRenderDataScore();sxListingMeta();sxSubtitle()}));
+async function sxNextSku(){const items=await allArticles();let max=0;for(const a of items){const m=String(a.sku||'').match(/^RV-(\d+)$/i);if(m)max=Math.max(max,+m[1])}return 'RV-'+String(max+1).padStart(4,'0')}
+$('sxSkuGen').onclick=async()=>{$('sku').value=await sxNextSku();article.sku=$('sku').value;sxRenderDataScore();sxSubtitle()};
+const SX_CAT_TAG={'jacken':'jacke','hoodies & pullover':'hoodie','shirts & tops':'shirt','hosen':'hose','kleider & röcke':'kleid','sneaker & schuhe':'sneaker','accessoires':'accessoires','taschen':'tasche'};
+const sxSlug=v=>String(v||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/ß/g,'ss').replace(/[^a-z0-9]/g,'');
+function sxHashtags(){const a=article,out=[],add=t=>{t=sxSlug(t);if(t&&t.length>1&&!out.includes('#'+t))out.push('#'+t)};
+ add(a.brand);const cat=SX_CAT_TAG[String(a.category||'').toLowerCase()]||a.category;add(cat);if(a.brand&&cat)add(a.brand+cat);add(a.model);add(a.color);['secondhand','preloved','reselling','fashion'].forEach(add);return out.slice(0,10)}
+function sxListingMeta(){
+ const t=$('listingTitle').value,d=$('listingDescription').value,max=SX_TITLE_MAX[activePlatform];
+ $('sxTitleCount').textContent=max?t.length+'/'+max:t.length+' Zeichen';$('sxTitleCount').classList.toggle('over',Boolean(max&&t.length>max));
+ $('sxDescCount').textContent=activePlatform==='instagram'?d.length+'/2200':d.length+' Zeichen';$('sxDescCount').classList.toggle('over',activePlatform==='instagram'&&d.length>2200);
+ const low=t.toLowerCase(),checks=[];
+ if(article.brand)checks.push(['Marke',low.includes(String(article.brand).toLowerCase())]);
+ if(article.size)checks.push(['Größe',low.includes(String(article.size).toLowerCase())]);
+ if(article.color)checks.push(['Farbe',low.includes(String(article.color).toLowerCase().split(/[\s/]/)[0])]);
+ if(t)checks.push([max?'Länge ≤ '+max:'Länge',!max||t.length<=max]);
+ $('sxTitleChecks').innerHTML=checks.map(([k,ok])=>'<span class="'+(ok?'ok':'miss')+'">'+(ok?'✓ ':'○ ')+k+'</span>').join('');
+ const tags=$('sxTags');tags.replaceChildren();
+ if(activePlatform==='instagram'){const list=sxHashtags();if(list.length){for(const tg of list){const b=document.createElement('button');b.type='button';b.textContent=tg;b.onclick=()=>sxInsertTags([tg]);tags.append(b)}const all=document.createElement('button');all.type='button';all.className='on';all.textContent='＃ Alle einfügen';all.onclick=()=>sxInsertTags(list);tags.append(all)}}
+}
+function sxInsertTags(list){const ta=$('listingDescription'),cur=ta.value,add=list.filter(t=>!cur.includes(t));if(!add.length)return;ta.value=cur.replace(/\s*$/,'')+(cur.trim()?'\n\n':'')+add.join(' ');article.listings[activePlatform].description=ta.value;sxListingMeta()}
+$('listingTitle').addEventListener('input',sxListingMeta);$('listingDescription').addEventListener('input',sxListingMeta);
+{const prevShow=showListing;showListing=function(){prevShow();sxListingMeta()}}
+$('copyTitle').onclick=()=>sxCopy($('listingTitle').value,$('copyTitle'));
+$('copyDescription').onclick=()=>sxCopy($('listingDescription').value,$('copyDescription'));
+$('sxCopyAll').onclick=()=>sxCopy($('listingTitle').value+'\n\n'+$('listingDescription').value,$('sxCopyAll'));
+function sxLocalListings(force){
+ pull();const a=article,has=platforms.some(k=>a.listings[k].title||a.listings[k].description);
+ if(has&&!force&&!confirm('Vorhandene Texte für alle Plattformen ersetzen?'))return;
+ const SXN={'jacken':'Jacke','hoodies & pullover':'Pullover','shirts & tops':'Shirt','hosen':'Hose','kleider & röcke':'Kleid','sneaker & schuhe':'Sneaker','accessoires':'','taschen':'Tasche'};
+ const name=[a.brand,a.model].filter(Boolean).join(' ')||a.category||'Artikel',lowModel=String(a.model||'').toLowerCase(),noun=SXN[String(a.category||'').toLowerCase()]??a.category??'';
+ const cat=noun&&!lowModel.includes(noun.toLowerCase())&&!/hoodie|sweat|cardigan|jacke|jacket|weste|mantel|polo|tee|hemd|jeans|pant|shorts|rock|kleid|sneaker|boot|cap|beanie|mütze/.test(lowModel)?noun:'';
+ const size=a.size?'Gr. '+a.size:'',defects=String(a.notes||'').trim(),noDefects=!defects||/^keine/i.test(defects);
+ const piece=name+(cat?' – '+cat:'')+(a.color?' in '+a.color:'')+(a.material?' aus '+a.material:'')+(a.country?', Made in '+a.country:'')+'.';
+ const sections=['🥇 DAS STÜCK\n'+piece,'📐 MASSE & PASSFORM\n'+[a.size&&'Größe '+a.size,a.measurements&&'Maße: '+a.measurements].filter(Boolean).join(' · ')+(a.measurements?'':'\nMaße auf Anfrage.'),'👀 ZUSTAND\n'+conditionText(a.condition)+(noDefects&&defects?' – keine Mängel bekannt.':'.')];
+ if(!noDefects)sections.push('⚠️ MÄNGEL\n'+defects+'.');
+ sections.push('📦 VERSAND & ANGEBOTE\nSchneller, sorgfältig verpackter Versand. Faire Preisvorschläge sind willkommen. Bei Fragen zur Passform schreib mir einfach.');
+ if(a.sku)sections.push('🏷️ ARTIKELNUMMER\n'+a.sku);
+ const body=sections.join('\n\n');
+ a.listings.ebay={title:[a.brand,a.model,cat,a.color,size,a.material].filter(Boolean).join(' ').replace(/\s+/g,' ').slice(0,80),description:body};
+ a.listings.vinted={title:[a.brand,a.model||cat,a.color,size].filter(Boolean).join(' '),description:body};
+ a.listings.instagram={title:name+(size?' · '+size:''),description:'✨ '+piece+'\n\n'+[size,a.measurements&&'Maße: '+a.measurements,'Zustand '+(a.condition||'—')+'/10',!noDefects&&'Mängel: '+defects].filter(Boolean).join(' · ')+'\n\n📩 Bei Interesse per DM.'+(sxHashtags().length?'\n\n'+sxHashtags().join(' '):'')};
+ showListing();sxToast('✓ Texte für alle Plattformen erstellt');
+}
+$('sxLocalTexts').onclick=()=>sxLocalListings(false);
+
+/* ---------- Preise ---------- */
+function sxFees(){try{return {...SX_FEES_DEFAULT,...JSON.parse(sxGet('rv_fees','{}'))}}catch{return {...SX_FEES_DEFAULT}}}
+function sxPsych(x){if(!(x>0))return 0;let r=Math.ceil(x-1e-9);if(r<20)return r;while(![5,9].includes(r%10))r++;return r}
+function sxRenderFees(){const fees=sxFees(),root=$('sxFees');root.replaceChildren();
+ for(const [k,name] of SX_PLATFORMS){const f=fees[k],box=document.createElement('div');box.innerHTML='<b>'+name+'</b><label>Gebühr %<input type="number" min="0" max="60" step="0.1" data-k="'+k+'" data-f="pct"></label><label>Fixgebühr €<input type="number" min="0" step="0.01" data-k="'+k+'" data-f="fix"></label><label>Puffer %<input type="number" min="0" max="60" step="1" data-k="'+k+'" data-f="buf"></label>';
+  box.querySelectorAll('input').forEach(inp=>{inp.value=f[inp.dataset.f];inp.onchange=()=>{const all=sxFees();all[k]={...all[k],[inp.dataset.f]:Math.max(0,Number(inp.value)||0)};sxSet('rv_fees',JSON.stringify(all));sxRenderProfits()}});root.append(box)}}
+function sxRenderProfits(){const fees=sxFees(),ek=Number($('cost').value)||0;
+ for(const [k] of SX_PLATFORMS){const el=$('sxProfit_'+k),vk=Number($('price'+k[0].toUpperCase()+k.slice(1)).value)||0;if(!vk){el.textContent=ek?'EK '+euro(ek):'';el.className='dl nil';continue}
+  const net=vk*(1-fees[k].pct/100)-fees[k].fix,profit=net-ek;el.className='dl'+(profit<0?' neg':'');el.textContent=(profit>=0?'↗ +':'↘ ')+euro(profit)+(ek>0?' · '+Math.round(profit/ek*100)+' %':' Erlös')}}
+['priceEbay','priceVinted','priceInstagram','cost'].forEach(id=>$(id).addEventListener('input',()=>{sxRenderProfits();if(step===3)sxRenderPublish()}));
+$('sxApplyPrices').onclick=()=>{const target=Number($('sxTarget').value);if(!(target>0)){$('sxTarget').focus();sxToast('Bitte Wunschbetrag eintragen');return}const fees=sxFees();
+ for(const [k] of SX_PLATFORMS){const f=fees[k];$('price'+k[0].toUpperCase()+k.slice(1)).value=sxPsych((target+f.fix)/(1-Math.min(.9,f.pct/100))*(1+f.buf/100))}pull();sxRenderProfits();sxRenderPublish();sxToast('✓ Preise für alle Plattformen gesetzt')};
+async function sxRenderHistory(){const el=$('sxPriceHint');el.textContent='';const items=(await allArticles()).filter(a=>a.id!==article.id&&a.sale&&Number(a.sale.price)>0);
+ const brand=String(article.brand||'').trim().toLowerCase(),cat=String(article.category||'').trim().toLowerCase();
+ let pool=brand?items.filter(a=>String(a.brand||'').trim().toLowerCase()===brand):[],label=article.brand;
+ if(pool.length<1&&cat){pool=items.filter(a=>String(a.category||'').trim().toLowerCase()===cat);label=article.category}
+ if(!pool.length){el.textContent=items.length?'Noch keine Verkäufe dieser Marke oder Kategorie – Preise frei wählen.':'';return}
+ const avg=pool.reduce((n,a)=>n+Number(a.sale.price),0)/pool.length,days=pool.map(a=>{const s=v5Date(a),e=Date.parse(a.sale.date);return s!==null&&Number.isFinite(e)?Math.max(0,Math.round((e-s)/864e5)):null}).filter(x=>x!==null);
+ el.innerHTML='Deine Verkäufe <b>'+sxEsc(label)+'</b>: Ø <b>'+euro(avg)+'</b>'+(days.length?' nach Ø '+Math.round(days.reduce((a,b)=>a+b,0)/days.length)+' Tagen':'')+' ('+pool.length+(pool.length===1?' Verkauf':' Verkäufe')+') ';
+ const b=document.createElement('button');b.type='button';b.className='sx-mini';b.textContent='Als Wunschbetrag';b.onclick=()=>{$('sxTarget').value=Math.round(avg);$('sxApplyPrices').click()};el.append(b)}
+
+/* ---------- Lager ---------- */
+async function sxRenderLager(){const items=await allArticles(),loc=new Map(),src=new Set(),brands=new Set();
+ for(const a of items){if(a.location)loc.set(a.location,Math.max(loc.get(a.location)||0,Date.parse(a.updatedAt||a.rvSyncModifiedAt||0)||0));if(a.source&&a.source!=='Beispiel')src.add(a.source);if(a.brand)brands.add(a.brand)}
+ const fill=(id,vals)=>{const dl=$(id);dl.replaceChildren();for(const v of vals){const o=document.createElement('option');o.value=v;dl.append(o)}};
+ fill('sxLocList',[...loc.keys()].sort());fill('sxSrcList',[...src].sort());fill('sxBrandList',[...brands].sort());
+ const chips=$('sxLocChips');chips.replaceChildren();[...loc.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5).forEach(([v])=>{const b=document.createElement('button');b.type='button';b.textContent=v;b.onclick=()=>{$('location').value=v;article.location=v};chips.append(b)});
+ if(!$('purchaseDate').value)$('purchaseDate').value=new Date().toISOString().slice(0,10)}
+
+/* ---------- Veröffentlichen ---------- */
+async function sxShareFiles(){const files=[];for(const [i,p] of article.photos.slice(0,10).entries()){try{const b=await (await fetch(p.src)).blob();files.push(new File([b],(article.sku||'rv')+'-'+(i+1)+'.jpg',{type:b.type||'image/jpeg'}))}catch{}}return files}
+function sxRenderPublish(){const root=$('sxPublish');root.replaceChildren();article.publishInfo=article.publishInfo||{};
+ const canShare=Boolean(navigator.canShare&&navigator.share);
+ for(const [k,name,short,url] of SX_PLATFORMS){
+  const info=article.publishInfo[k]||{},live=info.status==='listed',price=Number($('price'+k[0].toUpperCase()+k.slice(1)).value)||0,l=article.listings[k]||{title:'',description:''};
+  const card=document.createElement('div');card.className='sx-pub'+(live?' live':'');
+  card.innerHTML='<div class="sx-pub-hd"><span class="mi">'+short+'</span><div><b>'+name+'</b><small>'+(price?euro(price):'Kein Preis')+' · '+(l.title?sxEsc(l.title):'Kein Titel')+'</small></div><span class="sx-pub-st"><i></i>'+(live?'Online':'Nicht online')+'</span></div>'
+   +'<div class="sx-row"><button type="button" class="sx-btn" data-a="copy">'+sxIcon('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>')+'Kopieren</button><button type="button" class="sx-btn" data-a="open">'+sxIcon('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>')+'Öffnen</button>'+(canShare?'<button type="button" class="sx-btn" data-a="share">'+sxIcon('<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.6M8.2 13.2l7.6 4.6"/>')+'Teilen</button>':'')+'</div>'
+   +'<input type="url" placeholder="Listing-Link (optional)" data-a="url">'
+   +'<label class="sx-switch"><input type="checkbox" data-a="live"'+(live?' checked':'')+'><span></span>Online gestellt</label>';
+  const text=()=>{pull();const L=article.listings[k]||{};return [L.title,L.description,k==='instagram'&&price?'Preis: '+euro(price):''].filter(Boolean).join('\n\n')};
+  card.querySelector('[data-a=copy]').onclick=e=>sxCopy(text(),e.currentTarget);
+  card.querySelector('[data-a=open]').onclick=async e=>{await sxCopy(text(),e.currentTarget);window.open(url,'_blank','noopener')};
+  const sh=card.querySelector('[data-a=share]');if(sh)sh.onclick=async()=>{const files=await sxShareFiles(),data={title:(article.listings[k]||{}).title||'',text:text()};if(files.length&&navigator.canShare({files}))data.files=files;try{await navigator.share(data)}catch(err){if(err.name!=='AbortError')sxToast('Teilen nicht möglich: '+err.message)}};
+  const inp=card.querySelector('[data-a=url]');inp.value=info.url||'';inp.onchange=()=>{const v=inp.value.trim();if(v&&!/^https?:\/\//i.test(v)){sxToast('Bitte einen vollständigen Link eingeben');return}article.publishInfo[k]={...(article.publishInfo[k]||{status:'not_listed'}),url:v,updatedAt:new Date().toISOString()}};
+  card.querySelector('[data-a=live]').onchange=e=>{const on=e.target.checked;article.publishInfo[k]={...(article.publishInfo[k]||{}),status:on?'listed':'not_listed',url:inp.value.trim(),date:on?new Date().toISOString().slice(0,10):null,updatedAt:new Date().toISOString()};
+   if(on&&$('articleStatus').value!=='Verkauft'){$('articleStatus').value='Online';article.articleStatus='Online'}sxRenderPublish();sxRenderReady()};
+  root.append(card);
+ }}
+
+/* ---------- Fertig-Check ---------- */
+const SX_STEP_OF={Foto:0,Einkaufspreis:0,'Maße':0,Zustand:0,'Mängelangabe':0,Artikelnummer:1,Marke:1,Kategorie:1,'Größe':1,Listingtext:1,Plattformpreis:3};
+function sxRenderReady(){pull();const missing=v6Missing(article),total=11,done=total-missing.length,pct=done/total,C=2*Math.PI*30,color=pct>=1?'#2ee0a0':'#3d9bff';
+ $('sxReady').innerHTML='<svg class="ring" viewBox="0 0 76 76" aria-hidden="true"><circle class="t" cx="38" cy="38" r="30"/><circle class="v" cx="38" cy="38" r="30" stroke="'+color+'" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+(C*(1-pct)).toFixed(1)+'"/><text x="38" y="44" text-anchor="middle">'+Math.round(pct*100)+'%</text></svg>'
+  +'<div class="sx-ready-tx"><b>'+(missing.length?'Noch '+missing.length+(missing.length===1?' Angabe':' Angaben')+' offen':'Alles bereit zum Verkaufen')+'</b><div class="sx-chips">'+missing.map(m=>'<button type="button" data-step="'+(SX_STEP_OF[m]??0)+'">'+sxEsc(m)+'</button>').join('')+'</div></div>';
+ $('sxReady').querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>showStep(+b.dataset.step));}
+
+/* ---------- Schritte, Speichern ---------- */
+function sxSubtitle(){if(!article)return;const name=[article.brand,article.model].filter(Boolean).join(' ');$('sxSubtitle').textContent=(name||'Neuer Artikel')+(article.sku?' · '+article.sku:'')}
+{const prevShowStep=showStep;showStep=function(n){prevShowStep(n);if(n>3)return;sxSubtitle();
+ if(n===1){sxRenderDataScore();sxListingMeta();sxRenderLager()}
+ if(n===2)sxRenderCoverViews();
+ if(n===3){sxRenderFees();sxRenderProfits();sxRenderHistory();sxRenderLager();sxRenderPublish();sxRenderReady();$('next').textContent='✓ Im Bestand speichern'}}}
+{const prevPush=push;push=function(){prevPush();sxSubtitle();sxPaintDefects();sxRenderDataScore();sxListingMeta()}}
+$('next').onclick=()=>{pull();if(step===3){$('saveArticle').click();return}showStep(Math.min(3,step+1))};
+{const prevSave=$('saveArticle').onclick;$('saveArticle').onclick=async()=>{pull();if(!article.sku){article.sku=await sxNextSku();$('sku').value=article.sku}if(!article.purchaseDate){article.purchaseDate=new Date().toISOString().slice(0,10);$('purchaseDate').value=article.purchaseDate}article.updatedAt=new Date().toISOString();if(!article.createdAt)article.createdAt=article.updatedAt;return prevSave()}}
+function sxAfterSave(){$('saveStatus').textContent='';article=blank();sxCoverMsg='';activePlatform='ebay';push();showStep(4);sxToast('✓ Im Bestand gespeichert')}
+renderPhotos();sxSubtitle();
 // Externe Datenänderungen (z. B. Beispielartikel laden/entfernen) neu anzeigen.
 window.addEventListener('rv:data-changed',()=>{renderLibrary().catch(()=>{});try{renderHome()}catch(e){}});
 })();

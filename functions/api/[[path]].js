@@ -127,11 +127,36 @@ Die Beschreibung soll hochwertig und verkaufsstark sein. Plattformtexte dürfen 
     return json({ error:'KI-Anfrage fehlgeschlagen.', detail:String(err.message || err) }, 502);
   }
 }
+// Freisteller über einen spezialisierten Dienst. Schlüssel bleiben auf dem Server.
+function bytesToBase64(bytes){let out='';const chunk=0x8000;for(let i=0;i<bytes.length;i+=chunk)out+=String.fromCharCode.apply(null,bytes.subarray(i,i+chunk));return btoa(out)}
+function cutoutProvider(env){if(env.PHOTOROOM_API_KEY)return 'photoroom';if(env.REMOVE_BG_API_KEY)return 'removebg';return ''}
+async function handleCutout(request, env){
+  const provider=cutoutProvider(env);
+  if(request.method==='GET')return json({available:Boolean(provider),provider});
+  if(!provider)return json({error:'Kein Freisteller-Dienst eingerichtet.',detail:'PHOTOROOM_API_KEY oder REMOVE_BG_API_KEY als Secret setzen.'},501);
+  const data=await request.json().catch(()=>null);
+  const part=base64Parts(data?.image);
+  if(!part)return json({error:'Bild ungültig.'},400);
+  const raw=Uint8Array.from(atob(part.data),c=>c.charCodeAt(0));
+  if(raw.byteLength>10_000_000)return json({error:'Bild zu groß.'},413);
+  const form=new FormData();
+  form.append('image_file',new Blob([raw],{type:part.mediaType}),'foto.'+(part.mediaType==='image/png'?'png':part.mediaType==='image/webp'?'webp':'jpg'));
+  let res;
+  if(provider==='photoroom'){
+    res=await fetch('https://sdk.photoroom.com/v1/segment',{method:'POST',headers:{'x-api-key':env.PHOTOROOM_API_KEY},body:form});
+  }else{
+    form.append('size','auto');form.append('type','product');form.append('format','png');
+    res=await fetch('https://api.remove.bg/v1.0/removebg',{method:'POST',headers:{'X-Api-Key':env.REMOVE_BG_API_KEY},body:form});
+  }
+  if(!res.ok){const t=await res.text().catch(()=>'');return json({error:'Freisteller fehlgeschlagen.',detail:t.slice(0,300)},502)}
+  const out=new Uint8Array(await res.arrayBuffer());
+  return json({image:'data:image/png;base64,'+bytesToBase64(out),provider});
+}
 export async function onRequest(context){
   const { request, env } = context;
   const url = new URL(request.url);
   const sub = url.pathname.replace(/^\/api\/?/, '').split('/').filter(Boolean);
-  const protectedRoutes = new Set(['ping','articles','photo','meta','ai-chat','listing']);
+  const protectedRoutes = new Set(['ping','articles','photo','meta','ai-chat','listing','cutout']);
   if (protectedRoutes.has(sub[0])) {
     if (!env.RV_SYNC_PASSWORD) return json({ error:'RV_SYNC_PASSWORD fehlt.' }, 503);
     if (!same(request.headers.get('X-RV-Password'), env.RV_SYNC_PASSWORD)) return json({ error:'Falsches Cloud-Kennwort.' }, 401);
@@ -140,6 +165,7 @@ export async function onRequest(context){
     if (sub[0] === 'ping' && request.method === 'GET') return json({ ok:true });
     if (sub[0] === 'ai-chat' && request.method === 'POST') return handleAiChat(request, env);
     if (sub[0] === 'listing' && request.method === 'POST') return handleListing(request, env);
+    if (sub[0] === 'cutout' && (request.method === 'POST' || request.method === 'GET')) return handleCutout(request, env);
     if (!env.RV_DB || !env.RV_PHOTOS) return json({ error:'Cloudflare-Bindings fehlen.' }, 503);
     if (sub[0]==='articles'&&sub.length===1&&request.method==='GET') { const rows=await env.RV_DB.prepare('SELECT id,revision FROM articles WHERE deleted=0 ORDER BY id').all(); return json({items:rows.results||[]}); }
     if (sub[0]==='articles'&&sub.length===2) {

@@ -1,6 +1,6 @@
 {
   "scope": "Isolierte API-Vertragstests mit in-memory D1/R2 und gemocktem KI-fetch. Keine echten Cloudflare- oder Provider-Zugriffe.",
-  "passed": 16,
+  "passed": 17,
   "failed": 0,
   "knownLimits": [
     "Ungültiges vom Provider erzeugtes Listing-JSON liefert aktuell HTTP 200 mit leeren Listings; der Test dokumentiert diesen bestehenden API-Vertrag.",
@@ -69,6 +69,10 @@
     },
     {
       "name": "Bekannte Grenze: Ungültiges Listing-JSON liefert den bestehenden leeren 200-Fallback",
+      "result": "passed"
+    },
+    {
+      "name": "Freisteller: ohne Dienst 501, mit Photoroom/remove.bg PNG als Data-URL, Schlüssel nur serverseitig",
       "result": "passed"
     }
   ]
