@@ -434,16 +434,6 @@
     var bm = svgEl('linearGradient', { id: 'ccBeamG', x1: '0', y1: '0', x2: '0', y2: '1' });
     [['0', '#bfe3ff', '0'], ['.5', '#9fd2ff', '.55'], ['1', '#e6f4ff', '.95']].forEach(function (q) { bm.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
     d.appendChild(bm);
-    // Sockel mit Lichtstrahl
-    var py = Y + R + 9;
-    A('rect', { x: C - 3.5, y: Y + R - 2, width: 7, height: py - Y - R + 2, fill: 'url(#ccBeamG)', class: 'cc-beam', filter: 'url(#ccGoldBlur)' });
-    A('rect', { x: C - .35, y: Y + R - 4, width: .7, height: py - Y - R + 4, fill: '#eef7ff', opacity: '.9' });
-    A('ellipse', { cx: C, cy: py + 2, rx: 27, ry: 4.6, fill: '#05070c', stroke: '#2a3448', 'stroke-width': '.4' });
-    A('ellipse', { cx: C, cy: py, rx: 27, ry: 4.6, fill: '#0c1220', stroke: '#c9d6ea', 'stroke-width': '.35' });
-    A('ellipse', { cx: C, cy: py, rx: 27, ry: 4.6, fill: 'none', stroke: '#ffb060', 'stroke-width': '1.2', opacity: '.55', filter: 'url(#ccGoldBlur)' });
-    A('ellipse', { cx: C, cy: py, rx: 20, ry: 3.4, fill: 'none', stroke: '#5fb4ff', 'stroke-width': '.5', 'stroke-dasharray': '3 1.2 .8 1.2', class: 'cc-ped-dash' });
-    A('ellipse', { cx: C, cy: py, rx: 13, ry: 2.2, fill: 'none', stroke: '#ffc070', 'stroke-width': '.35', 'stroke-dasharray': '.8 .8', class: 'cc-ped-dash cc-ped-rev' });
-    A('ellipse', { cx: C, cy: py, rx: 6, ry: 1.1, fill: '#d8ecff', opacity: '.8', filter: 'url(#ccGoldBlur)', class: 'cc-field-halo' });
     // Strahlenkranz (dreht langsam)
     var rays = A('g', { class: 'cc-gold-rays' });
     var seed = 13; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
