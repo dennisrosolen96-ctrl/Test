@@ -618,3 +618,5 @@ body:has(#home:not(.hidden)) main.wrap { padding-bottom:120px !important; }
 .lux-bottomnav .orb svg.cc-navorb { width:96px !important; height:96px !important; }
 .lux-bottomnav .orb::before { display:none !important; }
 .lux-bottomnav .orb { margin-top:-30px !important; }
+.lux-bottomnav .orb { align-self:center !important; margin-top:-14px !important; min-height:0 !important; height:96px; display:grid !important; place-items:center !important; }
+.lux-bottomnav .orb .cc-nav-plasma { transform:translate(-50%,-50%) !important; }
