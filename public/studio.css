@@ -234,9 +234,9 @@ body:has(#steps:not(.hidden)) .cc-bokeh { display:block; }
 .sx-prices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
 .sx-price { display:flex; flex-direction:column; gap:8px; padding:12px; border-radius:16px; background:var(--sx-card); box-shadow:var(--sx-card-sh); border:1px solid transparent; }
 .sx-price .lbl { font-size:12.5px; color:var(--sx-lbl); display:flex; align-items:center; gap:7px; }
-.sx-price .lbl::before { content:''; width:8px; height:8px; border-radius:50%; background:#3d9bff; box-shadow:0 0 8px #3d9bff; }
-.sx-price[data-p="vinted"] .lbl::before { background:#8fd4ff; box-shadow:0 0 8px #8fd4ff; }
-.sx-price[data-p="instagram"] .lbl::before { background:#ffb060; box-shadow:0 0 8px #ffb060; }
+.sx-price .lbl::before { content:''; width:8px; height:8px; border-radius:50%; background:#3a8ef0; box-shadow:0 0 8px #3a8ef0; }
+.sx-price[data-p="vinted"] .lbl::before { background:#2aa57a; box-shadow:0 0 8px #2aa57a; }
+.sx-price[data-p="instagram"] .lbl::before { background:#cf7f2a; box-shadow:0 0 8px #cf7f2a; }
 .sx-price input { font-size:20px !important; }
 .sx-price .dl { font:600 12px/1.2 var(--sx-font); color:var(--sx-green); min-height:15px; }
 .sx-price .dl.neg { color:#718cff; }

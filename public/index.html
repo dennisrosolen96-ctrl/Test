@@ -23,6 +23,7 @@
 <link rel="stylesheet" href="/bestand.css">
 <link rel="stylesheet" href="/studio.css">
 <link rel="stylesheet" href="/settings.css">
+<link rel="stylesheet" href="/insights.css">
 <link rel="preload" href="/fonts/command-sans-regular.otf" as="font" type="font/otf" crossorigin>
 <link rel="preload" href="/fonts/command-sans-bold.otf" as="font" type="font/otf" crossorigin>
 </head>
@@ -1044,57 +1045,60 @@
 <button id="navSettings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Einstellungen</span></button>
 <button id="navFinance" class="cc-nav-hidden" tabindex="-1" aria-hidden="true"><span>Insights</span></button>
 </nav>
-<section id="finance" class="wrap hidden lux-finance-page">
-<div class="page-head finance-head">
-<div>
-<div class="eyebrow">ANALYTICS</div>
-<h1>Statistiken.</h1>
-<p class="muted">Umsatz, Gewinn und dein aktiver Warenwert auf einen Blick.</p>
+<section id="finance" class="wrap hidden sx in">
+<div class="sx-top">
+<span class="sx-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/></svg></span>
+<div class="sx-greet"><h1>Insights</h1><p id="inSubtitle">Zahlen, Trends und Empfehlungen</p></div>
+<div class="sx-seg in-period" id="inPeriod" role="group" aria-label="Zeitraum"><button type="button" data-p="7">7 Tage</button><button type="button" data-p="30">30 Tage</button><button type="button" data-p="90">90 Tage</button><button type="button" data-p="365">12 Monate</button><button type="button" data-p="all">Alle</button></div>
 </div>
-<div class="finance-mark">€</div>
-</div>
-<div class="finance-hero">
-<div class="finance-big">
-<small>REALISIERTER GEWINN</small>
-<strong id="financeProfitHero">0 €</strong>
-<p id="financeHeroHint">Basierend auf deinen gespeicherten Verkäufen.</p>
-</div>
-<div class="finance-side">
-<div class="stat">
-<span>EINKÄUFE IM BESTAND</span>
-<strong id="financeStock">0 €</strong>
-</div>
-<div class="stat">
-<span>UMSATZ</span>
-<strong id="financeRevenue">0 €</strong>
-</div>
-<div class="stat">
-<span>VERKAUFSKOSTEN</span>
-<strong id="financeFees">0 €</strong>
-</div>
-<div class="stat">
-<span>VERKÄUFE</span>
-<strong id="financeSalesCount">0</strong>
-</div>
-</div>
-</div>
-<div class="finance-split">
-<section class="settings-card">
-<div class="sectionheading">
-<h2>VERKÄUFE</h2>
-</div>
-<div id="salesList" class="library">
+<section class="sx-panel" aria-label="Überblick">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/></svg></span><div class="sx-tt"><h2 class="sx-title">Überblick</h2><span class="sx-sub" id="inRangeLabel">Vergleich mit dem Zeitraum davor</span></div></div>
+<div class="in-kpis" id="inKpis"></div>
+</section>
+<section class="sx-panel" aria-label="Umsatz und Gewinn">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><div class="sx-tt"><h2 class="sx-title">Umsatz &amp; Gewinn</h2><span class="sx-sub" id="inChartSub">Verlauf im gewählten Zeitraum</span></div>
+<div class="in-legend"><span><i class="sw rev"></i>Umsatz</span><span><i class="sw pro"></i>Gewinn</span></div><button type="button" class="sx-btn in-tbtn" id="inTableBtn" aria-pressed="false">Tabelle</button></div>
+<div class="in-chart" id="inChart"></div>
+<div class="in-table" id="inTable" hidden></div>
+</section>
+<div class="sx-split in-split">
+<section class="sx-panel" aria-label="Plattformen">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18M8 4v5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Plattformen</h2><span class="sx-sub">Wo du am besten verkaufst</span></div></div>
+<div class="in-platforms" id="inPlatforms"></div>
+</section>
+<section class="sx-panel" aria-label="Monatsziel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/></svg></span><div class="sx-tt"><h2 class="sx-title">Monatsziel</h2><span class="sx-sub" id="inGoalSub">Fortschritt und Prognose</span></div></div>
+<div class="in-goal" id="inGoal"></div>
+<div class="in-goal-set">
+<label class="sx-field"><span>Ziel pro Monat</span><span class="sx-input-wrap"><input id="inGoalValue" type="number" inputmode="decimal" min="0" step="10" placeholder="z. B. 500"><i>€</i></span></label>
+<div class="sx-seg" id="inGoalType" role="group" aria-label="Zielart"><button type="button" data-v="profit">Gewinn</button><button type="button" data-v="revenue">Umsatz</button></div>
 </div>
 </section>
-<section class="settings-card">
-<div class="sectionheading">
-<h2>INTERPRETATION</h2>
 </div>
-<div id="financeInsights" class="finance-insights">
-</div>
-<p class="muted">Gewinn = tatsächlicher Verkaufspreis − Einkauf − Einkaufskosten − Verkaufsgebühren − selbst getragene Versandkosten. Steuerliche Behandlung nicht enthalten.</p>
+<div class="sx-split in-split">
+<section class="sx-panel" aria-label="Kategorien">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Kategorien</h2><span class="sx-sub">Gewinn und Tempo pro Kategorie</span></div></div>
+<div class="in-bars" id="inCats"></div>
+</section>
+<section class="sx-panel" aria-label="Marken">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Top-Marken</h2><span class="sx-sub">Nach Gewinn im Zeitraum</span></div></div>
+<div class="in-brands" id="inBrands"></div>
 </section>
 </div>
+<section class="sx-panel" aria-label="Lager-Gesundheit">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg></span><div class="sx-tt"><h2 class="sx-title">Lager-Gesundheit</h2><span class="sx-sub">Gebundenes Kapital und Alter deines Bestands</span></div></div>
+<div class="in-kpis in-kpis-3" id="inStockKpis"></div>
+<div class="in-age" id="inAge"></div>
+</section>
+<section class="sx-panel" aria-label="Empfehlungen">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Empfehlungen</h2><span class="sx-sub">Aus deinen eigenen Zahlen abgeleitet</span></div></div>
+<div class="in-tips" id="inTips"></div>
+</section>
+<section class="sx-panel" aria-label="Letzte Verkäufe">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9.5" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Verkäufe</h2><span class="sx-sub" id="inSalesSub">Im gewählten Zeitraum</span></div><button type="button" class="sx-btn" id="inCsv">Tabelle exportieren</button></div>
+<div class="in-sales" id="inSales"></div>
+<p class="sx-note">Gewinn = Verkaufspreis − Einkaufspreis − Verkaufsgebühren − selbst getragene Versandkosten. Steuern sind nicht berücksichtigt.</p>
+</section>
 </section>
 <section id="aiChat" class="wrap hidden lux-ai-page">
 <div id="ccChat" class="v11 cc-chat">

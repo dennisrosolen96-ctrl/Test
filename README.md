@@ -1,4 +1,6 @@
-# RV Studio V23 — Command Center
+# RV Studio V24 — Command Center
+
+Neu in V24 (Details: [UEBERGABE-V24.md](UEBERGABE-V24.md)): Insights-Seite mit Zeitraumvergleich, interaktivem Umsatz-/Gewinn-Diagramm, Plattformvergleich, Monatsziel mit Prognose, Kategorien, Marken, Lager-Gesundheit und Empfehlungen.
 
 Neu in V23 (Details: [UEBERGABE-V23.md](UEBERGABE-V23.md)): Einstellungen als Kontrollzentrum mit Systemstatus, Profil & Shop, Plattform-Steuerung, Preisrundung, Verbindungstest, CSV-Export, Backup-Erinnerung und Speicherschutz.
 
