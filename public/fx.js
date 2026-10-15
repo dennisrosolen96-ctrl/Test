@@ -420,6 +420,59 @@
     wrap.appendChild(svg);
   }
 
+  /* Goldenes Kraftfeld um den Globus: Strahlen, Schimmerbögen, Funken, Sockel mit Lichtstrahl */
+  function setupGlobeGold() {
+    var wrap = doc.querySelector('.v15-globe-wrap'); if (!wrap || wrap.querySelector('.cc-globe-gold')) return;
+    var C = 43, Y = 50, R = 33.7;
+    var S = svgEl('svg', { viewBox: '0 0 100 100', class: 'cc-globe-gold', 'aria-hidden': 'true' });
+    var d = svgEl('defs', {}); S.appendChild(d);
+    function A(tag, at, p) { var e = svgEl(tag, at); (p || S).appendChild(e); return e; }
+    var rg = svgEl('linearGradient', { id: 'ccRay', x1: '0', y1: '0', x2: '1', y2: '0' });
+    [['0', '#fff6e0', '1'], ['.3', '#ffc070', '.8'], ['1', '#ff9a40', '0']].forEach(function (q) { rg.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
+    d.appendChild(rg);
+    var bl = svgEl('filter', { id: 'ccGoldBlur', x: '-50%', y: '-50%', width: '200%', height: '200%' }); bl.appendChild(svgEl('feGaussianBlur', { stdDeviation: '.6' })); d.appendChild(bl);
+    var bm = svgEl('linearGradient', { id: 'ccBeamG', x1: '0', y1: '0', x2: '0', y2: '1' });
+    [['0', '#bfe3ff', '0'], ['.5', '#9fd2ff', '.55'], ['1', '#e6f4ff', '.95']].forEach(function (q) { bm.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
+    d.appendChild(bm);
+    // Sockel mit Lichtstrahl
+    var py = Y + R + 9;
+    A('rect', { x: C - 3.5, y: Y + R - 2, width: 7, height: py - Y - R + 2, fill: 'url(#ccBeamG)', class: 'cc-beam', filter: 'url(#ccGoldBlur)' });
+    A('rect', { x: C - .35, y: Y + R - 4, width: .7, height: py - Y - R + 4, fill: '#eef7ff', opacity: '.9' });
+    A('ellipse', { cx: C, cy: py + 2, rx: 27, ry: 4.6, fill: '#05070c', stroke: '#2a3448', 'stroke-width': '.4' });
+    A('ellipse', { cx: C, cy: py, rx: 27, ry: 4.6, fill: '#0c1220', stroke: '#c9d6ea', 'stroke-width': '.35' });
+    A('ellipse', { cx: C, cy: py, rx: 27, ry: 4.6, fill: 'none', stroke: '#ffb060', 'stroke-width': '1.2', opacity: '.55', filter: 'url(#ccGoldBlur)' });
+    A('ellipse', { cx: C, cy: py, rx: 20, ry: 3.4, fill: 'none', stroke: '#5fb4ff', 'stroke-width': '.5', 'stroke-dasharray': '3 1.2 .8 1.2', class: 'cc-ped-dash' });
+    A('ellipse', { cx: C, cy: py, rx: 13, ry: 2.2, fill: 'none', stroke: '#ffc070', 'stroke-width': '.35', 'stroke-dasharray': '.8 .8', class: 'cc-ped-dash cc-ped-rev' });
+    A('ellipse', { cx: C, cy: py, rx: 6, ry: 1.1, fill: '#d8ecff', opacity: '.8', filter: 'url(#ccGoldBlur)', class: 'cc-field-halo' });
+    // Strahlenkranz (dreht langsam)
+    var rays = A('g', { class: 'cc-gold-rays' });
+    var seed = 13; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    for (var i = 0; i < 44; i++) {
+      var a = i / 44 * 360 + rnd() * 6, len = 8 + rnd() * 16, w = .45 + rnd() * .7;
+      var g = A('g', { transform: 'rotate(' + a.toFixed(1) + ' ' + C + ' ' + Y + ')' }, rays);
+      A('rect', { x: C + R - .5, y: Y - w / 2, width: len, height: w, fill: 'url(#ccRay)', class: 'cc-ray cc-ray-' + (i % 5) }, g);
+    }
+    // Schimmerbögen (gravitationsfeldartig, gegenläufig)
+    function arc(r, a0, a1) { var p0 = a0 * Math.PI / 180, p1 = a1 * Math.PI / 180; return 'M' + (C + Math.cos(p0) * r).toFixed(2) + ' ' + (Y + Math.sin(p0) * r).toFixed(2) + ' A' + r + ' ' + r + ' 0 0 1 ' + (C + Math.cos(p1) * r).toFixed(2) + ' ' + (Y + Math.sin(p1) * r).toFixed(2); }
+    var f1 = A('g', { class: 'cc-gold-spin' }), f2 = A('g', { class: 'cc-gold-spin cc-gold-rev' });
+    [[37, 200, 260, .7], [37, 20, 70, .55], [40.5, 110, 150, .5], [40.5, 290, 340, .6], [44, 230, 250, .4], [44, 60, 85, .35]].forEach(function (q, k) {
+      A('path', { d: arc(q[0], q[1], q[2]), fill: 'none', stroke: '#ffc070', 'stroke-width': q[3], 'stroke-linecap': 'round', opacity: '.85', filter: 'url(#ccGoldBlur)' }, k % 2 ? f2 : f1);
+      A('path', { d: arc(q[0], q[1], q[2]), fill: 'none', stroke: '#fff0d0', 'stroke-width': q[3] * .35, 'stroke-linecap': 'round' }, k % 2 ? f2 : f1);
+    });
+    // Goldene Funken, die nach außen treiben
+    var sp = A('g', {});
+    for (var j = 0; j < 36; j++) {
+      var an = rnd() * 6.283, r0 = R + 1 + rnd() * 3, r1 = R + 9 + rnd() * 12, dur = (3 + rnd() * 4).toFixed(1) + 's', del = (-rnd() * 6).toFixed(1) + 's';
+      var c = A('circle', { r: (.25 + rnd() * .45).toFixed(2), fill: rnd() < .8 ? '#ffd08a' : '#ffffff', class: 'cc-gold-spark' }, sp);
+      if (!reduce) {
+        c.appendChild(svgEl('animate', { attributeName: 'cx', values: (C + Math.cos(an) * r0).toFixed(2) + ';' + (C + Math.cos(an) * r1).toFixed(2), dur: dur, begin: del, repeatCount: 'indefinite' }));
+        c.appendChild(svgEl('animate', { attributeName: 'cy', values: (Y + Math.sin(an) * r0).toFixed(2) + ';' + (Y + Math.sin(an) * r1).toFixed(2), dur: dur, begin: del, repeatCount: 'indefinite' }));
+        c.appendChild(svgEl('animate', { attributeName: 'opacity', values: '0;1;0', dur: dur, begin: del, repeatCount: 'indefinite' }));
+      } else { c.setAttribute('cx', (C + Math.cos(an) * r1 * .8).toFixed(2)); c.setAttribute('cy', (Y + Math.sin(an) * r1 * .8).toFixed(2)); }
+    }
+    wrap.appendChild(S);
+  }
+
   function setupAvatar() {
     var av = doc.querySelector('.v11-avatar'); if (!av || av.parentNode.querySelector('.cc-avatar-earth')) return;
     var box = doc.createElement('span'); box.className = 'cc-avatar'; box.setAttribute('aria-hidden', 'true');
@@ -865,7 +918,7 @@
   function drawStatic() { for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(0); } for (var j = 0; j < plasmas.length; j++) { if (plasmas[j].resize()) plasmas[j].draw(2); } }
 
   function init() {
-    setupGlobe(); setupAvatar(); setupRobot(); setupNavCore(); setupNavTap(); setupPress(); setupFills(); setupGlints(); if (window.MutationObserver) { var ins = doc.getElementById('v11-insights'); if (ins) new MutationObserver(setupGlints).observe(ins, { childList: true }); var ci = doc.getElementById('ccChatIns'); if (ci) new MutationObserver(setupGlints).observe(ci, { childList: true }); } setupEmbers(); setupCounters();
+    setupGlobe(); setupGlobeGold(); setupAvatar(); setupRobot(); setupNavCore(); setupNavTap(); setupPress(); setupFills(); setupGlints(); if (window.MutationObserver) { var ins = doc.getElementById('v11-insights'); if (ins) new MutationObserver(setupGlints).observe(ins, { childList: true }); var ci = doc.getElementById('ccChatIns'); if (ci) new MutationObserver(setupGlints).observe(ci, { childList: true }); } setupEmbers(); setupCounters();
     doc.documentElement.classList.add('cc-fx');
     if (reduce) { drawStatic(); window.addEventListener('resize', drawStatic); var nh = doc.getElementById('navHome'); if (nh) nh.addEventListener('click', function () { setTimeout(drawStatic, 60); }); }
     else requestAnimationFrame(frame);
