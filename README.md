@@ -1,4 +1,6 @@
-# RV Studio V24 — Command Center
+# RV Studio V25 — Command Center
+
+Neu in V25 (Details: [UEBERGABE-V25.md](UEBERGABE-V25.md)): KI-Chat als eigene Seite mit gespeichertem Verlauf, formatierten Antworten, Folgefragen, Artikel-Kontext und Einrichtung direkt im Chat.
 
 Neu in V24 (Details: [UEBERGABE-V24.md](UEBERGABE-V24.md)): Insights-Seite mit Zeitraumvergleich, interaktivem Umsatz-/Gewinn-Diagramm, Plattformvergleich, Monatsziel mit Prognose, Kategorien, Marken, Lager-Gesundheit und Empfehlungen.
 

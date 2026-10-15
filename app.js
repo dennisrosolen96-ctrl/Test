@@ -151,7 +151,7 @@ async function runHomeAi(raw,opts={}){
  const localMessage=text=>homeMessage('assistant',text,{label:'RV lokal'});
  if(!text){localMessage('Schreib mir, was du brauchst – zum Beispiel <b>„Zeig mir meine Entwürfe“</b> oder <b>„Öffne den Bestand“</b>.');return}
  if(homeAiBusy){homeMessage('assistant','Eine KI-Anfrage läuft bereits. Warte bitte auf die Antwort.',{plain:true,label:'RV lokal'});return}
- homeMessage('user',text);
+ homeMessage('user',opts.display||text);
  if(sourceInput)sourceInput.value='';if($('homeAiInput'))$('homeAiInput').value='';if($('chatInput'))$('chatInput').value='';
  const lower=text.toLowerCase(),escapeText=v=>String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  let all;
@@ -175,13 +175,14 @@ async function runHomeAi(raw,opts={}){
  // The existing chat endpoint reads its six summary fields. For explicit
  // assistant actions, attach bounded real product details to the message;
  // photos, credentials and cloud metadata are never included here.
- let requestMessage=text;
- if(opts.remote){
+ let requestMessage=text+(opts.extra||'');
+ if(opts.remote||opts.withData){
   const field=value=>String(value??'').slice(0,240);
   const items=stock.slice(0,12).map(a=>({sku:field(a.sku),brand:field(a.brand),category:field(a.category),size:field(a.size),condition:field(a.condition),cost:Number(a.cost)||0,measurements:field(a.measurements),notes:field(a.notes),material:field(a.material),color:field(a.color),prices:a.prices?{ebay:field(a.prices.ebay),vinted:field(a.prices.vinted),instagram:field(a.prices.instagram)}:{},status:field(a.articleStatus),purchaseDate:field(a.purchaseDate)}));
   const sales=sold.slice(-12).map(a=>({sku:field(a.sku),category:field(a.category),price:Number(a.sale.price)||0,cost:Number(a.cost)||0,fees:Number(a.sale.fees)||0,shipping:Number(a.sale.shipping)||0,date:field(a.sale.date)}));
-  requestMessage=text+'\n\nErfasste eigene App-Daten (begrenzte Auswahl, keine externen Marktpreise): '+JSON.stringify({stock:items,sales})+'\nNutze ausschließlich diese Angaben. Fehlende Merkmale und Markttrends nicht erfinden; fordere erforderliche Angaben an. Bei Artikeltexten nur einen Entwurf liefern. Die vollständige Foto-Listing-Erstellung erfolgt im Studio.';
+ requestMessage=text+(opts.extra||'')+'\n\nErfasste eigene App-Daten (begrenzte Auswahl, keine externen Marktpreise): '+JSON.stringify({stock:items,sales})+'\nNutze ausschließlich diese Angaben. Fehlende Merkmale und Markttrends nicht erfinden; fordere erforderliche Angaben an. Bei Artikeltexten nur einen Entwurf liefern. Die vollständige Foto-Listing-Erstellung erfolgt im Studio.';
  }
+ if(opts.history)requestMessage='Bisheriger Gesprächsverlauf (gekürzt):\n'+opts.history+'\n\nNeue Nachricht: '+requestMessage;
  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),60000);
  homeAiBusy=true;rvAiState('busy',(rvProviderNames[provider]||'KI')+' antwortet …');
  const pending=homeMessage('assistant','Ich frage '+(rvProviderNames[provider]||'deine KI')+' an …',{plain:true});
@@ -234,7 +235,7 @@ async function recordSale(a){let platform=prompt('Verkauft auf welcher Plattform
 function syncFeeds(){const from=$('homeAiFeed');const to=$('chatFeed');if(from&&to)to.innerHTML=from.innerHTML}
 function showChat(){closeStockDetail&&closeStockDetail();hidePrimaryViews();$('aiChat').classList.remove('hidden');selectBottomNav('navChat');syncFeeds();window.scrollTo(0,0);setTimeout(()=>{$('chatInput')&&$('chatInput').focus()},80)}
 function showSettings(){closeStockDetail&&closeStockDetail();hidePrimaryViews();$('settingsPage').classList.remove('hidden');selectBottomNav('navSettings');window.scrollTo(0,0)}
-$('stockNewArticleQuick').onclick=()=>$('newArticle').click();$('homeNew').onclick=()=>{article=blank();push();showStep(0)};$('homeLibrary').onclick=()=>showStep(4);$('homeLibraryTop').onclick=()=>showStep(4);$('homeBackup').onclick=()=>$('backup').click();$('homeToSettings').onclick=()=>showSettings();$('homeToChat').onclick=()=>showChat();$('homeRefresh').onclick=()=>renderHome();$('homeAiSend').onclick=()=>runHomeAi();$('chatSend').onclick=()=>runHomeAi($('chatInput').value);$('chatClear').onclick=()=>{clearHomeFeed();syncFeeds()};$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runHomeAi($('chatInput').value)}});document.querySelectorAll('.chat-chip').forEach(b=>b.onclick=()=>runHomeAi(b.dataset.chatCmd||b.textContent));$('settingsBackup').onclick=()=>$('backup').click();$('settingsRestore').onchange=async e=>{await importBackupFile(e.target.files&&e.target.files[0]);e.target.value=''};$('homeAiClear').onclick=clearHomeFeed;$('homeAiAttach').onclick=()=>{article=blank();push();showStep(0);$('upload').click()};$('homeDrafts').onclick=()=>{showStep(4);stockFilter='draft';document.querySelectorAll('.stock-chip').forEach(b=>b.classList.toggle('selected',b.dataset.filter==='draft'));renderLibrary()};$('homeFinances').onclick=()=>showFinance();$('homeSyncShort').onclick=()=>{showSettings();setTimeout(()=>{$('rvCloudPassword').scrollIntoView({behavior:'smooth'});if(rvCloudPassword)$('rvCloudSync').click()},80)};$('homeStatStock').onclick=()=>showStep(4);$('homeStatSold').onclick=()=>showFinance();$('homeStatInvest').onclick=()=>showFinance();$('homeStatProfit').onclick=()=>showFinance();$('rvNotify').onclick=()=>{showHome();const tasks=$('homeTasks'),tools=tasks&&tasks.closest('details.v15-more-tools');if(tools)tools.open=true;if(tasks)requestAnimationFrame(()=>tasks.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}))};$('navChat').onclick=showChat;$('navSettings').onclick=()=>showSettings();$('homeAiInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runHomeAi()}});document.querySelectorAll('.home-chip').forEach(b=>b.onclick=()=>runHomeAi(b.dataset.cmd||b.textContent));$('navHome').onclick=showHome;$('navStock').onclick=()=>showStep(4);$('navStudio').onclick=()=>{article=blank();push();showStep(0)};$('navFinance').onclick=()=>showFinance();$('searchArticles').oninput=()=>renderLibrary();
+$('stockNewArticleQuick').onclick=()=>$('newArticle').click();$('homeNew').onclick=()=>{article=blank();push();showStep(0)};$('homeLibrary').onclick=()=>showStep(4);$('homeLibraryTop').onclick=()=>showStep(4);$('homeBackup').onclick=()=>$('backup').click();$('homeToSettings').onclick=()=>showSettings();$('homeToChat').onclick=()=>showChat();$('homeRefresh').onclick=()=>renderHome();$('homeAiSend').onclick=()=>runHomeAi();$('chatSend').onclick=()=>runHomeAi($('chatInput').value);$('chatClear').onclick=()=>{clearHomeFeed();syncFeeds()};$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runHomeAi($('chatInput').value)}});document.querySelectorAll('.chat-chip').forEach(b=>b.onclick=()=>runHomeAi(b.dataset.chatCmd||b.textContent));$('settingsBackup').onclick=()=>$('backup').click();$('settingsRestore').onchange=async e=>{await importBackupFile(e.target.files&&e.target.files[0]);e.target.value=''};$('homeAiClear').onclick=clearHomeFeed;$('homeAiAttach').onclick=()=>{article=blank();push();showStep(0);$('upload').click()};$('homeDrafts').onclick=()=>{showStep(4);stockFilter='draft';document.querySelectorAll('.stock-chip').forEach(b=>b.classList.toggle('selected',b.dataset.filter==='draft'));renderLibrary()};$('homeFinances').onclick=()=>showFinance();$('homeSyncShort').onclick=()=>{showSettings();setTimeout(()=>{$('rvCloudPassword').scrollIntoView({behavior:'smooth'});if(rvCloudPassword)$('rvCloudSync').click()},80)};$('homeStatStock').onclick=()=>showStep(4);$('homeStatSold').onclick=()=>showFinance();$('homeStatInvest').onclick=()=>showFinance();$('homeStatProfit').onclick=()=>showFinance();$('rvNotify').onclick=()=>{showHome();const tasks=$('homeTasks'),tools=tasks&&tasks.closest('details.v15-more-tools');if(tools)tools.open=true;if(tasks)requestAnimationFrame(()=>tasks.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}))};$('navChat').onclick=()=>showChat();$('navSettings').onclick=()=>showSettings();$('homeAiInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runHomeAi()}});document.querySelectorAll('.home-chip').forEach(b=>b.onclick=()=>runHomeAi(b.dataset.cmd||b.textContent));$('navHome').onclick=showHome;$('navStock').onclick=()=>showStep(4);$('navStudio').onclick=()=>{article=blank();push();showStep(0)};$('navFinance').onclick=()=>showFinance();$('searchArticles').oninput=()=>renderLibrary();
 
 // V5 Bestand: only inventory UI; photo upload, AI and editor remain V4 originals.
 let v5Tab='all',v5List=(()=>{try{return localStorage.getItem('rv_stock_view')==='list'}catch(e){return false}})(),v5Selecting=false,v5Picked=new Set(),v5WorkFilter='',v5Cache=[];
@@ -1208,6 +1209,83 @@ $('inGoalValue').addEventListener('change',()=>{stSave({goal:Math.max(0,Number($
 $('inGoalType').onclick=e=>{const b=e.target.closest('[data-v]');if(!b)return;stSave({goalType:b.dataset.v});inRender()};
 $('inCsv').onclick=()=>$('stCsv').click();
 {let rz=0,lastW=0;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if($('finance').classList.contains('hidden'))return;const w=$('inChart').clientWidth;if(Math.abs(w-lastW)>40){lastW=w;inRender()}},250)})}
+// ===================== KI-Chat V25 =====================
+const CH_KEY='rv_chat_v1',CH_MAX=60;
+const CH_QUICK=[['<path d="M3 12 12 3h8v8l-9 9-8-8Z"/><circle cx="16" cy="8" r="1.3"/>','Bestand bewerten','Was ist gut, was liegt zu lange?','Bewerte meinen aktuellen Bestand: Was läuft gut, was liegt zu lange, wo sollte ich handeln?'],
+ ['<path d="M4 18l5-6 4 3 7-9"/><path d="M15 6h5v5"/>','Preise prüfen','Welche Preise anpassen?','Welche meiner Preise sollte ich anpassen? Begründe kurz pro Artikel.'],
+ ['<path d="M7 3h7l4 4v14H7V3Z"/><path d="M14 3v4h4M9.5 12h6M9.5 16h6"/>','Verkaufstext','Für den neuesten Artikel','Schreibe einen Verkaufstext für meinen neuesten Artikel im Bestand.'],
+ ['<path d="M5 20V13M10 20V9M15 20V5M20 20V11"/>','Sortiment-Analyse','Stärken und Lücken','Analysiere mein Sortiment anhand meiner Verkäufe: Welche Kategorien und Marken lohnen sich?'],
+ ['<path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>','Lager optimieren','Ladenhüter & Kapital','Wie kann ich mein Lager optimieren und gebundenes Kapital freisetzen?'],
+ ['<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>','Woche planen','Konkrete To-dos','Plane meine Reselling-Woche mit konkreten Aufgaben, basierend auf meinem Bestand.'],
+ ['<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/>','Ideen & Strategien','Für mehr Umsatz','Gib mir Ideen und Strategien für mehr Umsatz mit meinem Reselling-Business.']];
+const CH_CMDS=[['Bestand öffnen','Öffne den Bestand'],['Entwürfe zeigen','Zeige meine offenen Entwürfe'],['Neuer Artikel','Neuen Artikel anlegen'],['Gewinn & Insights','Zeig mir meinen Gewinn'],['Backup erstellen','Backup erstellen'],['Synchronisieren','Synchronisieren']];
+const CH_CTX_ASK=[['Was ist er wert?','Was ist ein realistischer Verkaufspreis für diesen Artikel auf eBay, Vinted und Instagram?'],['Text für Vinted','Schreibe einen Vinted-Text für diesen Artikel.'],['Schneller verkaufen','Wie verkaufe ich diesen Artikel schneller?']];
+const CH_FOLLOW=['Konkreter, bitte','Als kurze Stichpunkte','Was mache ich als Erstes?'];
+let chPendingCtx=null,chWelcome=null;
+let chHistory=(()=>{try{return JSON.parse(localStorage.getItem(CH_KEY)||'[]')}catch{return []}})(),chTyping=false,chCtxId=null,chLastUser='';
+function chSave(){try{localStorage.setItem(CH_KEY,JSON.stringify(chHistory.slice(-CH_MAX)))}catch{}}
+function chFormat(text){const lines=sxEsc(text).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').split('\n');let out='',list=null;
+ for(const raw of lines){const ln=raw.trim(),ul=ln.match(/^[-•*]\s+(.*)/),ol=ln.match(/^\d+[.)]\s+(.*)/);
+  if(ul||ol){const t=ul?'ul':'ol';if(list!==t){if(list)out+='</'+list+'>';out+='<'+t+'>';list=t}out+='<li>'+(ul||ol)[1]+'</li>';continue}
+  if(list){out+='</'+list+'>';list=null}out+=ln?'<p>'+ln+'</p>':''}
+ if(list)out+='</'+list+'>';return out}
+function chTime(t){return new Date(t).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}
+function chRender(){const feed=$('chFeed');if(!feed)return;feed.replaceChildren();
+ if(!rvAiPassword()){const s=document.createElement('div');s.className='ch-setup';s.innerHTML='<span class="mi">'+sxIcon('<path d="M9 7H6a4 4 0 0 0 0 8h3M15 7h3a4 4 0 0 1 0 8h-3M8 11h8"/>')+'</span><div><b>KI verbinden</b><p>Für Antworten der KI brauchst du dein RV-Passwort (nur für diese Sitzung). App-Befehle funktionieren auch ohne.</p><div class="sx-row"><input type="password" id="chPw" placeholder="RV-Studio-Passwort" autocomplete="current-password"><button type="button" class="sx-btn" id="chPwGo">Verbinden</button><button type="button" class="sx-btn" id="chPwSet">Einstellungen</button></div></div>';feed.append(s);
+  s.querySelector('#chPwGo').onclick=()=>{const v=s.querySelector('#chPw').value.trim();if(!v)return;$('token').value=v;sessionStorage.setItem('rv_token',v);updateAiConnectionLabels();chRender();sxToast('✓ Passwort für diese Sitzung gesetzt')};
+  s.querySelector('#chPwSet').onclick=()=>{showSettings();setTimeout(()=>$('stKi').scrollIntoView({behavior:'smooth'}),80)}}
+ if(!chHistory.length){if(!chWelcome){chWelcome=document.createElement('div');chWelcome.className='ch-welcome';chWelcome.innerHTML='<div class="ch-orb" id="ccChatBot" aria-hidden="true"></div><b class="hi"></b><p>Ich kenne deinen Bestand und deine Verkäufe. Frag mich nach Preisen, Texten oder Strategien – oder häng einen Artikel an.</p>'}chWelcome.querySelector('.hi').textContent=stAll().name?'Hallo '+stAll().name+'! 👋':'Hallo! 👋';feed.append(chWelcome)}
+ for(const [i,m] of chHistory.entries()){const row=document.createElement('div');row.className='ch-msg '+(m.role==='user'?'me':'ai')+(m.local?' local':'')+(m.error?' err':'');
+  const body=m.role==='user'?'<p>'+sxEsc(m.text).replace(/\n/g,'<br>')+'</p>':m.html?m.text:chFormat(m.text);
+  row.innerHTML=(m.role==='user'?'':'<span class="ch-av" aria-hidden="true">'+sxIcon('<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/>')+'</span>')+'<div class="ch-bubble">'+(m.ctx?'<span class="ch-tag">'+sxIcon('<path d="M3 12V4h8l9 9-8 8-9-9Z"/>')+sxEsc(m.ctx)+'</span>':'')+body+'<div class="ch-meta"><small>'+(m.role==='user'?'Du':sxEsc(m.label||'KI'))+' · '+chTime(m.t)+'</small>'+(m.role!=='user'&&!m.local&&!m.error?'<button type="button" class="ch-act" data-copy="'+i+'">'+sxIcon('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>')+'Kopieren</button>':'')+(m.error&&chLastUser?'<button type="button" class="ch-act" data-retry="1">Erneut senden</button>':'')+'</div></div>';
+  feed.append(row)}
+ if(chTyping){const t=document.createElement('div');t.className='ch-msg ai';t.innerHTML='<span class="ch-av" aria-hidden="true">'+sxIcon('<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/>')+'</span><div class="ch-bubble ch-typing" aria-label="KI schreibt"><i></i><i></i><i></i></div>';feed.append(t)}
+ feed.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>sxCopy(chHistory[+b.dataset.copy].text,b));
+ feed.querySelectorAll('[data-retry]').forEach(b=>b.onclick=()=>chSend(chLastUser));
+ const last=chHistory[chHistory.length-1],fol=$('chFollow');fol.replaceChildren();
+ if(last&&last.role!=='user'&&!last.local&&!last.error&&!chTyping)for(const f of CH_FOLLOW){const b=document.createElement('button');b.type='button';b.textContent=f;b.onclick=()=>chSend(f);fol.append(b)}
+ $('chSub').textContent=(rvProviderNames[getAiProvider()]||'KI')+' · '+(chHistory.length?chHistory.filter(m=>m.role==='user').length+' Fragen in diesem Chat':'Dein Partner für Bestand, Preise und Texte');
+ if(!$('aiChat').classList.contains('hidden'))requestAnimationFrame(()=>{const r=feed.lastElementChild;if(r&&chHistory.length)r.scrollIntoView({block:'nearest',behavior:'smooth'})});
+}
+{const prevHM=homeMessage;homeMessage=function(role,text,opts={}){const el=prevHM(role,text,opts);const s=String(text);
+ if(role!=='user'&&/^Ich frage .+ an …$/.test(s))return el;
+ const local=opts.label==='RV lokal'||/^RV lokal/.test(opts.label||''),error=role!=='user'&&/^(KI-Anfrage fehlgeschlagen|RV-Passwort fehlt|Der KI-Endpunkt|Eine KI-Anfrage läuft)/.test(s);
+ chHistory.push({role,text:s,html:role!=='user'&&!opts.plain,local,error,label:local?'RV App':opts.label||(rvProviderNames[getAiProvider()]||'KI'),t:Date.now(),ctx:role==='user'?chPendingCtx:null});chPendingCtx=null;chHistory=chHistory.slice(-CH_MAX);chSave();chRender();return el}}
+{const prevClear=clearHomeFeed;clearHomeFeed=function(){prevClear();chHistory=[];chSave();chRender()}}
+document.addEventListener('rv:ai-state',e=>{const st=e.detail.state;chTyping=st==='busy';chRender()});
+function chHistoryText(){return chHistory.filter(m=>!m.local&&!m.error).slice(-6).map(m=>(m.role==='user'?'Nutzer: ':'Assistent: ')+String(m.text).replace(/<[^>]+>/g,'').slice(0,500)).join('\n')}
+const CH_LOCAL=/^(öffne|zeig|zeige|starte|mach|erstelle\s+(ein\s+)?backup|backup|sync|synchronisier|neuen?\s+artikel|neues?\s+(produkt|listing))/i;
+async function chSend(raw){const text=String(raw??$('chatInput').value).trim();if(!text)return;chLastUser=text;$('chatInput').value='';chAutosize();
+ if(CH_LOCAL.test(text)){runHomeAi(text);return}
+ let extra='',display=text;if(chCtxId){const a=(await allArticles()).find(x=>x.id===chCtxId);if(a){const f=v=>String(v??'').slice(0,240);
+  extra='\n\nBezogen auf diesen Artikel aus meinem Bestand: '+JSON.stringify({sku:f(a.sku),marke:f(a.brand),modell:f(a.model),kategorie:f(a.category),groesse:f(a.size),farbe:f(a.color),material:f(a.material),zustand:f(a.condition),maengel:f(a.notes),masse:f(a.measurements),ek:Number(a.cost)||0,preise:a.prices||{},status:f(a.articleStatus),tageImLager:v5Age(a),verkauft:a.sale?{preis:a.sale.price,plattform:a.sale.platform}:null});
+  chPendingCtx=[a.brand,a.model].filter(Boolean).join(' ')||a.sku||'Artikel'}}
+ runHomeAi(text,{remote:true,withData:true,extra,display,history:chHistoryText()})}
+$('chatSend').onclick=()=>chSend();
+$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();e.stopImmediatePropagation();chSend()}},true);
+function chAutosize(){const t=$('chatInput');t.style.height='auto';t.style.height=Math.min(160,t.scrollHeight)+'px'}
+$('chatInput').addEventListener('input',chAutosize);
+$('chatClear').onclick=()=>{if(chHistory.length&&!confirm('Neuen Chat beginnen? Der bisherige Verlauf wird gelöscht.'))return;clearHomeFeed();chSetCtx(null)};
+{const q=$('chQuick');for(const [ic,t,s,ask] of CH_QUICK){const b=document.createElement('button');b.type='button';b.className='ch-q';b.innerHTML='<span class="mi">'+sxIcon(ic)+'</span><span class="tx"><b>'+t+'</b><small>'+s+'</small></span>'+sxIcon('<path d="m9 5 7 7-7 7"/>');b.onclick=()=>chSend(ask);q.append(b)}
+ const c=$('chCmds');for(const [t,cmd] of CH_CMDS){const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>runHomeAi(cmd);c.append(b)}}
+/* Artikel als Kontext */
+async function chSetCtx(id){chCtxId=id;const box=$('chCtx');if(!id){box.hidden=true;box.replaceChildren();return}
+ const a=(await allArticles()).find(x=>x.id===id);if(!a){chSetCtx(null);return}
+ box.hidden=false;box.innerHTML=(a.photos?.[0]?.src?'<img src="'+sxEsc(a.photos[0].src)+'" alt="">':'')+'<span class="nm"><b>'+sxEsc([a.brand,a.model].filter(Boolean).join(' ')||a.sku||'Artikel')+'</b><small>'+sxEsc([a.sku,a.size&&'Gr. '+a.size,a.articleStatus].filter(Boolean).join(' · '))+'</small></span><span class="asks"></span><button type="button" class="ch-x" aria-label="Artikel entfernen">×</button>';
+ const asks=box.querySelector('.asks');for(const [t,q] of CH_CTX_ASK){const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>chSend(q);asks.append(b)}
+ box.querySelector('.ch-x').onclick=()=>chSetCtx(null)}
+async function chPickerRender(){const term=$('chPickerSearch').value.trim().toLowerCase(),items=(await allArticles()).filter(a=>!a.archivedAt).filter(a=>!term||[a.sku,a.brand,a.model,a.category,a.size].join(' ').toLowerCase().includes(term)).reverse().slice(0,40),root=$('chPickerList');root.replaceChildren();
+ if(!items.length){root.innerHTML='<p class="sx-hint">Keine passenden Artikel.</p>';return}
+ for(const a of items){const b=document.createElement('button');b.type='button';b.className='ch-pick';b.innerHTML=(a.photos?.[0]?.src?'<img src="'+sxEsc(a.photos[0].src)+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+sxEsc([a.brand,a.model].filter(Boolean).join(' ')||a.sku||'Artikel')+'</b><small>'+sxEsc([a.sku,a.category,a.size&&'Gr. '+a.size].filter(Boolean).join(' · '))+'</small></span><span class="st">'+sxEsc(a.articleStatus||'Entwurf')+'</span>';b.onclick=()=>{chSetCtx(a.id);$('chPicker').hidden=true;$('chatInput').focus()};root.append(b)}}
+$('chCtxBtn').onclick=()=>{$('chPicker').hidden=false;$('chPickerSearch').value='';chPickerRender();setTimeout(()=>$('chPickerSearch').focus(),50)};
+$('chPickerSearch').addEventListener('input',chPickerRender);
+$('chPickerClose').onclick=()=>{$('chPicker').hidden=true};
+$('chPicker').addEventListener('click',e=>{if(e.target===$('chPicker'))$('chPicker').hidden=true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('chPicker').hidden)$('chPicker').hidden=true});
+// Aus der Artikelakte: „KI fragen“
+{const prevOpenCh=openStockDetail;openStockDetail=async function(id){await prevOpenCh(id);let b=$('chAskArticle');if(!b){b=document.createElement('button');b.type='button';b.id='chAskArticle';b.className='btn secondary';b.textContent='✦ KI zu diesem Artikel fragen';const head=document.querySelector('#stockSheet .sheet-header');head&&head.after(b)}b.onclick=()=>{const sid=stockSelectedId;closeStockDetail();showChat();chSetCtx(sid)}}}
+{const prevShowChat=showChat;showChat=function(){prevShowChat();$('chatInput').placeholder=innerWidth<560?'Frag mich etwas …':'Frag nach Preisen, Texten, Strategien …';chRender();chAutosize();if(matchMedia('(hover:hover)').matches)setTimeout(()=>$('chatInput').focus(),120)}}
+chRender();
 // Externe Datenänderungen (z. B. Beispielartikel laden/entfernen) neu anzeigen.
 window.addEventListener('rv:data-changed',()=>{renderLibrary().catch(()=>{});try{renderHome()}catch(e){}});
 })();
