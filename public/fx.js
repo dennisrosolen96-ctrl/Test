@@ -420,47 +420,54 @@
     wrap.appendChild(svg);
   }
 
-  /* Goldenes Kraftfeld um den Globus: Strahlen, Schimmerbögen, Funken, Sockel mit Lichtstrahl */
-  function setupGlobeGold() {
-    var wrap = doc.querySelector('.v15-globe-wrap'); if (!wrap || wrap.querySelector('.cc-globe-gold')) return;
-    var C = 43, Y = 50, R = 33.7;
-    var S = svgEl('svg', { viewBox: '0 0 100 100', class: 'cc-globe-gold', 'aria-hidden': 'true' });
+  /* Goldenes Kraftfeld (gemeinsames Template für Globus, KI-Ball und Menümitte) */
+  var goldSerial = 0;
+  function goldField(host, o) {
+    o = o || {}; var C = o.C == null ? 50 : o.C, Y = o.Y == null ? 50 : o.Y, R = o.R || 30;
+    var id = 'gf' + (++goldSerial), N = o.rays || 44, L0 = o.len0 || 8, L1 = o.len1 || 16, W0 = o.w0 || .45, W1 = o.w1 || .7;
+    var S = svgEl('svg', { viewBox: '0 0 100 100', class: 'cc-globe-gold ' + (o.cls || ''), 'aria-hidden': 'true' });
     var d = svgEl('defs', {}); S.appendChild(d);
     function A(tag, at, p) { var e = svgEl(tag, at); (p || S).appendChild(e); return e; }
-    var rg = svgEl('linearGradient', { id: 'ccRay', x1: '0', y1: '0', x2: '1', y2: '0' });
+    var rg = svgEl('linearGradient', { id: id + 'r', x1: '0', y1: '0', x2: '1', y2: '0' });
     [['0', '#fff6e0', '1'], ['.3', '#ffc070', '.8'], ['1', '#ff9a40', '0']].forEach(function (q) { rg.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
     d.appendChild(rg);
-    var bl = svgEl('filter', { id: 'ccGoldBlur', x: '-50%', y: '-50%', width: '200%', height: '200%' }); bl.appendChild(svgEl('feGaussianBlur', { stdDeviation: '.6' })); d.appendChild(bl);
-    var bm = svgEl('linearGradient', { id: 'ccBeamG', x1: '0', y1: '0', x2: '0', y2: '1' });
-    [['0', '#bfe3ff', '0'], ['.5', '#9fd2ff', '.55'], ['1', '#e6f4ff', '.95']].forEach(function (q) { bm.appendChild(svgEl('stop', { offset: q[0], 'stop-color': q[1], 'stop-opacity': q[2] })); });
-    d.appendChild(bm);
-    // Strahlenkranz (dreht langsam)
-    var rays = A('g', { class: 'cc-gold-rays' });
-    var seed = 13; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
-    for (var i = 0; i < 44; i++) {
-      var a = i / 44 * 360 + rnd() * 6, len = 8 + rnd() * 16, w = .45 + rnd() * .7;
+    var bl = svgEl('filter', { id: id + 'b', x: '-50%', y: '-50%', width: '200%', height: '200%' }); bl.appendChild(svgEl('feGaussianBlur', { stdDeviation: '.6' })); d.appendChild(bl);
+    var org = C + 'px ' + Y + 'px';
+    var rays = A('g', { class: 'cc-gold-rays', style: 'transform-origin:' + org });
+    var seed = o.seed || 13; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    for (var i = 0; i < N; i++) {
+      var a = i / N * 360 + rnd() * 6, len = L0 + rnd() * (L1 - L0), w = W0 + rnd() * (W1 - W0);
       var g = A('g', { transform: 'rotate(' + a.toFixed(1) + ' ' + C + ' ' + Y + ')' }, rays);
-      A('rect', { x: C + R - .5, y: Y - w / 2, width: len, height: w, fill: 'url(#ccRay)', class: 'cc-ray cc-ray-' + (i % 5) }, g);
+      A('rect', { x: C + R - .5, y: Y - w / 2, width: len, height: w, fill: 'url(#' + id + 'r)', class: 'cc-ray cc-ray-' + (i % 5) }, g);
     }
-    // Schimmerbögen (gravitationsfeldartig, gegenläufig)
     function arc(r, a0, a1) { var p0 = a0 * Math.PI / 180, p1 = a1 * Math.PI / 180; return 'M' + (C + Math.cos(p0) * r).toFixed(2) + ' ' + (Y + Math.sin(p0) * r).toFixed(2) + ' A' + r + ' ' + r + ' 0 0 1 ' + (C + Math.cos(p1) * r).toFixed(2) + ' ' + (Y + Math.sin(p1) * r).toFixed(2); }
-    var f1 = A('g', { class: 'cc-gold-spin' }), f2 = A('g', { class: 'cc-gold-spin cc-gold-rev' });
-    [[37, 200, 260, .7], [37, 20, 70, .55], [40.5, 110, 150, .5], [40.5, 290, 340, .6], [44, 230, 250, .4], [44, 60, 85, .35]].forEach(function (q, k) {
-      A('path', { d: arc(q[0], q[1], q[2]), fill: 'none', stroke: '#ffc070', 'stroke-width': q[3], 'stroke-linecap': 'round', opacity: '.85', filter: 'url(#ccGoldBlur)' }, k % 2 ? f2 : f1);
-      A('path', { d: arc(q[0], q[1], q[2]), fill: 'none', stroke: '#fff0d0', 'stroke-width': q[3] * .35, 'stroke-linecap': 'round' }, k % 2 ? f2 : f1);
+    var f1 = A('g', { class: 'cc-gold-spin', style: 'transform-origin:' + org }), f2 = A('g', { class: 'cc-gold-spin cc-gold-rev', style: 'transform-origin:' + org });
+    [[1.1, 200, 260, .7], [1.1, 20, 70, .55], [1.2, 110, 150, .5], [1.2, 290, 340, .6], [1.3, 230, 250, .4], [1.3, 60, 85, .35]].forEach(function (q, k) {
+      var r = R * q[0], sw = q[3] * (o.arcW || 1);
+      A('path', { d: arc(r, q[1], q[2]), fill: 'none', stroke: '#ffc070', 'stroke-width': sw, 'stroke-linecap': 'round', opacity: '.85', filter: 'url(#' + id + 'b)' }, k % 2 ? f2 : f1);
+      A('path', { d: arc(r, q[1], q[2]), fill: 'none', stroke: '#fff0d0', 'stroke-width': sw * .35, 'stroke-linecap': 'round' }, k % 2 ? f2 : f1);
     });
-    // Goldene Funken, die nach außen treiben
-    var sp = A('g', {});
-    for (var j = 0; j < 36; j++) {
-      var an = rnd() * 6.283, r0 = R + 1 + rnd() * 3, r1 = R + 9 + rnd() * 12, dur = (3 + rnd() * 4).toFixed(1) + 's', del = (-rnd() * 6).toFixed(1) + 's';
-      var c = A('circle', { r: (.25 + rnd() * .45).toFixed(2), fill: rnd() < .8 ? '#ffd08a' : '#ffffff', class: 'cc-gold-spark' }, sp);
+    var sp = A('g', {}), NS = o.sparks == null ? 36 : o.sparks;
+    for (var j = 0; j < NS; j++) {
+      var an = rnd() * 6.283, r0 = R + 1 + rnd() * 3, r1 = R + L0 + rnd() * (L1 - L0 + 4), dur = (3 + rnd() * 4).toFixed(1) + 's', del = (-rnd() * 6).toFixed(1) + 's';
+      var c = A('circle', { r: ((.25 + rnd() * .45) * (o.sparkR || 1)).toFixed(2), fill: rnd() < .8 ? '#ffd08a' : '#ffffff', class: 'cc-gold-spark' }, sp);
       if (!reduce) {
         c.appendChild(svgEl('animate', { attributeName: 'cx', values: (C + Math.cos(an) * r0).toFixed(2) + ';' + (C + Math.cos(an) * r1).toFixed(2), dur: dur, begin: del, repeatCount: 'indefinite' }));
         c.appendChild(svgEl('animate', { attributeName: 'cy', values: (Y + Math.sin(an) * r0).toFixed(2) + ';' + (Y + Math.sin(an) * r1).toFixed(2), dur: dur, begin: del, repeatCount: 'indefinite' }));
         c.appendChild(svgEl('animate', { attributeName: 'opacity', values: '0;1;0', dur: dur, begin: del, repeatCount: 'indefinite' }));
       } else { c.setAttribute('cx', (C + Math.cos(an) * r1 * .8).toFixed(2)); c.setAttribute('cy', (Y + Math.sin(an) * r1 * .8).toFixed(2)); }
     }
-    wrap.appendChild(S);
+    host.appendChild(S);
+    return S;
+  }
+  function setupGlobeGold() {
+    var wrap = doc.querySelector('.v15-globe-wrap'); if (!wrap || wrap.querySelector('.cc-globe-gold')) return;
+    goldField(wrap, { C: 43, Y: 50, R: 33.7 });
+  }
+  function setupGoldElsewhere() {
+    var bot = doc.querySelector('.v15-bot-frame'); if (bot && !bot.querySelector('.cc-globe-gold')) goldField(bot, { R: 33, rays: 36, len0: 6, len1: 13, w0: .35, w1: .6, sparks: 22, cls: 'cc-gold-soft', seed: 21 });
+    var chat = doc.getElementById('ccChatBot'); if (chat && !chat.querySelector('.cc-globe-gold')) goldField(chat, { Y: 44, R: 30, rays: 36, len0: 6, len1: 13, w0: .35, w1: .6, sparks: 22, cls: 'cc-gold-soft', seed: 27 });
+    var nav = doc.querySelector('#bottomnav .orb'); if (nav && !nav.querySelector('.cc-globe-gold')) goldField(nav, { R: 34, rays: 30, len0: 4, len1: 9, w0: .5, w1: .8, sparks: 14, sparkR: 1.6, arcW: 1.6, cls: 'cc-gold-nav', seed: 31 });
   }
 
   function setupAvatar() {
@@ -908,7 +915,7 @@
   function drawStatic() { for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(0); } for (var j = 0; j < plasmas.length; j++) { if (plasmas[j].resize()) plasmas[j].draw(2); } }
 
   function init() {
-    setupGlobe(); setupGlobeGold(); setupAvatar(); setupRobot(); setupNavCore(); setupNavTap(); setupPress(); setupFills(); setupGlints(); if (window.MutationObserver) { var ins = doc.getElementById('v11-insights'); if (ins) new MutationObserver(setupGlints).observe(ins, { childList: true }); var ci = doc.getElementById('ccChatIns'); if (ci) new MutationObserver(setupGlints).observe(ci, { childList: true }); } setupEmbers(); setupCounters();
+    setupGlobe(); setupGlobeGold(); setupAvatar(); setupRobot(); setupNavCore(); setupNavTap(); setupPress(); setupGoldElsewhere(); setupFills(); setupGlints(); if (window.MutationObserver) { var ins = doc.getElementById('v11-insights'); if (ins) new MutationObserver(setupGlints).observe(ins, { childList: true }); var ci = doc.getElementById('ccChatIns'); if (ci) new MutationObserver(setupGlints).observe(ci, { childList: true }); } setupEmbers(); setupCounters();
     doc.documentElement.classList.add('cc-fx');
     if (reduce) { drawStatic(); window.addEventListener('resize', drawStatic); var nh = doc.getElementById('navHome'); if (nh) nh.addEventListener('click', function () { setTimeout(drawStatic, 60); }); }
     else requestAnimationFrame(frame);

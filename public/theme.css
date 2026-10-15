@@ -884,3 +884,28 @@ body:has(#home:not(.hidden))::before { background:none !important; display:none 
     linear-gradient(180deg, rgba(185,205,230,.14), rgba(120,140,170,.06) 55%, rgba(90,110,140,.08)) padding-box,
     linear-gradient(180deg, rgba(18,26,40,.70), rgba(14,20,32,.76)) padding-box,
     linear-gradient(165deg, rgba(255,255,255,.55), rgba(255,255,255,.14) 30%, rgba(255,255,255,.06) 65%, rgba(255,255,255,.28)) border-box !important; }
+
+/* Goldenes Kraftfeld als gemeinsames Template */
+.cc-gold-rays, .cc-gold-spin { transform-box:view-box; }
+.v15-bot-frame .cc-gold-soft { position:absolute; left:50%; top:50%; width:150%; height:150%; transform:translate(-50%,-50%); opacity:.55; z-index:0; }
+.v15-bot-frame .cc-plasma { position:relative; z-index:1; }
+#ccChatBot .cc-gold-soft { position:absolute; left:50%; top:0; width:140%; transform:translateX(-50%); height:auto; aspect-ratio:1; opacity:.5; z-index:0; }
+#ccChatBot .cc-plasma { z-index:1; }
+#bottomnav.lux-bottomnav .orb .cc-gold-nav { position:absolute; left:50%; top:50%; width:124px; height:124px; transform:translate(-50%,-50%); opacity:.55; z-index:0; }
+
+/* Menü: kleinerer Kreis wie in der Vorlage, sanfter Gold-Glow */
+#bottomnav.lux-bottomnav .orb svg.cc-navorb { width:92px !important; height:92px !important; z-index:2; }
+#bottomnav.lux-bottomnav .orb .cc-nav-plasma { width:108px !important; height:108px !important; z-index:1; }
+#bottomnav.lux-bottomnav { grid-template-columns:repeat(3,minmax(0,1fr)) 9.5% repeat(3,minmax(0,1fr)) !important; }
+#bottomnav.lux-bottomnav::before, #bottomnav.lux-bottomnav::after { width:43.2% !important; }
+#bottomnav.lux-bottomnav::after { box-shadow:inset -18px 0 30px -18px rgba(255,170,90,.55), inset 0 1px 0 rgba(255,255,255,.14), 0 8px 24px rgba(0,0,0,.55) !important; }
+#bottomnav.lux-bottomnav::before { box-shadow:inset 0 1px 0 rgba(255,255,255,.14), 0 8px 24px rgba(0,0,0,.55), 0 -2px 18px -8px rgba(255,180,100,.25) !important; }
+.v15-bot-frame .cc-gold-soft, #ccChatBot .cc-gold-soft { opacity:.9 !important; }
+#bottomnav.lux-bottomnav .orb svg.cc-navorb { width:110px !important; height:110px !important; }
+#bottomnav.lux-bottomnav .orb .cc-nav-plasma { width:118px !important; height:118px !important; opacity:.7; }
+#bottomnav.lux-bottomnav .orb .cc-gold-nav { width:132px !important; height:132px !important; opacity:.85 !important; }
+#bottomnav.lux-bottomnav button span { font-size:11.5px !important; }
+#bottomnav.lux-bottomnav button:not(.orb) svg { width:24px !important; height:24px !important; }
+#bottomnav.lux-bottomnav button:not(.orb) { height:62px; min-height:62px !important; }
+.v15-bot-frame .cc-gold-soft { width:120% !important; height:auto !important; aspect-ratio:1; z-index:2 !important; opacity:.75 !important; }
+#ccChatBot .cc-gold-soft { z-index:2 !important; opacity:.75 !important; }
