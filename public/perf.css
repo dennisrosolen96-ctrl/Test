@@ -1,0 +1,33 @@
+/* RV Studio – Leistung: gleiche Optik, deutlich weniger Rechenaufwand */
+/* 1) Keine Echtzeit-Unschärfe hinter Glasflächen (größter Bremsfaktor) */
+*, *::before, *::after { -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+/* 2) Hintergrund als eigene feste Ebene statt background-attachment: fixed */
+html { background:#070a11 !important; }
+html::before { content:''; position:fixed; inset:0; z-index:-1; pointer-events:none; transform:translateZ(0);
+  background:radial-gradient(ellipse 60% 26% at 50% 30%, rgba(50,100,200,.14), transparent 70%), url('/rv-bg.webp') center top / cover no-repeat, #070a11; }
+html body:is(:has(#home:not(.hidden)), :has(#aiChat:not(.hidden)), :has(#s4:not(.hidden)), :has(#finance:not(.hidden)), :has(#settingsPage:not(.hidden)), :has(#steps:not(.hidden))) { background:transparent !important; }
+/* 3) Leuchtlinien ohne Filter auf bewegten SVG-Teilen */
+.cc-glowline, .cc-orbit-dot, .cc-spark, .cc-gold-spark, .cc-glint, .cc-globe-hud, .cc-globe-gold { filter:none !important; }
+.cc-globe-gold, .cc-globe-bg .cc-sweep { mix-blend-mode:normal !important; }
+.v15-globe-wrap .cc-earth, .cc-globe-gold { animation:none !important; }
+/* 4) Randlicht nur noch auf Kacheln, Schnellzugriff und Einblick-Karten */
+.v11-panel > .cc-glint, .v11-m > .cc-glint, .v11-s2 > .cc-glint, .v11-cat > .cc-glint, .v11-pill > .cc-glint, .v11-prompts button > .cc-glint,
+.cc-side > .cc-glint, .cc-q > .cc-glint, .chat-chip > .cc-glint, .v11-prompts button > .cc-sheen, .v11-m > .cc-sheen, .v11-s2 > .cc-sheen, .cc-q > .cc-sheen { display:none !important; }
+.cc-glint { animation-duration:9s !important; }
+/* 5) Symbol-Schimmer über Farbe statt Filter */
+@keyframes cc-goldshimmer { 0%,100% { color:var(--gold-2,#ffd585); opacity:.92; } 55% { color:#fff4d8; opacity:1; } }
+@keyframes cc-iconglow { 0%,100% { opacity:.88; } 50% { opacity:1; } }
+@keyframes cc-iconglow-warm { 0%,100% { opacity:.88; } 50% { opacity:1; } }
+.v11-m .mi .v11-ico, .v11-s2 .mi .v11-ico, .cc-q .ic .v11-ico, .v11-card .ci, .v11-tile .ic, .v11-q .ic { filter:drop-shadow(0 0 3px rgba(255,200,130,.5)) !important; }
+.v11-tile .ic, .v11-q .ic { filter:drop-shadow(0 0 3px rgba(180,215,255,.55)) !important; }
+@keyframes cc-segwarm { 0%,100% { box-shadow:inset 0 0 0 1.5px #ffd585, 0 0 8px rgba(255,170,70,.45); } 55% { box-shadow:inset 0 0 0 1.5px #fff0c8, 0 0 16px rgba(255,190,100,.85); } }
+.lux-bottomnav button:not(.orb) svg { animation:none !important; }
+/* 6) Sparmodus für langsame Geräte (automatisch) */
+html.cc-lite .cc-glint, html.cc-lite .cc-sheen, html.cc-lite #s4 .stock-card::before, html.cc-lite .cc-gold-spark { display:none !important; }
+html.cc-lite .cc-gold-rays, html.cc-lite .cc-gold-spin, html.cc-lite .cc-ray, html.cc-lite .cc-spark, html.cc-lite .cc-field-halo,
+html.cc-lite .v11-tile .ic, html.cc-lite .v11-q .ic, html.cc-lite .v11-m .mi .v11-ico, html.cc-lite .v11-card .ci, html.cc-lite .v15-globe-wrap::before { animation:none !important; }
+/* Goldstrahlen: ganzer Kranz pulsiert statt jeder Strahl einzeln */
+.cc-ray { animation:none !important; opacity:.8; }
+.cc-gold-rays { animation:cc-spin 90s linear infinite, cc-raysbreath 4.2s ease-in-out infinite !important; }
+@keyframes cc-raysbreath { 0%,100% { opacity:.6; } 55% { opacity:1; } }
+html.cc-lite svg * { animation:none !important; }
