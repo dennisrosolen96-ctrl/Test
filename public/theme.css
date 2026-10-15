@@ -785,3 +785,23 @@ body:has(#home:not(.hidden)) .v11-ai .rv-crafted-chat #homeAiSend, .cc-send { bo
     box-shadow:0 0 0 1px rgba(255,190,120,.45), 0 0 18px rgba(255,150,60,.35), 0 10px 22px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.25) !important; }
 }
 .cc-sheen { position:absolute !important; top:0 !important; bottom:0 !important; left:0 !important; z-index:2 !important; }
+
+/* Globus: starker Glow wie in der Vorlage (warm-weißer Rand, orange und blau nach außen) */
+.v15-globe-wrap .cc-earth { box-shadow:
+  0 0 2px 1px rgba(255,245,230,.95),
+  0 0 10px 3px rgba(255,220,170,.75),
+  0 0 26px 8px rgba(255,170,90,.55),
+  0 0 54px 18px rgba(255,140,60,.28),
+  0 0 90px 34px rgba(60,130,255,.22),
+  inset 0 0 22px 4px rgba(255,190,120,.35) !important;
+  animation:cc-globeglow 4.5s ease-in-out infinite; }
+@keyframes cc-globeglow { 0%,100% { filter:brightness(1); } 50% { filter:brightness(1.12) saturate(1.1); } }
+.v15-globe-wrap::before { content:''; position:absolute; left:43%; top:50%; width:96%; height:96%; transform:translate(-50%,-50%); border-radius:50%; pointer-events:none; z-index:0;
+  background:radial-gradient(circle, rgba(255,170,90,.32) 30%, rgba(255,140,60,.16) 42%, rgba(60,130,255,.12) 56%, transparent 70%);
+  animation:cc-globehalo 4.5s ease-in-out infinite; }
+@keyframes cc-globehalo { 0%,100% { opacity:.8; transform:translate(-50%,-50%) scale(.97); } 50% { opacity:1; transform:translate(-50%,-50%) scale(1.03); } }
+@media (prefers-reduced-motion: reduce) { .v15-globe-wrap .cc-earth, .v15-globe-wrap::before { animation:none; } }
+/* Glocke: nur ein roter Punkt */
+.v11-bell > .cc-sheen, .v11-bell > .cc-glint { display:none !important; }
+.v15-globe-wrap::before { z-index:1 !important; mix-blend-mode:screen; width:104% !important; height:104% !important;
+  background:radial-gradient(circle, transparent 30%, rgba(255,200,140,.45) 32.5%, rgba(255,160,80,.30) 36%, rgba(255,130,50,.14) 43%, rgba(70,140,255,.12) 52%, transparent 64%) !important; }
