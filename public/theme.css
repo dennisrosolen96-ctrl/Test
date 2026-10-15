@@ -616,3 +616,5 @@ body:has(#home:not(.hidden)) main.wrap { padding-bottom:120px !important; }
 .lux-bottomnav .orb::before { width:112px !important; height:112px !important; background:radial-gradient(circle, rgba(10,14,28,.95) 0 62%, transparent 72%) !important; }
 .lux-bottomnav .orb .cc-nav-plasma { width:138px !important; height:138px !important; }
 .lux-bottomnav .orb svg.cc-navorb { width:96px !important; height:96px !important; }
+.lux-bottomnav .orb::before { display:none !important; }
+.lux-bottomnav .orb { margin-top:-30px !important; }
