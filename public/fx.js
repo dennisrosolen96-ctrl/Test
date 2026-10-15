@@ -534,6 +534,18 @@
     Array.prototype.forEach.call(doc.querySelectorAll('.cc-rbot-host'), function (h) { h.classList.toggle('cc-busy', st === 'busy'); });
   });
 
+  /* Angeklickte Knöpfe leuchten kurz orange (nicht im Menü unten) */
+  function setupPress() {
+    if (doc.documentElement.dataset.ccPress) return; doc.documentElement.dataset.ccPress = '1';
+    doc.addEventListener('pointerdown', function (e) {
+      var b = e.target.closest && e.target.closest('button, .v11-card, [role="button"]');
+      if (!b || b.closest('#bottomnav')) return;
+      if (!b.closest('#v11Root, #ccChat')) return;
+      b.classList.remove('cc-pressed'); void b.offsetWidth; b.classList.add('cc-pressed');
+      clearTimeout(b._ccp); b._ccp = setTimeout(function () { b.classList.remove('cc-pressed'); }, 900);
+    }, true);
+  }
+
   /* Menü: rotes Aufleuchten beim Antippen */
   function setupNavTap() {
     var nav = doc.getElementById('bottomnav'); if (!nav || nav.dataset.ccTap) return; nav.dataset.ccTap = '1';
@@ -853,7 +865,7 @@
   function drawStatic() { for (var i = 0; i < earths.length; i++) { if (earths[i].resize()) earths[i].draw(0); } for (var j = 0; j < plasmas.length; j++) { if (plasmas[j].resize()) plasmas[j].draw(2); } }
 
   function init() {
-    setupGlobe(); setupAvatar(); setupRobot(); setupNavCore(); setupNavTap(); setupFills(); setupGlints(); if (window.MutationObserver) { var ins = doc.getElementById('v11-insights'); if (ins) new MutationObserver(setupGlints).observe(ins, { childList: true }); var ci = doc.getElementById('ccChatIns'); if (ci) new MutationObserver(setupGlints).observe(ci, { childList: true }); } setupEmbers(); setupCounters();
+    setupGlobe(); setupAvatar(); setupRobot(); setupNavCore(); setupNavTap(); setupPress(); setupFills(); setupGlints(); if (window.MutationObserver) { var ins = doc.getElementById('v11-insights'); if (ins) new MutationObserver(setupGlints).observe(ins, { childList: true }); var ci = doc.getElementById('ccChatIns'); if (ci) new MutationObserver(setupGlints).observe(ci, { childList: true }); } setupEmbers(); setupCounters();
     doc.documentElement.classList.add('cc-fx');
     if (reduce) { drawStatic(); window.addEventListener('resize', drawStatic); var nh = doc.getElementById('navHome'); if (nh) nh.addEventListener('click', function () { setTimeout(drawStatic, 60); }); }
     else requestAnimationFrame(frame);
