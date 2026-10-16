@@ -265,18 +265,20 @@ const BX_ICONS={
  stale:bxSvg('<path d="M7 3h10M7 21h10M8 3c0 5 8 5 8 9s-8 4-8 9M16 3c0 5-8 5-8 9s8 4 8 9"/>'),
  price:bxSvg('<path d="M3 12V4h8l9 9-8 8-9-9Z"/><path d="M9.5 9.5 14 14M14 9.5 9.5 14"/>')
 };
-const BX_STATUS=[['online','Online','#3d9bff'],['ready','Bereit','#8fd4ff'],['draft','Entwurf','#7f8da8'],['sold','Verkauft','#ffb060']];
+const BX_STATUS=[['online','Online','#c4c6ca'],['ready','Bereit','#dee0e2'],['draft','Entwurf','#8d929a'],['sold','Verkauft','#cfd2d5']];
 function bxStatusKey(a){return ({Entwurf:'draft',Bereit:'ready',Online:'online',Verkauft:'sold'}[a.articleStatus]||'draft')}
 function bxMaxPrice(a){return Math.max(0,...Object.values(a.prices||{}).map(Number).filter(Number.isFinite))}
 function bxProfit(a){return a.sale?Number(a.sale.price||0)-Number(a.cost||0)-Number(a.sale.fees||0)-Number(a.sale.shipping||0):0}
 function bxMetric(icon,label,value,delta,cls,extra){return '<div class="bx-m'+(extra?' has-spark':'')+'"><span class="mi">'+BX_ICONS[icon]+'</span><span class="tx"><span class="lbl">'+label+'</span><span class="val">'+bxEsc(value)+'</span><span class="dl '+(cls||'')+'">'+bxEsc(delta)+'</span></span>'+(extra||'')+'</div>'}
 function bxBars(rows,unit){return rows.map(([name,val,pct])=>'<div class="row"><span class="nm">'+bxEsc(name)+'</span><span class="tr"><s style="width:'+Math.max(4,Math.round(pct))+'%"></s></span><span class="pc">'+bxEsc(val)+(unit||'')+'</span></div>').join('')}
+let bxSparkN=0;
 function bxSpark(values){
  if(values.filter(v=>v).length<2)return '';
  const w=86,h=34,max=Math.max(...values,1),min=Math.min(...values,0),step=w/(values.length-1);
  const pts=values.map((v,i)=>[i*step,h-3-((v-min)/(max-min||1))*(h-8)]);
  const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
- return '<svg class="bx-spark" viewBox="0 0 '+w+' '+h+'" aria-hidden="true"><defs><linearGradient id="bxSpF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d9bff" stop-opacity=".45"/><stop offset="1" stop-color="#3d9bff" stop-opacity="0"/></linearGradient></defs><path d="'+d+' L'+w+' '+h+' L0 '+h+' Z" fill="url(#bxSpF)"/><path d="'+d+'" fill="none" stroke="#5fb4ff" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+ const up=values[values.length-1]>=values[0],flat=values.every(v=>v===values[0]),col=flat?'#c9ccd1':up?'#2ee0a0':'#ff6b6b',gid='bxSpF'+(++bxSparkN);
+ return '<svg class="bx-spark" viewBox="0 0 '+w+' '+h+'" aria-hidden="true"><defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+col+'" stop-opacity=".4"/><stop offset="1" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs><path d="'+d+' L'+w+' '+h+' L0 '+h+' Z" fill="url(#'+gid+')"/><path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>';
 }
 function v5Analytics(items){
  const available=items.filter(v5Available),sold=items.filter(a=>a.articleStatus==='Verkauft'&&a.sale);
@@ -306,7 +308,7 @@ function v5Analytics(items){
   +bxMetric('clock','Ø Lagerdauer',avgAge===null?'—':avgAge+' Tage',old60?old60+' Artikel über 60 Tage':'↗ Alles frisch',old60?'warn':'')
   +bxMetric('chart','Realisierter Gewinn',euro(profit),revenue>0?'↗ Ø '+Math.round(profit/revenue*100)+' % Marge':'Noch keine Verkäufe',revenue>0?'':'nil',bxSpark(weeks))
   +'</div><div class="bx-ring" role="img" aria-label="'+(total-counts.sold)+' Artikel im Lager, '+counts.sold+' verkauft">'
-  +'<svg viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="bxCore" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="#2a5fae" stop-opacity=".55"/><stop offset=".7" stop-color="#0c1a33" stop-opacity=".2"/><stop offset="1" stop-color="#050a14" stop-opacity="0"/></radialGradient></defs>'
+  +'<svg viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="bxCore" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="#a4a8ae" stop-opacity=".55"/><stop offset=".7" stop-color="#1e1f21" stop-opacity=".2"/><stop offset="1" stop-color="#0c0c0d" stop-opacity="0"/></radialGradient></defs>'
   +'<circle cx="100" cy="100" r="96" class="hud a"/><circle cx="100" cy="100" r="90" class="hud b"/><circle cx="100" cy="100" r="66" fill="url(#bxCore)"/>'
   +'<circle cx="100" cy="100" r="'+R+'" class="track"/>'+ring+'<g class="orbit"><circle cx="100" cy="4" r="2.6" class="dot"/></g></svg>'
   +'<div class="bx-ring-c"><b>'+(total-counts.sold)+'</b><span>im Lager</span><small>'+counts.sold+' verkauft</small></div>'
@@ -812,7 +814,7 @@ const sxSources=()=>article.photos.filter(p=>!p.cover);
 // Das RVO-Titelbild ist ausschließlich für die interne Bestandsliste und liegt getrennt von den Fotos (article.rvCover).
 const sxCover=()=>article&&article.rvCover&&article.rvCover.src?article.rvCover:null;
 function sxEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function sxToast(text){let t=$('sxToast');if(!t){t=document.createElement('div');t.id='sxToast';t.setAttribute('role','status');t.style.cssText='position:fixed;left:50%;bottom:170px;transform:translateX(-50%);z-index:60;padding:12px 18px;border-radius:999px;font:500 14px Segoe UI,Inter,system-ui,sans-serif;color:#fff0d6;background:radial-gradient(ellipse at 50% 0,rgba(255,160,80,.35),rgba(40,22,10,.92));box-shadow:inset 0 0 0 1.5px #ffb060,0 0 18px rgba(255,150,60,.5),0 12px 30px rgba(0,0,0,.5);transition:opacity .3s;pointer-events:none';document.body.append(t)}t.textContent=text;t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity='0',2200)}
+function sxToast(text){let t=$('sxToast');if(!t){t=document.createElement('div');t.id='sxToast';t.setAttribute('role','status');t.style.cssText='position:fixed;left:50%;bottom:170px;transform:translateX(-50%);z-index:60;padding:12px 18px;border-radius:999px;font:500 14px Segoe UI,Inter,system-ui,sans-serif;color:#f0ece5;background:radial-gradient(ellipse at 50% 0,rgba(203,205,208,.35),rgba(23,24,26,.92));box-shadow:inset 0 0 0 1.5px #cfd2d5,0 0 18px rgba(196,198,202,.5),0 12px 30px rgba(0,0,0,.5);transition:opacity .3s;pointer-events:none';document.body.append(t)}t.textContent=text;t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity='0',2200)}
 async function sxCopy(text,btn){try{await navigator.clipboard.writeText(text)}catch{prompt('Zum Kopieren markieren:',text);return}if(btn){const old=btn.innerHTML;btn.textContent='✓ Kopiert';setTimeout(()=>btn.innerHTML=old,1500)}else sxToast('✓ Kopiert')}
 
 /* ---------- Fotos ---------- */
@@ -1120,7 +1122,7 @@ function sxRenderPublish(){const root=$('sxPublish');root.replaceChildren();arti
 
 /* ---------- Fertig-Check ---------- */
 const SX_STEP_OF={Foto:0,Einkaufspreis:0,'Maße':0,Zustand:0,'Mängelangabe':0,Artikelnummer:1,Marke:1,Kategorie:1,'Größe':1,Listingtext:1,Plattformpreis:3};
-function sxRenderReady(){pull();const missing=v6Missing(article),total=11,done=total-missing.length,pct=done/total,C=2*Math.PI*30,color=pct>=1?'#2ee0a0':'#3d9bff';
+function sxRenderReady(){pull();const missing=v6Missing(article),total=11,done=total-missing.length,pct=done/total,C=2*Math.PI*30,color=pct>=1?'#2ee0a0':'#c4c6ca';
  $('sxReady').innerHTML='<svg class="ring" viewBox="0 0 76 76" aria-hidden="true"><circle class="t" cx="38" cy="38" r="30"/><circle class="v" cx="38" cy="38" r="30" stroke="'+color+'" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+(C*(1-pct)).toFixed(1)+'"/><text x="38" y="44" text-anchor="middle">'+Math.round(pct*100)+'%</text></svg>'
   +'<div class="sx-ready-tx"><b>'+(missing.length?'Noch '+missing.length+(missing.length===1?' Angabe':' Angaben')+' offen':'Alles bereit zum Verkaufen')+'</b><div class="sx-chips">'+missing.map(m=>'<button type="button" data-step="'+(SX_STEP_OF[m]??0)+'">'+sxEsc(m)+'</button>').join('')+'</div></div>';
  $('sxReady').querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>showStep(+b.dataset.step));}
@@ -1216,10 +1218,10 @@ setTimeout(()=>{const days=Number(stAll().backupDays)||0;if(!days)return;const l
 {const prevStep=showStep;showStep=function(n){if(n===1&&!stAll().platforms[activePlatform]){pull();activePlatform=SX_PLATFORMS.map(x=>x[0]).find(k=>stAll().platforms[k])||'ebay'}prevStep(n);if(n===1)showListing()}}
 stApply();
 // ===================== Insights V24 =====================
-const IN_PF=[['ebay','eBay','#3a8ef0'],['vinted','Vinted','#2aa57a'],['instagram','Instagram','#cf7f2a']];
-const IN_REV='#3a8ef0',IN_PRO='#2aa57a',DAY=864e5;
+const IN_PF=[['ebay','eBay','#f3efe7'],['vinted','Vinted','#c9ccd1'],['instagram','Instagram','#8a8e95']];
+const IN_REV='#2ee0a0',IN_PRO='#f3efe7',DAY=864e5;
 const inPfName=k=>(IN_PF.find(x=>x[0]===String(k||'').toLowerCase())||[0,k||'Sonstige'])[1];
-const inPfColor=k=>(IN_PF.find(x=>x[0]===String(k||'').toLowerCase())||[0,0,'#7f8da8'])[2];
+const inPfColor=k=>(IN_PF.find(x=>x[0]===String(k||'').toLowerCase())||[0,0,'#8d929a'])[2];
 function inSaleTime(a){const t=Date.parse(a.sale?.date||'');return Number.isFinite(t)?t:null}
 function inDays(a){const s=v5Date(a),e=inSaleTime(a);return s!==null&&e!==null&&e>=s?Math.round((e-s)/DAY):null}
 function inStats(list){const rev=list.reduce((n,a)=>n+Number(a.sale.price||0),0),pro=list.reduce((n,a)=>n+bxProfit(a),0),cost=list.reduce((n,a)=>n+Number(a.sale.fees||0)+Number(a.sale.shipping||0),0),days=list.map(inDays).filter(x=>x!==null);
@@ -1277,7 +1279,7 @@ function inRenderStock(all){const avail=all.filter(v5Available),stale=Number(stA
  $('inStockKpis').innerHTML=stMetric('<ellipse cx="12" cy="6" rx="6" ry="2.5"/><path d="M6 6v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V6M6 10v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4"/>','Gebundenes Kapital',euro(cap),avail.length+' Artikel · Verkaufswert '+euro(pot),'nil')
   +stMetric('<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>','Ø Lagerdauer',ages.length?Math.round(ages.reduce((a,b)=>a+b,0)/ages.length)+' Tage':'—',ages.length?'Ältester Artikel '+Math.max(...ages)+' Tage':'Noch keine Daten','nil')
   +stMetric('<path d="M7 3h10M7 21h10M8 3c0 5 8 5 8 9s-8 4-8 9M16 3c0 5-8 5-8 9s8 4 8 9"/>','Ladenhüter',String(old),old?'über '+stale+' Tage im Lager':'↗ Keine über '+stale+' Tage',old?'warn':'');
- const B=[['0–30 Tage',0,30,'#9fc8f5'],['31–60 Tage',31,60,'#5fa3ef'],['61–90 Tage',61,90,'#2f78d6'],['über 90 Tage',91,1e9,'#1d4f99']].map(([n,lo,hi,c])=>[n,ages.filter(d=>d>=lo&&d<=hi).length,c]),tot=ages.length||1;
+ const B=[['0–30 Tage',0,30,'#e0e1e4'],['31–60 Tage',31,60,'#c9ccd0'],['61–90 Tage',61,90,'#b3b6bb'],['über 90 Tage',91,1e9,'#999ea5']].map(([n,lo,hi,c])=>[n,ages.filter(d=>d>=lo&&d<=hi).length,c]),tot=ages.length||1;
  $('inAge').innerHTML='<div class="in-agebar" role="img" aria-label="Altersstruktur des Bestands">'+B.filter(b=>b[1]).map(([n,c,col])=>'<i style="flex:'+c+';background:'+col+'" title="'+n+': '+c+' Artikel"></i>').join('')+'</div><div class="in-agelegend">'+B.map(([n,c,col])=>'<span><i style="background:'+col+'"></i>'+n+'<b>'+c+'</b><em>'+Math.round(c/tot*100)+' %</em></span>').join('')+'</div>'}
 function inTips(sales,all){const tips=[],avail=all.filter(v5Available),stale=Number(stAll().staleDays)||60;
  const pf=IN_PF.map(([k,name])=>({name,...inStats(sales.filter(a=>String(a.sale.platform||'').toLowerCase()===k))})).filter(r=>r.count>=2&&r.margin!==null).sort((a,b)=>b.margin-a.margin);
@@ -1456,7 +1458,7 @@ function hmRenderPerf(all,sales){const p=sxGet('rv_home_perf','30'),days=Number(
  for(let i=0;i<days;i++){const s=start+i*DAY,e=s+DAY,l=sales.filter(a=>{const t=inSaleTime(a);return t>=s&&t<e});rev+=l.reduce((n,a)=>n+Number(a.sale.price||0),0);pro+=l.reduce((n,a)=>n+bxProfit(a),0);pts.push({s,rev,pro,n:l.length})}
  $('hmPerfPeriod').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
  const host=$('hmChart'),W=Math.max(300,Math.round(host.clientWidth||600)),H=W<500?190:230,L=W<500?44:52,R=10,T=12,B=26,iw=W-L-R,ih=H-T-B;
- const vis=[['rev','Umsatz','#3a8ef0'],['pro','Gewinn','#2aa57a']].filter(([k])=>hmSeriesOn[k]);
+ const vis=[['rev','Umsatz','#2ee0a0'],['pro','Gewinn','#f3efe7']].filter(([k])=>hmSeriesOn[k]);
  const top=inNice(Math.max(1,...pts.flatMap(q=>vis.map(([k])=>q[k])))),bot=Math.min(0,...pts.map(q=>hmSeriesOn.pro?q.pro:0))<0?-inNice(-Math.min(...pts.map(q=>q.pro))):0;
  const x=i=>L+(days===1?iw/2:i*iw/(days-1)),y=v=>T+ih-(v-bot)/(top-bot)*ih;
  let g='';for(let i=0;i<=4;i++){const v=bot+(top-bot)*i/4;g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v).toFixed(1)+'" y2="'+y(v).toFixed(1)+'" class="'+(v===0?'zero':'grid')+'"/><text x="'+(L-8)+'" y="'+(y(v)+4).toFixed(1)+'" class="ax" text-anchor="end">'+inEuroShort(v)+'</text>'}
@@ -1469,7 +1471,7 @@ function hmRenderPerf(all,sales){const p=sxGet('rv_home_perf','30'),days=Number(
   tip.innerHTML='<b>bis '+new Date(q.s).toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'long'})+'</b><span><i class="sw rev"></i>Umsatz<em>'+euro(q.rev)+'</em></span><span><i class="sw pro"></i>Gewinn<em>'+euro(q.pro)+'</em></span><span><i></i>Verkäufe am Tag<em>'+q.n+'</em></span>';tip.hidden=false;const bw=host.getBoundingClientRect().width;tip.style.left=Math.max(4,Math.min(bw-tip.offsetWidth-4,x(i)/W*bw-tip.offsetWidth/2))+'px'};h.addEventListener('pointerenter',show);h.addEventListener('pointerdown',show)});
  svg.addEventListener('pointerleave',()=>{cross.hidden=true;tip.hidden=true;svg.querySelectorAll('.dot').forEach(dt=>dt.hidden=true)});
  const last=pts[pts.length-1]||{rev:0,pro:0},nSales=pts.reduce((n,q)=>n+q.n,0),nNew=all.filter(a=>{const t=Date.parse(a.createdAt||a.purchaseDate||'');return Number.isFinite(t)&&t>=start}).length;
- $('hmLegend').innerHTML=[['rev','Umsatz',euro(last.rev),'#3a8ef0',true],['pro','Gewinn',euro(last.pro),'#2aa57a',true],['n','Verkäufe',String(nSales),null,false],['a','Neue Artikel',String(nNew),null,false]].map(([k,l,v,col,tg])=>tg?'<label class="hm-lg"><input type="checkbox" data-k="'+k+'"'+(hmSeriesOn[k]?' checked':'')+'><i style="background:'+col+'"></i><span>'+l+'</span><b>'+v+'</b></label>':'<div class="hm-lg"><i class="nil"></i><span>'+l+'</span><b>'+v+'</b></div>').join('');
+ $('hmLegend').innerHTML=[['rev','Umsatz',euro(last.rev),'#2ee0a0',true],['pro','Gewinn',euro(last.pro),'#f3efe7',true],['n','Verkäufe',String(nSales),null,false],['a','Neue Artikel',String(nNew),null,false]].map(([k,l,v,col,tg])=>tg?'<label class="hm-lg"><input type="checkbox" data-k="'+k+'"'+(hmSeriesOn[k]?' checked':'')+'><i style="background:'+col+'"></i><span>'+l+'</span><b>'+v+'</b></label>':'<div class="hm-lg"><i class="nil"></i><span>'+l+'</span><b>'+v+'</b></div>').join('');
  $('hmLegend').querySelectorAll('input').forEach(c=>c.onchange=()=>{hmSeriesOn[c.dataset.k]=c.checked;if(!hmSeriesOn.rev&&!hmSeriesOn.pro){hmSeriesOn[c.dataset.k]=true;c.checked=true}hmRenderPerf(all,sales)})}
 function hmStock(){$('searchArticles').value='';TOP_GO.stock()}
 function hmRenderTasks(all,sales,avail){const stale=Number(stAll().staleDays)||60,days=Number(stAll().backupDays)||0,last=Date.parse(sxGet('rv_last_backup',''));
@@ -1488,7 +1490,7 @@ function hmRenderTrends(sales){const now=Date.now(),cur=sales.filter(a=>inSaleTi
  const rows=[...m.entries()].sort((x,y)=>y[1].rev-x[1].rev).slice(0,4),root=$('hmTrends');
  if(!rows.length){root.innerHTML='<p class="hm-empty">Sobald du in den letzten 30 Tagen verkaufst, siehst du hier deine stärksten Marken.</p>';return}
  root.innerHTML=rows.map(([k,o])=>{const d=o.prev?Math.round((o.n-o.prev)/o.prev*100):null,max=Math.max(1,...o.wk),pts=o.wk.map((v,i)=>(i*12).toFixed(0)+','+(22-v/max*18).toFixed(1)).join(' ');
-  const pic=sales.find(a=>key(a)===k&&rvThumb(a));return '<div class="hm-trend">'+(pic?'<img src="'+sxEsc(rvThumb(pic))+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+sxEsc(k)+'</b><small>'+o.n+(o.n===1?' Verkauf':' Verkäufe')+' · '+euro(o.rev)+'</small></span><svg class="sp" viewBox="0 0 60 24" aria-hidden="true"><polyline points="'+pts+'" fill="none" stroke="#2aa57a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg><span class="dl '+(d===null?'new':d<0?'neg':'')+'">'+(d===null?'neu':(d>=0?'+':'')+d+' %')+'</span></div>'}).join('')}
+  const pic=sales.find(a=>key(a)===k&&rvThumb(a));return '<div class="hm-trend">'+(pic?'<img src="'+sxEsc(rvThumb(pic))+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+sxEsc(k)+'</b><small>'+o.n+(o.n===1?' Verkauf':' Verkäufe')+' · '+euro(o.rev)+'</small></span><svg class="sp" viewBox="0 0 60 24" aria-hidden="true"><polyline points="'+pts+'" fill="none" stroke="'+(d!==null&&d<0?'#ff6b6b':'#2ee0a0')+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg><span class="dl '+(d===null?'new':d<0?'neg':'')+'">'+(d===null?'neu':(d>=0?'+':'')+d+' %')+'</span></div>'}).join('')}
 $('hmQuick').innerHTML=HM_QUICK.map(([k,ic,l])=>'<button type="button" class="bx-q hm-q" data-q="'+k+'"><span class="ic">'+sxIcon(ic)+'</span><span class="lb">'+l+'</span></button>').join('');
 $('hmQuick').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const k=b.dataset.q;if(k==='new'){article=blank();sxCoverMsg='';push();showStep(0)}else if(k==='purchases')TOP_GO.purchases();else hmOld(k)});
 $('hmPrompts').innerHTML='';for(const [l,q] of HM_PROMPTS){const b=document.createElement('button');b.type='button';b.textContent=l;b.onclick=()=>document.dispatchEvent(new CustomEvent('rv:ai-request',{detail:{message:q}}));$('hmPrompts').append(b)}

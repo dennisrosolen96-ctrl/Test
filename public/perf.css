@@ -2,9 +2,9 @@
 /* 1) Keine Echtzeit-Unschärfe hinter Glasflächen (größter Bremsfaktor) */
 *, *::before, *::after { -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
 /* 2) Hintergrund als eigene feste Ebene statt background-attachment: fixed */
-html { background:#070a11 !important; }
+html { background:#0b0c0d !important; }
 html::before { content:''; position:fixed; inset:0; z-index:-1; pointer-events:none; transform:translateZ(0);
-  background:radial-gradient(ellipse 60% 26% at 50% 30%, rgba(50,100,200,.14), transparent 70%), url('/rv-bg.webp') center top / cover no-repeat, #070a11; }
+  background:radial-gradient(ellipse 60% 26% at 50% 30%, rgba(175,179,184,.14), transparent 70%), url('/rv-bg.webp') center top / cover no-repeat, #0b0c0d; }
 html body:is(:has(#home:not(.hidden)), :has(#aiChat:not(.hidden)), :has(#s4:not(.hidden)), :has(#finance:not(.hidden)), :has(#settingsPage:not(.hidden)), :has(#steps:not(.hidden))) { background:transparent !important; }
 /* 3) Leuchtlinien ohne Filter auf bewegten SVG-Teilen */
 .cc-glowline, .cc-orbit-dot, .cc-spark, .cc-gold-spark, .cc-glint, .cc-globe-hud, .cc-globe-gold { filter:none !important; }
@@ -15,12 +15,12 @@ html body:is(:has(#home:not(.hidden)), :has(#aiChat:not(.hidden)), :has(#s4:not(
 .cc-side > .cc-glint, .cc-q > .cc-glint, .chat-chip > .cc-glint, .v11-prompts button > .cc-sheen, .v11-m > .cc-sheen, .v11-s2 > .cc-sheen, .cc-q > .cc-sheen { display:none !important; }
 .cc-glint { animation-duration:9s !important; }
 /* 5) Symbol-Schimmer über Farbe statt Filter */
-@keyframes cc-goldshimmer { 0%,100% { color:var(--gold-2,#ffd585); opacity:.92; } 55% { color:#fff4d8; opacity:1; } }
+@keyframes cc-goldshimmer { 0%,100% { color:var(--gold-2,#dbdddf); opacity:.92; } 55% { color:#f1ede6; opacity:1; } }
 @keyframes cc-iconglow { 0%,100% { opacity:.88; } 50% { opacity:1; } }
 @keyframes cc-iconglow-warm { 0%,100% { opacity:.88; } 50% { opacity:1; } }
-.v11-m .mi .v11-ico, .v11-s2 .mi .v11-ico, .cc-q .ic .v11-ico, .v11-card .ci, .v11-tile .ic, .v11-q .ic { filter:drop-shadow(0 0 3px rgba(255,200,130,.5)) !important; }
-.v11-tile .ic, .v11-q .ic { filter:drop-shadow(0 0 3px rgba(180,215,255,.55)) !important; }
-@keyframes cc-segwarm { 0%,100% { box-shadow:inset 0 0 0 1.5px #ffd585, 0 0 8px rgba(255,170,70,.45); } 55% { box-shadow:inset 0 0 0 1.5px #fff0c8, 0 0 16px rgba(255,190,100,.85); } }
+.v11-m .mi .v11-ico, .v11-s2 .mi .v11-ico, .cc-q .ic .v11-ico, .v11-card .ci, .v11-tile .ic, .v11-q .ic { filter:drop-shadow(0 0 3px rgba(218,220,222,.5)) !important; }
+.v11-tile .ic, .v11-q .ic { filter:drop-shadow(0 0 3px rgba(234,235,236,.55)) !important; }
+@keyframes cc-segwarm { 0%,100% { box-shadow:inset 0 0 0 1.5px #dbdddf, 0 0 8px rgba(199,201,205,.45); } 55% { box-shadow:inset 0 0 0 1.5px #ede8de, 0 0 16px rgba(208,211,214,.85); } }
 .lux-bottomnav button:not(.orb) svg { animation:none !important; }
 /* 6) Sparmodus für langsame Geräte (automatisch) */
 html.cc-lite .cc-glint, html.cc-lite .cc-sheen, html.cc-lite #s4 .stock-card::before, html.cc-lite .cc-gold-spark { display:none !important; }
@@ -33,11 +33,11 @@ html.cc-lite .v11-tile .ic, html.cc-lite .v11-q .ic, html.cc-lite .v11-m .mi .v1
 html.cc-lite svg * { animation:none !important; }
 
 /* Globus: volle Effekte zurück (ein einzelnes Element, gut verkraftbar) */
-.v15-globe-wrap .cc-glowline { filter:drop-shadow(0 0 1.2px #5fb4ff) drop-shadow(0 0 2.4px #3d9bff) !important; }
-.v15-globe-wrap .cc-orbit-dot { filter:drop-shadow(0 0 1.6px #ffffff) drop-shadow(0 0 3px #5fb4ff) !important; }
-.v15-globe-wrap .cc-spark, .v15-globe-wrap .cc-gold-spark { filter:drop-shadow(0 0 .8px #ffb060) !important; }
-.v15-globe-wrap .cc-globe-hud { filter:drop-shadow(0 0 3px rgba(95,180,255,.8)) !important; }
-.v15-globe-wrap .cc-globe-gold { filter:drop-shadow(0 0 2.5px rgba(255,190,100,.95)) !important; mix-blend-mode:screen !important; }
+.v15-globe-wrap .cc-glowline { filter:drop-shadow(0 0 1.2px #cfd1d4) drop-shadow(0 0 2.4px #c4c6ca) !important; }
+.v15-globe-wrap .cc-orbit-dot { filter:drop-shadow(0 0 1.6px #ffffff) drop-shadow(0 0 3px #cfd1d4) !important; }
+.v15-globe-wrap .cc-spark, .v15-globe-wrap .cc-gold-spark { filter:drop-shadow(0 0 .8px #cfd2d5) !important; }
+.v15-globe-wrap .cc-globe-hud { filter:drop-shadow(0 0 3px rgba(207,209,212,.8)) !important; }
+.v15-globe-wrap .cc-globe-gold { filter:drop-shadow(0 0 2.5px rgba(208,211,214,.95)) !important; mix-blend-mode:screen !important; }
 .v15-globe-wrap .cc-ray { animation:cc-ray 3.4s ease-in-out infinite !important; }
 .v15-globe-wrap .cc-gold-rays { animation:cc-spin 90s linear infinite !important; }
 .v15-globe-wrap .cc-earth { animation:cc-globeglow 4.5s ease-in-out infinite !important; }

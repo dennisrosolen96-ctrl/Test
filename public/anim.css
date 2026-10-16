@@ -3,7 +3,7 @@
 .cc-sheen, #s4 .stock-card::before, .v11-m .mi::after, .v11-s2 .mi::after, .cc-q .ic::after { display:none !important; animation:none !important; }
 .v11-tile, .v11-q, .v11-card, .v11-m, .v11-s2, #s4 .stock-card, #s4 .v5-kpi, #s4 .v6-tile, #ccChat .cc-q, #finance .stat, #finance .insight { position:relative; overflow:hidden; }
 .cc-gleam { position:absolute; top:0; bottom:0; left:0; width:55%; z-index:3; pointer-events:none; border-radius:inherit;
-  background:linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 30%, rgba(255,245,225,.22) 50%, rgba(255,255,255,0) 70%, transparent 100%);
+  background:linear-gradient(105deg, transparent 0%, rgba(255,255,255,0) 30%, rgba(244,241,236,.22) 50%, rgba(255,255,255,0) 70%, transparent 100%);
   transform:translateX(-130%); animation:cc-gleam 2.2s ease-in-out forwards; }
 @keyframes cc-gleam { to { transform:translateX(260%); } }
 /* Schalter */
@@ -22,27 +22,27 @@ html.cc-no-pulse :is(#rvCloudConnect, #settingsAiApply, #settingsBackup, #v7Back
 .rv-anim-list { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; margin-top:12px; }
 @media(max-width:640px) { .rv-anim-list { grid-template-columns:1fr; } }
 .rv-anim-row { position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; border-radius:14px; cursor:pointer;
-  border:1px solid transparent; background:linear-gradient(180deg, rgba(185,205,230,.12), rgba(90,110,140,.06)) padding-box, linear-gradient(180deg, rgba(18,26,40,.7), rgba(14,20,32,.76)) padding-box,
+  border:1px solid transparent; background:linear-gradient(180deg, rgba(227,229,231,.12), rgba(108,114,122,.06)) padding-box, linear-gradient(180deg, rgba(27,28,31,.7), rgba(22,23,24,.76)) padding-box,
   linear-gradient(165deg, rgba(255,255,255,.45), rgba(255,255,255,.1) 40%, rgba(255,255,255,.22)) border-box; }
 .rv-anim-row span { display:grid; gap:2px; min-width:0; }
-.rv-anim-row b { color:#f3f5f9; font-weight:600; font-size:14px; }
-.rv-anim-row small { color:#aeb8c8 !important; font-size:12px; line-height:1.3; }
+.rv-anim-row b { color:#f9f7f3; font-weight:600; font-size:14px; }
+.rv-anim-row small { color:#b7babf !important; font-size:12px; line-height:1.3; }
 .rv-anim-row input[type=checkbox] { position:absolute; opacity:0; pointer-events:none; }
 .rv-switch { flex:none; width:44px; height:24px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22); position:relative; transition:background .2s ease, box-shadow .2s ease; }
-.rv-switch::after { content:''; position:absolute; left:2px; top:2px; width:18px; height:18px; border-radius:50%; background:#d9e0ea; transition:transform .2s ease, background .2s ease; }
-.rv-anim-row input:checked + .rv-switch { background:radial-gradient(ellipse at 50% 0, rgba(255,170,80,.6), rgba(120,60,20,.6)); border-color:#ffd585; box-shadow:0 0 10px rgba(255,160,70,.5); }
-.rv-anim-row input:checked + .rv-switch::after { transform:translateX(20px); background:#fff4e0; }
-.rv-anim-row input:focus-visible + .rv-switch { outline:2px solid #fff0ba; outline-offset:2px; }
+.rv-switch::after { content:''; position:absolute; left:2px; top:2px; width:18px; height:18px; border-radius:50%; background:#ede8de; transition:transform .2s ease, background .2s ease; }
+.rv-anim-row input:checked + .rv-switch { background:radial-gradient(ellipse at 50% 0, rgba(203,205,208,.6), rgba(66,69,74,.6)); border-color:#dbdddf; box-shadow:0 0 10px rgba(199,201,205,.5); }
+.rv-anim-row input:checked + .rv-switch::after { transform:translateX(20px); background:#f4f1eb; }
+.rv-anim-row input:focus-visible + .rv-switch { outline:2px solid #ecedee; outline-offset:2px; }
 .rv-anim-sub select { max-width:130px; }
 
 /* ===== Lebendige Unterseiten ===== */
 /* 1) Wandernde Hintergrundlichter (nur Transform/Opacity, sehr günstig) */
 .cc-ambient { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; contain:strict; transform:translateZ(0); }
 .cc-ambient i { position:absolute; width:46vmax; height:46vmax; border-radius:50%; opacity:.55; will-change:transform; }
-.cc-ambient i:nth-child(1) { left:-18vmax; top:30%; background:radial-gradient(circle, rgba(255,160,80,.22), transparent 62%); animation:cc-drift1 34s ease-in-out infinite alternate; }
-.cc-ambient i:nth-child(2) { right:-20vmax; top:55%; background:radial-gradient(circle, rgba(255,175,110,.18), transparent 62%); animation:cc-drift2 41s ease-in-out infinite alternate; }
-.cc-ambient i:nth-child(3) { right:-10vmax; top:-14vmax; background:radial-gradient(circle, rgba(80,140,255,.20), transparent 62%); animation:cc-drift3 38s ease-in-out infinite alternate; }
-.cc-ambient i:nth-child(4) { left:20%; bottom:-24vmax; background:radial-gradient(circle, rgba(60,120,240,.14), transparent 62%); animation:cc-drift1 46s ease-in-out infinite alternate-reverse; }
+.cc-ambient i:nth-child(1) { left:-18vmax; top:30%; background:radial-gradient(circle, rgba(203,205,208,.22), transparent 62%); animation:cc-drift1 34s ease-in-out infinite alternate; }
+.cc-ambient i:nth-child(2) { right:-20vmax; top:55%; background:radial-gradient(circle, rgba(212,214,216,.18), transparent 62%); animation:cc-drift2 41s ease-in-out infinite alternate; }
+.cc-ambient i:nth-child(3) { right:-10vmax; top:-14vmax; background:radial-gradient(circle, rgba(203,205,208,.20), transparent 62%); animation:cc-drift3 38s ease-in-out infinite alternate; }
+.cc-ambient i:nth-child(4) { left:20%; bottom:-24vmax; background:radial-gradient(circle, rgba(191,194,198,.14), transparent 62%); animation:cc-drift1 46s ease-in-out infinite alternate-reverse; }
 @keyframes cc-drift1 { from { transform:translate(0,0) scale(1); } to { transform:translate(14vmax,-10vmax) scale(1.15); } }
 @keyframes cc-drift2 { from { transform:translate(0,0) scale(1.1); } to { transform:translate(-16vmax,-8vmax) scale(.95); } }
 @keyframes cc-drift3 { from { transform:translate(0,0) scale(1); } to { transform:translate(-12vmax,12vmax) scale(1.2); } }
@@ -67,12 +67,12 @@ html.cc-no-pagefx .cc-enter > *, html.cc-no-pagefx .cc-enter * { animation-name:
 #s4 .lux-stock-mark { overflow:visible !important; }
 #s4 .lux-stock-mark::before, #finance .finance-mark::before, #settingsPage .settings-mark::before {
   content:''; position:absolute; inset:-7px; border-radius:18px; pointer-events:none;
-  background:conic-gradient(from 0deg, transparent 0 55%, rgba(255,200,130,.0) 60%, rgba(255,210,150,.9) 72%, #fff3dc 76%, rgba(95,180,255,.7) 82%, transparent 92%);
-  -webkit-mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); mask:linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  background:conic-gradient(from 0deg, transparent 0 55%, rgba(218,220,222,.0) 60%, rgba(224,226,228,.9) 72%, #f2efe9 76%, rgba(207,209,212,.7) 82%, transparent 92%);
+  -webkit-mask:linear-gradient(#000000 0 0) content-box exclude, linear-gradient(#000000 0 0); mask:linear-gradient(#000000 0 0) content-box exclude, linear-gradient(#000000 0 0);
   -webkit-mask-composite:xor; padding:1.5px; animation:cc-spin 6s linear infinite; }
 #s4 .lux-stock-mark::after, #finance .finance-mark::after, #settingsPage .settings-mark::after {
   content:''; position:absolute; inset:-16px; border-radius:24px; pointer-events:none; z-index:-1;
-  background:radial-gradient(circle, rgba(255,170,80,.35), transparent 70%); animation:cc-markpulse 4.2s ease-in-out infinite; }
+  background:radial-gradient(circle, rgba(203,205,208,.35), transparent 70%); animation:cc-markpulse 4.2s ease-in-out infinite; }
 @keyframes cc-markpulse { 0%,100% { opacity:.4; transform:scale(.92); } 55% { opacity:1; transform:scale(1.06); } }
 html.cc-no-pulse #s4 .lux-stock-mark::after, html.cc-no-pulse #finance .finance-mark::after, html.cc-no-pulse #settingsPage .settings-mark::after,
 html.cc-no-shimmer #s4 .lux-stock-mark::before, html.cc-no-shimmer #finance .finance-mark::before, html.cc-no-shimmer #settingsPage .settings-mark::before { animation:none !important; }
@@ -80,7 +80,7 @@ html.cc-no-shimmer #s4 .lux-stock-mark::before, html.cc-no-shimmer #finance .fin
 /* 4) Überschriften: feine Goldlinie, die langsam aufleuchtet */
 :is(#s4 .lux-stock-hero, #finance .page-head, #settingsPage .page-head, #s0, #s1, #s2, #s3) .eyebrow { position:relative; display:inline-block; }
 :is(#s4 .lux-stock-hero, #finance .page-head, #settingsPage .page-head, #s0, #s1, #s2, #s3) .eyebrow::after { content:''; position:absolute; left:0; right:-30%; bottom:-4px; height:1.5px; border-radius:2px;
-  background:linear-gradient(90deg, rgba(255,200,130,0), #ffd585 30%, #fff0c8 50%, rgba(255,200,130,0)); background-size:200% 100%; animation:cc-lineflow 5s ease-in-out infinite; }
+  background:linear-gradient(90deg, rgba(218,220,222,0), #dbdddf 30%, #ede8de 50%, rgba(218,220,222,0)); background-size:200% 100%; animation:cc-lineflow 5s ease-in-out infinite; }
 @keyframes cc-lineflow { 0%,100% { background-position:100% 0; opacity:.5; } 50% { background-position:0 0; opacity:1; } }
 html.cc-no-shimmer .eyebrow::after { animation:none !important; }
 
@@ -103,7 +103,7 @@ html.cc-no-pagefx :is(#hmRoot, #finance, #settingsPage, .ch-root, #s4) > * { ani
 /* Randlicht auf den neuen Panels: ein Lichtpunkt läuft über die Oberkante.
    Nur ein 2px-Streifen auf eigener Ebene wird neu gezeichnet – kein Neuzeichnen des ganzen Panels, kein Flackern. */
 html:not(.cc-no-glint) :is(.sx-panel, .bx-panel, #rvTop .rvt-tile.on)::after { content:''; position:absolute; top:-1px; left:16px; right:16px; height:2px; pointer-events:none; border-radius:2px;
-  background:linear-gradient(90deg, transparent, rgba(160,215,255,.9) 30%, #fff 50%, rgba(255,190,120,.85) 70%, transparent) no-repeat; background-size:34% 100%;
+  background:linear-gradient(90deg, transparent, rgba(227,229,231,.9) 30%, #ffffff 50%, rgba(215,217,219,.85) 70%, transparent) no-repeat; background-size:34% 100%;
   animation:rv-edge 8s linear infinite; opacity:.85; will-change:transform; transform:translateZ(0); }
 #rvTop .rvt-tile.on::after { left:10px; right:10px; animation-duration:5s; }
 @keyframes rv-edge { from { background-position:-60% 0; } to { background-position:160% 0; } }

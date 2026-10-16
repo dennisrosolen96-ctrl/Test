@@ -7,13 +7,13 @@
   var OPTS = [
     ['gleam', 'Glanz', 'Ab und zu gleitet zufällig ein Glanz über ein Element'],
     ['glint', 'Randlicht', 'Lichtpunkt, der um Kacheln und Panels läuft'],
-    ['globeSpin', 'Globus dreht sich', 'Erde, Stadtlichter und Routen bewegen sich'],
-    ['globeFx', 'Globus-Effekte', 'Goldstrahlen, Ringe, Lichtbögen und Funken um den Globus'],
-    ['orb', 'Energieball', 'Lichtbänder des KI-Balls bewegen sich'],
-    ['shimmer', 'Schimmer', 'Orange Symbole und goldene Akzente leuchten langsam auf'],
+    ['globeSpin', 'Zitate wechseln', 'Alle 8 Sekunden erscheint ein neues Unternehmer-Zitat'],
+    ['globeFx', 'Zitat-Effekte', 'Lichtstreif, wandernder Lichtschein und Funken auf der Zitat-Bühne'],
+    ['orb', 'Panda bewegt sich', 'Der KI-Panda atmet, blinzelt, schaut sich um und reagiert auf dich'],
+    ['shimmer', 'Schimmer', 'Silberne Symbole und Akzente leuchten langsam auf'],
     ['pulse', 'Sanftes Pulsieren', 'KI-Leiste, aktive Auswahl, Abzeichen und Hauptknöpfe pulsieren leicht'],
     ['pageFx', 'Seitenwechsel', 'Inhalte gleiten beim Öffnen einer Seite nacheinander herein'],
-    ['ambient', 'Lichter im Hintergrund', 'Warme und blaue Lichter wandern langsam durch den Hintergrund'],
+    ['ambient', 'Lichter im Hintergrund', 'Silberne Lichter wandern langsam durch den Hintergrund'],
     ['autoLite', 'Automatischer Sparmodus', 'Nur für ältere Geräte: schaltet Effekte ab, wenn die Seite ruckelt']
   ];
   var RATES = { selten: [9000, 16000], mittel: [5000, 9000], oft: [2500, 5000] };
@@ -59,6 +59,7 @@
     Array.prototype.forEach.call(document.querySelectorAll('.v15-globe-wrap svg'), function (v) { if (v.pauseAnimations) { if (c.globeFx) v.unpauseAnimations(); else v.pauseAnimations(); } });
     if (window.RVFx) setTimeout(window.RVFx.redraw, 30);
     schedule();
+    try { document.dispatchEvent(new CustomEvent('rv:anim-change', { detail: c })); } catch (e) {}
   }
 
   /* Zufälliger Glanz: ein Element zur Zeit, nur wenn sichtbar */
