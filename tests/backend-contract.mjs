@@ -166,6 +166,79 @@ try {
       assert.deepEqual(result,{detected:{},ebay:{title:'',description:''},vinted:{title:'',description:''},instagram:{title:'',description:''}});
     }
   });
+  await test('Freisteller: ohne Dienst 501, mit Photoroom/remove.bg PNG als Data-URL, Schlüssel nur serverseitig', async () => {
+    const info=await expectStatus(await call('GET','cutout'),200);assert.deepEqual(info,{available:false,provider:''});
+    await expectStatus(await call('POST','cutout',{image:'data:image/jpeg;base64,/9j/2Q=='}),501);
+    const png=new Uint8Array([137,80,78,71,13,10,26,10]);
+    for (const [key,host,header] of [['PHOTOROOM_API_KEY','sdk.photoroom.com','x-api-key'],['REMOVE_BG_API_KEY','api.remove.bg','X-Api-Key']]) {
+      let seen=null;
+      globalThis.fetch = async (url, options) => { seen={url:String(url),key:options.headers[header]}; return new Response(png,{status:200,headers:{'Content-Type':'image/png'}}); };
+      const cutEnv={...env,[key]:'qa-cutout-key'};
+      await expectStatus(await call('POST','cutout',{image:'data:image/png;base64,'},{env:cutEnv}),400);
+      const r=await expectStatus(await call('POST','cutout',{image:'data:image/jpeg;base64,/9j/2Q=='},{env:cutEnv}),200);
+      assert.ok(seen.url.includes(host));assert.equal(seen.key,'qa-cutout-key');
+      assert.equal(r.image,'data:image/png;base64,iVBORw0KGgo=');assert.ok(!JSON.stringify(r).includes('qa-cutout-key'));
+    }
+    globalThis.fetch = async () => new Response('limit',{status:402});
+    await expectStatus(await call('POST','cutout',{image:'data:image/jpeg;base64,/9j/2Q=='},{env:{...env,REMOVE_BG_API_KEY:'k'}}),502);
+    await expectStatus(await call('POST','cutout',{image:'data:image/jpeg;base64,/9j/2Q=='},{headers:{'X-RV-Password':'wrong'}}),401);
+  });
+  await test('Poof.bg: geschützt, Typ/Größe geprüft, Schlüssel nur serverseitig, Fehler/Timeout/Limit sauber, kein Doppel-Credit', async () => {
+    const jpeg='data:image/jpeg;base64,/9j/2Q==';
+    // Ohne Secret
+    assert.deepEqual(await expectStatus(await call('GET','poof'),200),{available:false});
+    const nc=await expectStatus(await call('POST','poof',{image:jpeg}),501);assert.equal(nc.code,'not_configured');
+    const penv={...env,POOF_BG_API_KEY:'qa-poof-key'};
+    // Ohne/mit falschem Kennwort
+    await expectStatus(await call('POST','poof',{image:jpeg},{env:penv,headers:{'X-RV-Password':'wrong'}}),401);
+    // Typ- und Größenprüfung (vor jedem Poof-Aufruf)
+    let calls=[];
+    globalThis.fetch=async(url,options)=>{calls.push({url:String(url),options});throw new Error('darf nicht aufgerufen werden')};
+    await expectStatus(await call('POST','poof',{image:'data:image/jpeg;base64,'+Buffer.from('GIF89a-kein-jpeg').toString('base64')},{env:penv}),415);
+    await expectStatus(await call('POST','poof',{image:'data:image/gif;base64,R0lGODlh'},{env:penv}),415);
+    await expectStatus(await call('POST','poof',{},{env:penv}),415);
+    const big=Buffer.alloc(20_000_001);big[0]=0xff;big[1]=0xd8;big[2]=0xff;
+    await expectStatus(await call('POST','poof',{image:'data:image/jpeg;base64,'+big.toString('base64')},{env:penv}),413);
+    assert.equal(calls.length,0);
+    // Erfolg: richtige Felder, Schlüssel nur im Header zu Poof
+    const png=new Uint8Array([137,80,78,71,13,10,26,10,0,0,0,13]);
+    globalThis.fetch=async(url,options)=>{calls.push({url:String(url),key:options.headers['x-api-key'],form:options.body});
+      return new Response(png,{status:200,headers:{'Content-Type':'image/png','X-Image-Width':'800','X-Image-Height':'1000','X-Matte-Confidence':'0.97','X-Request-ID':'req_qa'}})};
+    const ok=await expectStatus(await call('POST','poof',{image:jpeg},{env:penv}),200);
+    assert.equal(calls.length,1);assert.equal(calls[0].url,'https://api.poof.bg/v1/remove');assert.equal(calls[0].key,'qa-poof-key');
+    assert.equal(calls[0].form.get('format'),'png');assert.equal(calls[0].form.get('size'),'full');assert.ok(calls[0].form.get('image_file') instanceof Blob);
+    assert.equal(ok.image,'data:image/png;base64,'+Buffer.from(png).toString('base64'));assert.equal(ok.engine,'poof');assert.equal(ok.width,800);assert.equal(ok.confidence,0.97);
+    assert.ok(!JSON.stringify(ok).includes('qa-poof-key'));
+    // Fehler-Zuordnung, jeweils genau EIN Aufruf (keine Wiederholung)
+    for(const [st,code,expect,re] of [[402,'payment_required',402,/aufgebraucht/],[429,'rate_limit_exceeded',429,/Minute/],[401,'authentication_error',502,/Schlüssel/],[500,'processing_failed',502,/nicht freistellen/],[503,'upstream_error',503,/nicht erreichbar/],[418,'',502,/Poof-Fehler/]]){
+      calls=[];globalThis.fetch=async()=>{calls.push(1);return new Response(JSON.stringify({code,message:'x',request_id:'req_e'}),{status:st,headers:{'Content-Type':'application/json'}})};
+      const e=await expectStatus(await call('POST','poof',{image:jpeg},{env:penv}),expect);
+      assert.match(e.error,re);assert.equal(calls.length,1);assert.ok(!JSON.stringify(e).includes('qa-poof-key'));
+    }
+    // Zeitüberschreitung
+    globalThis.fetch=async()=>{const e=new Error('timeout');e.name='TimeoutError';throw e};
+    const to=await expectStatus(await call('POST','poof',{image:jpeg},{env:penv}),504);assert.equal(to.code,'timeout');
+    // Kein PNG zurück
+    globalThis.fetch=async()=>new Response('nope',{status:200,headers:{'Content-Type':'text/html'}});
+    await expectStatus(await call('POST','poof',{image:jpeg},{env:penv}),502);
+    // Doppelte Anfrage mit gleichem Bild: aus dem Cache, kein zweiter Poof-Aufruf
+    const store=new Map();globalThis.caches={default:{async match(r){return store.has(r.url)?new Response(store.get(r.url)):undefined},async put(r,res){store.set(r.url,await res.text())}}};
+    calls=[];globalThis.fetch=async()=>{calls.push(1);return new Response(png,{status:200,headers:{'Content-Type':'image/png'}})};
+    const c1=await expectStatus(await call('POST','poof',{image:'data:image/jpeg;base64,/9j/4AAQ'},{env:penv}),200);
+    const c2=await expectStatus(await call('POST','poof',{image:'data:image/jpeg;base64,/9j/4AAQ'},{env:penv}),200);
+    assert.equal(calls.length,1);assert.equal(c2.cached,true);assert.equal(c1.image,c2.image);
+    delete globalThis.caches;
+    // Eigenes Rate-Limit (ohne D1: Speicher-Variante), 3. Anfrage in der Minute wird abgelehnt, ohne Poof-Aufruf
+    const renv={...penv,RV_DB:undefined,POOF_MAX_PER_MINUTE:'2'};calls=[];
+    await expectStatus(await call('POST','poof',{image:jpeg},{env:renv}),200);
+    await expectStatus(await call('POST','poof',{image:jpeg},{env:renv}),200);
+    const rl=await expectStatus(await call('POST','poof',{image:jpeg},{env:renv}),429);
+    assert.equal(rl.code,'rate_limit_local');assert.equal(calls.length,2);
+    // Credit-Stand (kostenlos über /v1/me)
+    globalThis.fetch=async(url,options)=>{assert.equal(String(url),'https://api.poof.bg/v1/me');assert.equal(options.headers['x-api-key'],'qa-poof-key');return new Response(JSON.stringify({plan:'Free',maxCredits:50,usedCredits:7,organizationId:'org'}),{status:200,headers:{'Content-Type':'application/json'}})};
+    const acc=await expectStatus(await call('GET','poof',undefined,{env:penv}),200);
+    assert.deepEqual(acc,{available:true,account:{plan:'Free',maxCredits:50,usedCredits:7}});
+  });
 } finally { globalThis.fetch = originalFetch; }
 
 const report={scope:'Isolierte API-Vertragstests mit in-memory D1/R2 und gemocktem KI-fetch. Keine echten Cloudflare- oder Provider-Zugriffe.',passed:tests.length,failed:0,knownLimits:['Ungültiges vom Provider erzeugtes Listing-JSON liefert aktuell HTTP 200 mit leeren Listings; der Test dokumentiert diesen bestehenden API-Vertrag.','D1/R2-Doubles prüfen den API-Vertrag, nicht echte Cloudflare-SQL-/Storage-Ausführung oder Parallelzugriffe.'],tests};

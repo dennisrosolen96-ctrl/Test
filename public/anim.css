@@ -37,7 +37,7 @@ html.cc-no-pulse :is(#rvCloudConnect, #settingsAiApply, #settingsBackup, #v7Back
 
 /* ===== Lebendige Unterseiten ===== */
 /* 1) Wandernde Hintergrundlichter (nur Transform/Opacity, sehr günstig) */
-.cc-ambient { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+.cc-ambient { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; contain:strict; transform:translateZ(0); }
 .cc-ambient i { position:absolute; width:46vmax; height:46vmax; border-radius:50%; opacity:.55; will-change:transform; }
 .cc-ambient i:nth-child(1) { left:-18vmax; top:30%; background:radial-gradient(circle, rgba(255,160,80,.22), transparent 62%); animation:cc-drift1 34s ease-in-out infinite alternate; }
 .cc-ambient i:nth-child(2) { right:-20vmax; top:55%; background:radial-gradient(circle, rgba(255,175,110,.18), transparent 62%); animation:cc-drift2 41s ease-in-out infinite alternate; }
@@ -85,3 +85,26 @@ html.cc-no-shimmer #s4 .lux-stock-mark::before, html.cc-no-shimmer #finance .fin
 html.cc-no-shimmer .eyebrow::after { animation:none !important; }
 
 @media (prefers-reduced-motion: reduce) { .cc-ambient i, .cc-enter *, .eyebrow::after, .lux-stock-mark::before, .lux-stock-mark::after, .finance-mark::before, .finance-mark::after, .settings-mark::before, .settings-mark::after { animation:none !important; } }
+
+/* V28: Animations-Schalter wirken auch auf den neuen Seiten */
+#rvTop .rvt-tile, #hmRoot .st-m, #hmRoot .hm-q, #hmRoot .hm-row, #hmRoot .hm-cattile, #hmRoot .hm-s2, #hmRoot .hm-task, .sx-panel .st-m, .in-pf, .in-tipcard, .ch-q, .st-nav button, .st .st-action, #steps .step, .sx-pub, #s4 .bx-tab { position:relative; overflow:hidden; }
+#rvTop .rvt-tile .bd { z-index:4; }
+#rvTop .rvt-tile:has(.bd:not([hidden])) { overflow:visible; }
+html.cc-no-pulse :is(.bx-q .bd, .bx-cta-orb, .sx-cta, #nav.sx-nav #next, .rvt-pill .dot, .bx-st i, .ch-state::before, .ch-send, #homeAiSend, .sx-cta-orb) { animation:none !important; }
+html.cc-no-shimmer :is(#s4.bx .mi .bx-ico, .sx-orb::after, .bx-orb::after) { animation:none !important; }
+html.cc-no-globefx :is(.bx-ring .hud, .bx-ring .orbit, .ch-orb, .hm-globe::before) { animation:none !important; }
+/* Seitenauftritt für die neuen Seiten: Bereiche gleiten gestaffelt herein */
+:is(#home.cc-enter #hmRoot, #finance.cc-enter, #settingsPage.cc-enter, #aiChat.cc-enter .ch-root, #s4.cc-enter) > * { animation:cc-rise .55s cubic-bezier(.2,.7,.2,1) both; }
+:is(#home.cc-enter #hmRoot, #finance.cc-enter, #settingsPage.cc-enter, #aiChat.cc-enter .ch-root, #s4.cc-enter) > :nth-child(2) { animation-delay:.06s; }
+:is(#home.cc-enter #hmRoot, #finance.cc-enter, #settingsPage.cc-enter, #aiChat.cc-enter .ch-root, #s4.cc-enter) > :nth-child(3) { animation-delay:.12s; }
+:is(#home.cc-enter #hmRoot, #finance.cc-enter, #settingsPage.cc-enter, #aiChat.cc-enter .ch-root, #s4.cc-enter) > :nth-child(4) { animation-delay:.18s; }
+:is(#home.cc-enter #hmRoot, #finance.cc-enter, #settingsPage.cc-enter, #aiChat.cc-enter .ch-root, #s4.cc-enter) > :nth-child(n+5) { animation-delay:.24s; }
+html.cc-no-pagefx :is(#hmRoot, #finance, #settingsPage, .ch-root, #s4) > * { animation-name:none !important; }
+/* Randlicht auf den neuen Panels: ein Lichtpunkt läuft über die Oberkante.
+   Nur ein 2px-Streifen auf eigener Ebene wird neu gezeichnet – kein Neuzeichnen des ganzen Panels, kein Flackern. */
+html:not(.cc-no-glint) :is(.sx-panel, .bx-panel, #rvTop .rvt-tile.on)::after { content:''; position:absolute; top:-1px; left:16px; right:16px; height:2px; pointer-events:none; border-radius:2px;
+  background:linear-gradient(90deg, transparent, rgba(160,215,255,.9) 30%, #fff 50%, rgba(255,190,120,.85) 70%, transparent) no-repeat; background-size:34% 100%;
+  animation:rv-edge 8s linear infinite; opacity:.85; will-change:transform; transform:translateZ(0); }
+#rvTop .rvt-tile.on::after { left:10px; right:10px; animation-duration:5s; }
+@keyframes rv-edge { from { background-position:-60% 0; } to { background-position:160% 0; } }
+html.cc-lite :is(.sx-panel, .bx-panel)::after { display:none; }

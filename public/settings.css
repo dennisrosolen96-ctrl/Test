@@ -1,0 +1,110 @@
+/* RV Studio – Einstellungen als Kontrollzentrum. Baut auf studio.css (Klasse .sx) auf und nutzt dieselben Werte wie die Startseite. */
+#settingsPage.st { --sx-text:#eef4ff; max-width:1000px !important; padding:22px 16px 140px !important; }
+#settingsPage.st:not(.hidden) { display:flex !important; }
+#settingsPage.st .st-sec { scroll-margin-top:16px; }
+#settingsPage.st h1, #settingsPage.st h2, #settingsPage.st h3 { font-family:var(--sx-font) !important; }
+
+/* Systemstatus: Kennzahlen wie in der Verkaufs-Übersicht */
+.st-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+.st-m { position:relative; display:flex; align-items:center; gap:11px; min-height:70px; padding:10px 11px; border-radius:16px; border:1px solid transparent; background:var(--sx-card); box-shadow:var(--sx-card-sh); min-width:0; }
+.st-m .mi, .st .st-action .mi { display:grid; place-items:center; width:38px; height:38px; flex:none; border-radius:12px; border:1px solid rgba(255,205,130,.45); color:var(--sx-orange-hi);
+  background:radial-gradient(circle at 35% 25%, rgba(255,215,150,.22), rgba(60,40,22,.35) 70%); box-shadow:inset 0 0 10px rgba(255,150,60,.18), 0 0 10px rgba(255,140,50,.18); }
+.st-m .mi .sx-ico, .st .st-action .mi .sx-ico { width:20px; height:20px; filter:drop-shadow(0 0 3px rgba(255,200,130,.5)); }
+.st-m .tx { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.st-m .lbl { font-size:11.5px; color:var(--sx-lbl); }
+.st-m .val { font-size:19px; line-height:1.05; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow:0 0 10px rgba(170,220,255,.22); }
+.st-m .dl { font:600 11px/1.2 var(--sx-font); color:var(--sx-green); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.st-m .dl.nil { color:var(--sx-dim); font-weight:500; }
+.st-m .dl.warn { color:var(--sx-orange-hi); }
+
+/* Bereichs-Kacheln wie die Startseiten-Kacheln */
+.st-nav { display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:10px; }
+.st-nav button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-height:84px; padding:10px 4px !important; border:1px solid transparent !important; border-radius:18px !important;
+  background:var(--sx-tile) !important; box-shadow:var(--sx-card-sh) !important; color:#e9edf3 !important; transition:transform .2s, box-shadow .25s, filter .25s; }
+.st-nav .ic { color:#f4f8ff; filter:drop-shadow(0 0 6px rgba(140,200,255,.55)); display:grid; }
+.st-nav .ic .sx-ico { width:24px; height:24px; stroke-width:1.6; }
+.st-nav .lb { font-size:12px; line-height:1.15; text-align:center; }
+.st-nav button.on { background:var(--sx-on-bg) padding-box, var(--sx-tile) !important; box-shadow:var(--sx-on-sh) !important; color:#fff0d6 !important; }
+.st-nav button.on .ic { color:#ffd9a8; filter:drop-shadow(0 0 6px rgba(255,170,90,.75)); }
+@media(hover:hover) { .st-nav button:hover, .st .st-action:hover { transform:translateY(-2px); filter:brightness(1.15); box-shadow:var(--sx-hover-sh) !important; } }
+.st-nav button:active, .st .st-action:active { transform:scale(.96); box-shadow:var(--sx-active-sh) !important; }
+
+/* Felder */
+.st textarea.st-short { min-height:84px; }
+#stTemplate { min-height:170px; }
+.st-toggles { display:flex; flex-wrap:wrap; gap:10px 22px; }
+.st-toggles .sx-switch { margin:0; }
+.st .sx-seg { margin:0 !important; }
+.st .sx-field { margin-bottom:14px; }
+.st .sx-fields .sx-field { margin:0; }
+.st .sx-fees { margin:0; }
+.st .sx-input-wrap > i { font-size:13px; }
+.st .sx-input-wrap > input[data-st-key="staleDays"] { padding-right:70px !important; }
+
+/* Listen und Prüfungen */
+.st-list { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px,1fr)); gap:8px; margin:0 0 14px; }
+.st-list > div { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 12px; border-radius:14px; background:rgba(10,14,22,.5); box-shadow:inset 0 0 0 1px rgba(255,255,255,.1); min-width:0; }
+.st-list small { font-size:12px; color:var(--sx-dim) !important; }
+.st-list strong { font-size:13px; font-weight:500; color:#fff !important; text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.st-checks { display:flex; flex-wrap:wrap; gap:7px; margin:12px 0; }
+.st-checks:empty { display:none; }
+.st-checks span { display:inline-flex; align-items:center; min-height:30px; padding:0 12px; border-radius:999px; font-size:12.5px; color:var(--sx-lbl); background:rgba(10,14,22,.5); box-shadow:inset 0 0 0 1px rgba(255,255,255,.14); }
+.st-checks span.ok { color:var(--sx-green); box-shadow:inset 0 0 0 1px rgba(46,224,160,.4); }
+.st-checks span.miss { color:var(--sx-orange-hi); box-shadow:inset 0 0 0 1px rgba(255,190,120,.4); }
+.st-cloudstate { margin:12px 0 8px !important; padding:10px 12px; border-radius:12px; background:rgba(10,14,22,.5); box-shadow:inset 0 0 0 1px rgba(255,255,255,.1); }
+.st .rvconflicts { margin:10px 0; padding:12px; border-radius:14px; background:rgba(60,30,12,.35); box-shadow:inset 0 0 0 1px rgba(255,176,96,.45); }
+.st .rvconflicts h3 { margin:0 0 6px; font-size:14px !important; color:var(--sx-orange-hi) !important; }
+.st .rvconflicts p { font-size:12px; color:var(--sx-sub); }
+
+/* Datenaktionen */
+.st-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-bottom:14px; }
+.st .st-action { display:flex; align-items:center; gap:12px; padding:12px !important; min-height:66px; text-align:left; cursor:pointer; border:1px solid transparent !important; border-radius:16px !important;
+  background:var(--sx-card) !important; box-shadow:var(--sx-card-sh) !important; color:#fff !important; transition:transform .2s, box-shadow .25s, filter .25s; }
+.st .st-action > span:last-of-type { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.st .st-action b { font-size:14px; font-weight:500; }
+.st .st-action small { font-size:12px; color:var(--sx-sub) !important; }
+.st .st-action.done .mi { color:var(--sx-green); border-color:rgba(46,224,160,.5); background:radial-gradient(circle at 35% 25%, rgba(120,240,190,.2), rgba(10,50,35,.4) 70%); }
+.st .st-action:disabled { opacity:.5; cursor:not-allowed; }
+.st-demo-slot:empty::after { content:'—'; color:var(--sx-dim); }
+.st .rv-demo-btn[hidden] { display:none !important; }
+
+/* Lokale Sicherheitskopie (bestehendes Panel) */
+.st-extras .v7-panel { margin:0 !important; padding:14px !important; border:1px solid transparent !important; border-radius:16px !important; background:var(--sx-card) !important; box-shadow:var(--sx-card-sh) !important; color:var(--sx-text) !important; }
+.st-extras .v7-panel h3 { margin:0 0 6px !important; font:500 14px/1.2 var(--sx-font) !important; color:#fff !important; letter-spacing:0 !important; text-transform:none; }
+.st-extras .v7-help, .st-extras .v7-mini { font-size:12px !important; color:var(--sx-sub) !important; background:none !important; border:0 !important; box-shadow:none !important; padding:0 !important; }
+.st-extras .v7-row { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+.st-extras .v7-row button { min-height:38px; padding:0 14px !important; border:1px solid rgba(255,255,255,.18) !important; border-radius:999px !important; background:rgba(10,14,22,.6) !important; color:var(--sx-text) !important; font-size:12.5px !important; box-shadow:none !important; }
+
+/* Animationen-Karte im Bereich Darstellung */
+#stAnimSlot { margin-top:4px; }
+#stAnimSlot .rv-anim-card { padding:0 !important; margin:0 !important; border:0 !important; background:none !important; box-shadow:none !important; }
+#stAnimSlot .rv-anim-card > .eyebrow, #stAnimSlot .rv-anim-card > h2 { display:none; }
+#stAnimSlot .rv-anim-card > .rvcloud-small { font-size:12.5px; color:var(--sx-sub) !important; margin:0; }
+#stAnimSlot .rv-anim-row { background:var(--sx-card) !important; box-shadow:var(--sx-card-sh); }
+#stAnimSlot .rv-anim-row b { font-weight:500; }
+#stAnimSlot .rv-anim-row input:checked + .rv-switch { background:var(--sx-on-bg); border-color:transparent; box-shadow:var(--sx-on-sh); }
+#stAnimSlot .rv-anim-sub select { width:auto; min-height:36px; padding:4px 32px 4px 12px !important; font-size:13px !important; }
+#stAnimSlot .settings-btns { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+#stAnimSlot .settings-btns button { min-height:40px; padding:0 16px !important; border:1px solid rgba(255,255,255,.18) !important; border-radius:999px !important; background:rgba(10,14,22,.6) !important; color:var(--sx-text) !important; font-size:13px !important; box-shadow:none !important; animation:none !important; }
+#stAnimSlot #rvAnimSave { color:#fff0d6 !important; background:var(--sx-on-bg) !important; box-shadow:var(--sx-on-sh) !important; border-color:transparent !important; }
+#stAnimSlot #rvAnimStatus { margin-top:8px; font-size:12.5px; color:var(--sx-sub) !important; }
+
+/* Ausgeblendete Plattformen im Studio */
+body.rv-off-ebay :is(#listingTabs [data-platform="ebay"], .sx-price[data-p="ebay"], .sx-pub[data-p="ebay"]),
+body.rv-off-vinted :is(#listingTabs [data-platform="vinted"], .sx-price[data-p="vinted"], .sx-pub[data-p="vinted"]),
+body.rv-off-instagram :is(#listingTabs [data-platform="instagram"], .sx-price[data-p="instagram"], .sx-pub[data-p="instagram"]) { display:none !important; }
+
+@media (max-width:860px) { .st-nav { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+@media (max-width:760px) { .st-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:560px) {
+  .st-nav { gap:8px; }
+  .st-nav button { min-height:72px; gap:6px; border-radius:16px !important; }
+  .st-nav .lb { font-size:11px; }
+  .st-actions { grid-template-columns:1fr; }
+  .st-m { flex-direction:column; align-items:flex-start; gap:8px; }
+  .st-m .val { font-size:17px; }
+}
+.st [hidden], .st .sx-btn[hidden] { display:none !important; }
+.st #settingsBackup, .st #v7BackupNow { animation:none !important; }
+#stAnimSlot .rv-anim-main { grid-column:1 / -1; box-shadow:inset 0 0 0 1px rgba(120,190,255,.35), var(--sx-card-sh) !important; }
+#stAnimSlot .rv-anim-main select { min-width:150px; }

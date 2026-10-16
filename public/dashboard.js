@@ -266,7 +266,7 @@ function scan(){
 
 /* ---------- Start ---------- */
 function greet(){
-  var t=$('v11Greet');if(t)t.textContent='Guten Tag!';
+  var t=$('v11Greet');if(!t)return;var s=(window.RVSettings&&window.RVSettings.get())||{},h=new Date().getHours();t.textContent=(h<11?'Guten Morgen':h<18?'Guten Tag':'Guten Abend')+(s.name?', '+s.name:'')+'!';
 }
 var timer=null;
 function refresh(){clearTimeout(timer);timer=setTimeout(function(){readArticles().then(function(l){state.articles=l;render()})},180)}

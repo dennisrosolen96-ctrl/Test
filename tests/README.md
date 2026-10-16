@@ -31,3 +31,8 @@ Grenzen: D1 und R2 werden im Arbeitsspeicher simuliert; Provider-`fetch` wird ge
 `node tests/dashboard.mjs` prüft 10 weitere Gruppen der tatsächlich verwendeten Dashboard-Berechnungen. Insgesamt wurden 39 isolierte Gruppen erfolgreich ausgeführt.
 
 `npm run test:browser` ist ein vorbereiteter Playwright-Lauf für fünf Viewports und die Hauptnavigation. Er wurde in der eingeschränkten Arbeitsumgebung nicht erfolgreich ausgeführt, da Chromium keine lokalen Sockets öffnen konnte. Ersetzt daher keinen hier vorliegenden Screenshotnachweis. Installation und Befehle: Haupt-README.
+
+## Fotostudio V31.3
+
+- `node tests/backend-contract.mjs` enthält den Poof-Test (Schutz, Prüfungen, Fehler, Timeout, Rate-Limit, Cache, kein Schlüssel in Antworten).
+- `npm run test:fotostudio` prüft den Ablauf im Browser mit gemockter Poof-API (Ergebnis: `tests/fotostudio-results.json`). Benötigt Playwright; ein echter Poof-Aufruf findet nicht statt.

@@ -1,0 +1,21 @@
+{
+  "scope": "Browser-Ablauftest Fotostudio mit gemockter Poof-API. Kein echter Poof-Aufruf, kein Android-Gerät.",
+  "passed": 14,
+  "failed": 0,
+  "tests": [
+    "Hochladen löst keinen Poof-Aufruf aus (nur auf Klick)",
+    "Zwei Originalfotos (hoch und quer) vorhanden",
+    "Dreifachklick erzeugt genau einen Poof-Aufruf, Kennwort im Header",
+    "Titelbild erstellt, Abzeichen „Poof.bg“, JPEG im 4:5-Format",
+    "Originalfotos unverändert, Titelbild als eigene Kachel davor",
+    "Stil- und Hintergrundwechsel ohne neuen Poof-Aufruf",
+    "„Nur freistellen“ bei vorhandener Freistellung fragt nach und verbraucht ohne Zustimmung keinen Credit",
+    "Transparente Freistellung (PNG) separat sichtbar",
+    "Credits aufgebraucht: klare Meldung, Titelbild und Fotos bleiben erhalten, keine Wiederholung",
+    "Gespeichert: rvCover und rvCutout getrennt, Fotos ohne Titelbild",
+    "Nach Neuladen zeigt die Bestandsliste das RVO-Titelbild",
+    "„KI auf dem Gerät“ nur wählbar, wenn das lokale Modell enthalten ist",
+    "Keine Skriptfehler",
+    "Alte Artikel: Titelbild in rvCover verschoben, Originalfoto bleibt"
+  ]
+}

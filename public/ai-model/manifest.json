@@ -1,0 +1,30 @@
+{
+ "models": {
+  "isnet": {
+   "version": "isnet-rv1",
+   "size": 90652385,
+   "sha256": "5999607ea9a45b8c6c96063277b8486d4fc5e082ff154d4cb2835ac70639d5ed",
+   "parts": [
+    "isnet-rv1.onnx.part00",
+    "isnet-rv1.onnx.part01",
+    "isnet-rv1.onnx.part02",
+    "isnet-rv1.onnx.part03",
+    "isnet-rv1.onnx.part04"
+   ],
+   "name": "ISNet general-use (Apache-2.0)",
+   "mean": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "std": [
+    1,
+    1,
+    1
+   ],
+   "post": "minmax",
+   "gpuOnly": false
+  }
+ },
+ "input": 1024
+}

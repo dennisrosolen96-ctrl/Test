@@ -1,4 +1,28 @@
-# RV Studio V17 — Animated Reference Command Center
+# RV Studio V31.3 — Command Center
+
+Neu in V31.3 (Details: [UEBERGABE-V31.3.md](UEBERGABE-V31.3.md)): Internes RVO-Titelbild getrennt von Fotos und Plattformbildern, Freistellen mit Poof.bg über geschützten Server-Endpunkt, Freistellung wird wiederverwendet (kein doppelter Credit).
+
+Neu in V31 (Details: [UEBERGABE-V31.md](UEBERGABE-V31.md)): Titelbild-Studio mit KI-Freisteller auf dem Gerät (kostenlos, ohne Upload), drei Stile (Studio, App-Look, Sticker), bessere Kanten und Fremdteil-Entfernung.
+
+Neu in V30 (Details: [UEBERGABE-V30.md](UEBERGABE-V30.md)): Seite „Snipes“ – Vinted-Suchaufträge mit Gewinnbewertung, Alarm bei Funden und „Gekauft“-Übernahme in den Bestand (Abruf über ein Userscript auf deinem Gerät).
+
+Neu in V29 (Details: [UEBERGABE-V29.md](UEBERGABE-V29.md)): Flackern durch das Randlicht behoben (neues, flüssiges Lauflicht), Globus auf der Startseite exakt mittig.
+
+Neu in V28 (Details: [UEBERGABE-V28.md](UEBERGABE-V28.md)): Animationen laufen wieder überall, auch bei Energiesparmodus; neuer Hauptschalter „Bewegung“, alle Animations-Schalter wirken auf allen Seiten.
+
+Neu in V27 (Details: [UEBERGABE-V27.md](UEBERGABE-V27.md)): Startseite responsiv im gleichen Design mit Übersicht, neuesten Artikeln, Verkaufsverlauf, Kategorien, Performance-Diagramm, KI-Assistent, Aufgaben und Trends.
+
+Neu in V26 (Details: [UEBERGABE-V26.md](UEBERGABE-V26.md)): Kopfmenü mit Begrüßung, KI-Leiste und sechs Kacheln auf allen Seiten; unteres Menü und KI-Ball entfernt.
+
+Neu in V25 (Details: [UEBERGABE-V25.md](UEBERGABE-V25.md)): KI-Chat als eigene Seite mit gespeichertem Verlauf, formatierten Antworten, Folgefragen, Artikel-Kontext und Einrichtung direkt im Chat.
+
+Neu in V24 (Details: [UEBERGABE-V24.md](UEBERGABE-V24.md)): Insights-Seite mit Zeitraumvergleich, interaktivem Umsatz-/Gewinn-Diagramm, Plattformvergleich, Monatsziel mit Prognose, Kategorien, Marken, Lager-Gesundheit und Empfehlungen.
+
+Neu in V23 (Details: [UEBERGABE-V23.md](UEBERGABE-V23.md)): Einstellungen als Kontrollzentrum mit Systemstatus, Profil & Shop, Plattform-Steuerung, Preisrundung, Verbindungstest, CSV-Export, Backup-Erinnerung und Speicherschutz.
+
+Neu in V22 (Details: [UEBERGABE-V22.md](UEBERGABE-V22.md)): Studio im Design der Startseite, automatisches Titelbild mit Freisteller, Texte ohne KI, Preisrechner für alle drei Plattformen, Veröffentlichen-Karten und Fertig-Check.
+
+Neu in V21 (Details: [UEBERGABE-V21.md](UEBERGABE-V21.md)): Bestand komplett im Design der Startseite, Status-Ring, Analyse mit Ladenhütern, neue Artikelkarten und 30 Beispielartikel (Kleidung) mit Titelbild.
 
 Neu in V17 (Details: [UEBERGABE-V17.md](UEBERGABE-V17.md)): Startseite auf allen Breiten im Referenz-Layout, drehende Erde, lebendiger KI-Roboter und Lichteffekte.
 
@@ -73,6 +97,8 @@ npx wrangler@4 pages deploy public --project-name rv-studio-cloud
 | `ANTHROPIC_API_KEY` | Alternativ für Claude-Chat-/Listinganfragen. |
 | `AI_PROVIDER` | Optional: `openai` oder `claude`; die Auswahl in der App kann dies pro Anfrage übersteuern. |
 | `OPENAI_MODEL` | Optional; vorhandener Backend-Standard `gpt-4.1-mini`. |
+| `PHOTOROOM_API_KEY` | Optional: Profi-Freisteller fürs Titelbild (Photoroom). |
+| `REMOVE_BG_API_KEY` | Optional: alternativ remove.bg. Ohne beide stellt die App direkt auf dem Gerät frei. |
 | `ANTHROPIC_MODEL` | Optional; vorhandener Backend-Standard `claude-3-5-sonnet-latest`. Ein für dein Konto verfügbares Modell verwenden. |
 
 Secrets im Cloudflare-Dashboard für die gewünschte Umgebung setzen. Alternativ interaktiv mit Wrangler, zum Beispiel:

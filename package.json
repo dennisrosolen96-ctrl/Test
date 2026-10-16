@@ -1,12 +1,13 @@
 {
-  "name": "rv-studio-v20",
-  "version": "20.0.0",
+  "name": "rv-studio-v28",
+  "version": "31.3.0",
   "private": true,
-  "description": "RV Studio V17 — bestehende Cloudflare-App mit animiertem Reference Command Center",
+  "description": "RV Studio V17 \u2014 bestehende Cloudflare-App mit animiertem Reference Command Center",
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node tests/backend-contract.mjs && node tests/chat-and-sync.mjs && node tests/dashboard.mjs",
-    "test:browser": "node tests/browser.mjs"
+    "test:browser": "node tests/browser.mjs",
+    "test:fotostudio": "node tests/fotostudio-browser.mjs"
   },
   "engines": {
     "node": ">=20"
