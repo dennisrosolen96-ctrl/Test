@@ -11,16 +11,24 @@
 <title>RV STUDIO V16 — Reselling Command Center</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Allura&family=Amiri:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Amiri:wght@400;700&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/app.css">
 <link rel="stylesheet" href="/dashboard.css">
 <link rel="stylesheet" href="/fx.css">
 <link rel="stylesheet" href="/ref.css">
 <link rel="stylesheet" href="/theme.css">
-<link rel="stylesheet" href="/stock.css">
 <link rel="stylesheet" href="/pages.css">
 <link rel="stylesheet" href="/perf.css">
 <link rel="stylesheet" href="/anim.css">
+<link rel="stylesheet" href="/bestand.css">
+<link rel="stylesheet" href="/studio.css">
+<link rel="stylesheet" href="/settings.css">
+<link rel="stylesheet" href="/insights.css">
+<link rel="stylesheet" href="/chat.css">
+<link rel="stylesheet" href="/topnav.css">
+<link rel="stylesheet" href="/home.css">
+<link rel="stylesheet" href="/snipe.css">
+<link rel="stylesheet" href="/noir.css">
 <link rel="preload" href="/fonts/command-sans-regular.otf" as="font" type="font/otf" crossorigin>
 <link rel="preload" href="/fonts/command-sans-bold.otf" as="font" type="font/otf" crossorigin>
 </head>
@@ -60,36 +68,24 @@
     </div>
   </div>
 </header>
-<main class="wrap">
-<section id="home" class="home lux-home">
-<div class="v11" id="v11Root">
-<div class="v16-crown" aria-hidden="true">
-</div>
-<div class="v11-top">
-<img class="v11-avatar" src="/v11-avatar.webp" alt="" width="252" height="252" aria-hidden="true">
-<div class="v11-greet">
-<b id="v11Greet">Guten Tag!</b>
-<span>Dein Reselling Command Center</span>
-</div>
-<button type="button" class="v11-pill v11-hud" id="v11AiPill">
-<i class="dot">
-</i>
+<header id="rvTop" class="rvt">
+<div class="rvt-row">
+<button type="button" class="rvt-home" id="rvTopHome" aria-label="Zur Startseite">
+<span class="rvt-globe"><img class="v11-avatar rv-mono" src="/rv-monogram.png" alt="Rosolen Vintage" width="220" height="258"></span>
+<span class="rvt-greet"><b id="v11Greet">Guten Tag!</b><span id="rvTopSub">Dein Reselling Command Center</span></span>
+</button>
+<button type="button" class="rvt-pill" id="v11AiPill">
+<i class="dot"></i>
 <span>Dein KI-Assistent<br>ist bereit.</span>
-<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
-<path d="m9 5 7 7-7 7"/>
-</svg>
+<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
 </button>
-<button type="button" class="v11-bell" id="v11Bell" aria-label="Aufgaben">
-<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
-<path d="M6 17v-6a6 6 0 0 1 12 0v6l1.5 2h-15L6 17Z"/>
-<path d="M10 21h4"/>
-</svg>
-<i>
-</i>
+<button type="button" class="rvt-bell" id="v11Bell" aria-label="Aufgaben">
+<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17v-6a6 6 0 0 1 12 0v6l1.5 2h-15L6 17Z"/><path d="M10 21h4"/></svg>
+<i></i>
 </button>
 </div>
-<div class="v11-tiles">
-<button type="button" class="v11-tile v11-hud" data-go="studio" aria-label="Studio">
+<div class="rvt-tiles" role="navigation" aria-label="Hauptmenü">
+<button type="button" class="rvt-tile" data-nav="studio" aria-label="Studio">
 <span class="ic">
 <svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
 <path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/>
@@ -98,7 +94,7 @@
 </span>
 <span class="lb">Studio</span>
 </button>
-<button type="button" class="v11-tile v11-hud" data-go="stock" aria-label="Bestand">
+<button type="button" class="rvt-tile" data-nav="stock" aria-label="Bestand">
 <span class="ic">
 <svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
 <path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/>
@@ -107,7 +103,7 @@
 </span>
 <span class="lb">Bestand</span>
 </button>
-<button type="button" class="v11-tile v11-hud" data-go="purchases" aria-label="Einkäufe">
+<button type="button" class="rvt-tile" data-nav="purchases" aria-label="Einkäufe">
 <span class="ic">
 <svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
 <path d="M3 4h2.5l2 11h10.5l2-8H7"/>
@@ -117,7 +113,15 @@
 </span>
 <span class="lb">Einkäufe</span>
 </button>
-<button type="button" class="v11-tile v11-hud" data-go="sales" aria-label="Verkauf">
+<button type="button" class="rvt-tile" data-nav="snipe" aria-label="Snipes">
+<span class="ic">
+<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
+<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+</svg>
+</span>
+<span class="lb">Snipes</span>
+</button>
+<button type="button" class="rvt-tile" data-nav="sales" aria-label="Verkauf">
 <span class="ic">
 <svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
 <path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/>
@@ -126,7 +130,7 @@
 <span class="lb">Verkauf</span>
 <span class="bd" id="v11-badge-sales" hidden>0</span>
 </button>
-<button type="button" class="v11-tile v11-hud" data-go="chat" aria-label="KI-Chat">
+<button type="button" class="rvt-tile" data-nav="chat" aria-label="KI-Chat">
 <span class="ic">
 <svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
 <path d="M4 5h16v11H9l-5 4V5Z"/>
@@ -135,16 +139,86 @@
 </span>
 <span class="lb">KI-Chat</span>
 </button>
-<button type="button" class="v11-tile v11-hud" data-go="settings" aria-label="Einstellungen">
+<button type="button" class="rvt-tile" data-nav="settings" aria-label="Einstellungen">
 <span class="ic">
 <svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
 <circle cx="12" cy="12" r="3"/>
 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
 </svg>
 </span>
-<span class="lb">Einstellungen</span>
+<span class="lb">Einstel&shy;lungen</span>
 </button>
 </div>
+</header>
+<main class="wrap">
+<section id="home" class="home lux-home">
+<div class="sx hm" id="hmRoot">
+<section class="sx-panel hm-over" aria-label="Verkaufs-Übersicht">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/></svg></span><div class="sx-tt"><h2 class="sx-title">Verkaufs-Übersicht</h2><span class="sx-sub">Live-Daten deines Business</span></div>
+<div class="sx-seg" id="hmPeriod" role="group" aria-label="Zeitraum"><button type="button" data-p="today">Heute</button><button type="button" data-p="7">7 Tage</button><button type="button" data-p="30">30 Tage</button><button type="button" data-p="all">Alle</button></div></div>
+<div class="hm-over-body">
+<div class="hm-kpis" id="hmKpis"></div>
+<div class="hm-globe" id="hmGlobe"></div>
+<div class="hm-right">
+<div class="hm-cat" id="hmCats"></div>
+<div class="hm-s2" id="hmActive"></div>
+<div class="hm-s2" id="hmWorth"></div>
+</div>
+</div>
+</section>
+<section class="sx-panel" aria-label="Schnellzugriff">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7Z" fill="currentColor" stroke="none"/></svg></span><div class="sx-tt"><h2 class="sx-title">Schnellzugriff</h2><span class="sx-sub">Häufige Aktionen – direkt starten</span></div></div>
+<div class="hm-quick" id="hmQuick"></div>
+</section>
+<div class="hm-two">
+<section class="sx-panel" aria-label="Neueste Artikel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></span><div class="sx-tt"><h2 class="sx-title">Neueste Artikel</h2><span class="sx-sub">Zuletzt hinzugefügt</span></div><button type="button" class="hm-more" data-hm-go="stock">Alle anzeigen<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+<div class="hm-list" id="hmNew"></div>
+</section>
+<section class="sx-panel" aria-label="Letzte Verkäufe">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/></svg></span><div class="sx-tt"><h2 class="sx-title">Verkaufsverlauf</h2><span class="sx-sub">Letzte Verkäufe</span></div><button type="button" class="hm-more" data-hm-go="insights">Alle anzeigen<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+<div class="hm-list" id="hmSales"></div>
+</section>
+</div>
+<section class="sx-panel" aria-label="Bestands-Übersicht">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg></span><div class="sx-tt"><h2 class="sx-title">Bestands-Übersicht</h2><span class="sx-sub">Deine Kategorien im Lager</span></div><button type="button" class="hm-more" data-hm-go="stock">Alle anzeigen<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+<div class="hm-cats" id="hmCatTiles"></div>
+</section>
+<section class="sx-panel" aria-label="Performance-Analyse">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><div class="sx-tt"><h2 class="sx-title">Performance-Analyse</h2><span class="sx-sub">Entwicklung deines Business</span></div>
+<div class="sx-seg" id="hmPerfPeriod" role="group" aria-label="Zeitraum"><button type="button" data-p="7">7 Tage</button><button type="button" data-p="30">30 Tage</button><button type="button" data-p="90">90 Tage</button></div></div>
+<div class="hm-perf">
+<div class="hm-chart" id="hmChart"></div>
+<div class="hm-legend" id="hmLegend"></div>
+</div>
+</section>
+<section class="sx-panel hm-ai" aria-label="KI-Assistent">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">KI-Assistent</h2><span class="sx-sub">Dein Partner für Preise, Texte und Strategien</span></div><span id="hmAiStateSlot"></span><button type="button" class="hm-more" data-hm-go="chat">Chat öffnen<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+<div class="hm-ai-body">
+<div class="hm-orb" id="hmOrb"></div>
+<div class="hm-ai-main">
+<div class="hm-bubble"><b id="hmAiHello">Hallo! 👋</b> Wie kann ich dir heute helfen?<span>Frag nach Preisen, Texten, Marktchancen oder deinem nächsten Schritt.</span></div>
+<div id="hmFeedSlot"></div>
+<div class="sx-chips hm-prompts" id="hmPrompts"></div>
+<div class="hm-entry" id="hmEntry"></div>
+</div>
+</div>
+</section>
+<div class="hm-two">
+<section class="sx-panel" aria-label="Aktive Aufgaben">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Aktive Aufgaben</h2><span class="sx-sub">Deine nächsten To-dos</span></div></div>
+<div class="hm-tasks" id="hmTasks"></div>
+</section>
+<section class="sx-panel" aria-label="Deine Trends">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 17l5-5 4 4 7-8"/><path d="M15 8h5v5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Deine Trends</h2><span class="sx-sub">Aus deinen Verkäufen · 30 Tage zum Vorzeitraum</span></div><button type="button" class="hm-more" data-hm-go="insights">Insights<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+<div class="hm-trends" id="hmTrends"></div>
+</section>
+</div>
+</div>
+<div class="v11" id="v11Root">
+<div class="v16-crown" aria-hidden="true">
+</div>
+
 <section class="v11-panel v11-sales v11-hud" aria-label="Verkaufsübersicht">
 <div class="v11-ph">
 <span class="hx">
@@ -419,7 +493,7 @@
 <path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>
 </svg>
 </button>
-  <textarea id="homeAiInput" rows="1" aria-label="Frage an den RV-Assistenten" placeholder="Stelle eine Frage oder gib einen Befehl ein …"></textarea>
+  <textarea id="homeAiInput" rows="1" aria-label="Frage an den RV-Assistenten" placeholder="Frag deinen KI-Assistenten …"></textarea>
   <button id="homeAiSend" type="button" aria-label="Nachricht senden">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 <path d="M8 5.5v13l11-6.5z"/>
@@ -581,275 +655,235 @@
 <button type="button" id="homeAiClear" class="hidden" aria-hidden="true" tabindex="-1">
 </button>
 </section>
-<div class="steps hidden" id="steps">
-<div class="step active">01 / FOTOS</div>
-<div class="step">02 / OPENAI</div>
-<div class="step">03 / STUDIO</div>
-<div class="step">04 / PREISE</div>
+<div class="steps sx-head hidden" id="steps">
+<div class="sx-top">
+<span class="sx-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+<div class="sx-greet"><h1>Studio</h1><p id="sxSubtitle">Neuer Artikel</p></div>
+<button type="button" class="sx-pill" id="sxNewArticle"><span class="sx-pill-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span class="sx-pill-tx"><b>Neuer Artikel</b><small>Studio leeren</small></span></button>
 </div>
-<section id="s0" class="hidden">
-<div class="eyebrow">Schritt 1 von 4 · Quick Capture</div>
-<h1>Fotos rein. KI macht den Rest.</h1>
-<p class="muted">Du gibst nur Dinge ein, die die KI nicht zuverlässig wissen kann: EK, Maße, Zustand und Mängel.</p>
-
-<div class="panel">
-  <label class="dropzone" for="upload">
-<span>＋</span>
-<b>PRODUKTFOTOS HINZUFÜGEN</b>
-<small>Front · Rücken · Labels · Details</small>
+<nav class="sx-steps" aria-label="Schritte">
+<button type="button" class="step active" data-sx-step="0"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span class="lb">Fotos</span><small>Schritt 1</small></button>
+<button type="button" class="step" data-sx-step="1"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M5 17l.8 2 2 .8-2 .8L5 23l-.8-2.4-2-.8 2-.8zM19 15l.6 1.4 1.4.6-1.4.6L19 19l-.6-1.4-1.4-.6 1.4-.6z"/></svg></span><span class="lb">Details<span class="lx"> &amp; Texte</span></span><small>Schritt 2</small></button>
+<button type="button" class="step" data-sx-step="2"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg></span><span class="lb">Bilder</span><small>Schritt 3</small></button>
+<button type="button" class="step" data-sx-step="3"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><span class="lb">Preis<span class="lx"> &amp; Online</span></span><small>Schritt 4</small></button>
+</nav>
+</div>
+<section id="s0" class="hidden sx">
+<div class="sx-split">
+<section class="sx-panel sx-photos">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Produktfotos</h2><span class="sx-sub">Front · Rücken · Etikett · Details</span></div></div>
+<label class="sx-drop" for="upload" id="sxDrop">
+<span class="sx-drop-orb"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span>
+<b>Fotos hinzufügen</b>
+<small>Antippen oder hierher ziehen · danach „Titelbild erstellen“ für die Bestandsliste</small>
 </label>
-  <input class="hidden" id="upload" type="file" accept="image/*" multiple>
-  <div class="photo-grid" id="photos">
-</div>
-  <p class="muted" id="photoCount">
-</p>
-</div>
-
-<div class="panel">
-  <h2>NUR DEINE ANGABEN</h2>
-  <div class="manual-grid">
-    <div>
-<label class="field">Einkaufspreis (€)</label>
-<input class="inp" id="cost" type="number" step="0.01" min="0" placeholder="12,00">
-</div>
-    <div>
-<label class="field">Maße</label>
-<input class="inp" id="measurements" placeholder="z. B. Brust 51 · Länge 70 cm">
-</div>
-  </div>
-
-  <label class="field">Zustand · <span id="conditionLabel">noch nicht gewählt</span>
-</label>
-  <div class="condition-scale" id="conditionScale">
-    <button type="button" data-v="1">1</button>
-<button type="button" data-v="2">2</button>
-<button type="button" data-v="3">3</button>
-<button type="button" data-v="4">4</button>
-<button type="button" data-v="5">5</button>
-    <button type="button" data-v="6">6</button>
-<button type="button" data-v="7">7</button>
-<button type="button" data-v="8">8</button>
-<button type="button" data-v="9">9</button>
-<button type="button" data-v="10">10</button>
-  </div>
-  <input id="condition" class="hidden" value="">
-
-  <label class="field">Mängel</label>
-  <textarea class="inp" id="notes" placeholder="Nur vorhandene Mängel eintragen – ansonsten leer lassen"></textarea>
-
-  <button class="btn wide ai-primary" id="aiBtn">✦ ARTIKEL MIT KI ERKENNEN</button>
-  <p class="status" id="aiStatus">
-</p>
-  <p class="ai-note">Die KI erkennt Marke, Artikelart, Farbe, Größe/Material/Herstellungsland nur soweit auf den Fotos belegbar. Sie darf deine Maße, deinen Zustand und deine Mängel nicht verändern.</p>
-</div>
-
-<!-- Hidden compatibility fields; filled by AI -->
-<input class="hidden" id="sku">
-<input class="hidden" id="brand">
-<input class="hidden" id="size">
-<input class="hidden" id="category">
-<input class="hidden" id="chest">
-<input class="hidden" id="length">
-<input class="hidden" id="material">
-<input class="hidden" id="color">
-<input class="hidden" id="country">
-<input class="hidden" id="model">
+<input class="hidden" id="upload" type="file" accept="image/*" multiple>
+<input class="hidden" id="sxCamera" type="file" accept="image/*" capture="environment">
+<div class="sx-row"><button type="button" class="sx-btn" id="sxCameraBtn"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Kamera</button><span class="sx-hint" id="photoCount"></span></div>
+<div class="sx-thumbs" id="photos"></div>
 </section>
-<section id="s1" class="hidden">
-<div class="eyebrow">Schritt 2 von 4 · KI-Ergebnis</div>
-<h1>Erkannt. Kurz prüfen.</h1>
-<p class="muted">Nur korrigieren, wenn die KI etwas falsch gelesen hat. Deine manuellen Angaben bleiben unverändert.</p>
-<div class="panel">
-<h2>ERKANNTE PRODUKTDATEN</h2>
-<div class="detected-grid" id="detectedGrid">
+<section class="sx-panel sx-cover-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Titelbild</h2><span class="sx-sub">Internes Titelbild für deine Bestandsliste</span></div></div>
+<div class="sx-cover" id="sxCover"></div>
+<div class="sx-row sx-center"><button type="button" class="sx-btn" id="sxCoverRedo">Titelbild erstellen</button><button type="button" class="sx-btn" data-sx-go="2">Anpassen</button></div>
+</section>
 </div>
-<p class="ai-note">„Nicht erkannt“ bedeutet bewusst: Die KI konnte es auf den Fotos nicht sicher belegen.</p>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13 7 4 4"/></svg></span><div class="sx-tt"><h2 class="sx-title">Deine Angaben</h2><span class="sx-sub">Nur was die KI nicht sicher wissen kann</span></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Einkaufspreis</span><span class="sx-input-wrap"><input class="inp" id="cost" type="number" inputmode="decimal" step="0.01" min="0" placeholder="12,00"><i>€</i></span></label>
+<label class="sx-field"><span>Maße</span><input class="inp" id="measurements" placeholder="z. B. Brust 51 · Länge 70 cm"></label>
 </div>
-<div class="panel">
-<h2>Deine Beschreibungsvorlage</h2>
-<textarea class="inp" id="template" style="min-height:165px" placeholder="So sollen meine Listings aussehen..."></textarea>
-<p class="muted">Deine Vorlage wird auf diesem Gerät gespeichert und für neue Artikel wiederverwendet. Die KI verwendet deine RV-Struktur und erfindet keine Maße.</p>
-<button class="btn secondary" id="saveTemplate">Vorlage merken</button>
+<div class="sx-field"><span>Zustand · <b id="conditionLabel">noch nicht gewählt</b></span>
+<div class="condition-scale sx-scale" id="conditionScale">
+<button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button><button type="button" data-v="8">8</button><button type="button" data-v="9">9</button><button type="button" data-v="10">10</button>
+</div></div>
+<input id="condition" class="hidden" value="">
+<label class="sx-field"><span>Mängel</span><textarea class="inp" id="notes" placeholder="Nur vorhandene Mängel eintragen – sonst „Keine Mängel“ antippen"></textarea></label>
+<div class="sx-chips" id="sxDefectChips"><button type="button" data-defect="Keine Mängel">Keine Mängel</button><button type="button" data-defect="Leichte Gebrauchsspuren">Gebrauchsspuren</button><button type="button" data-defect="Leichtes Pilling">Pilling</button><button type="button" data-defect="Kleiner Fleck">Kleiner Fleck</button><button type="button" data-defect="Leicht verwaschen">Verwaschen</button><button type="button" data-defect="Kleines Loch">Kleines Loch</button></div>
+<div class="sx-ai-row">
+<button type="button" class="sx-cta" id="aiBtn"><span class="sx-cta-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><span class="sx-cta-tx"><b>Mit KI erkennen</b><small>Marke, Größe, Texte für alle 3 Plattformen</small></span></button>
+<button type="button" class="sx-btn" id="sxNoAi">Ohne KI weiter</button>
 </div>
-<div class="panel">
-<h2>KI VERBINDEN</h2>
-<p class="muted">Hier verbindest du RV Studio mit deiner KI. Für eine sichere Einrichtung bleibt der eigentliche API-Schlüssel auf dem Server – nicht in der App.</p>
-<label class="field">KI-Anbieter</label>
-<select class="inp" id="aiProvider">
-<option value="openai">OpenAI</option>
-<option value="claude">Claude</option>
-</select>
-<label class="field">KI-Server (HTTPS)</label>
-<input class="inp" id="endpoint" placeholder="https://deine-rv-app.pages.dev">
-<label class="field">RV-Studio-Passwort</label>
-<input class="inp" id="token" type="password" placeholder="Cloud-/App-Passwort">
-<div class="notice">Empfohlen: dieselbe Cloud-App als KI-Server verwenden. Dann brauchst du nur deine App-URL und dein RV-Passwort. Ein direktes Login mit OpenAI/Claude-Konto in der HTML-App ist nicht vorgesehen – sicher ist die Verbindung über deinen Server.</div>
+<p class="status sx-status" id="aiStatus"></p>
+<p class="ai-note sx-note">Die KI erkennt Marke, Artikelart, Farbe, Größe, Material und Herstellungsland nur, soweit es auf den Fotos belegbar ist. Deine Maße, dein Zustand und deine Mängel bleiben unverändert.</p>
+</section>
+</section>
+<section id="s1" class="hidden sx">
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Produktdaten</h2><span class="sx-sub">Von der KI erkannt – antippen zum Korrigieren</span></div><span class="sx-score" id="sxDataScore"></span></div>
+<div class="sx-fields sx-four">
+<label class="sx-field"><span>Marke</span><input class="inp" id="brand" list="sxBrandList" placeholder="z. B. Nike"></label>
+<label class="sx-field"><span>Modell / Linie</span><input class="inp" id="model" placeholder="z. B. Tech Fleece"></label>
+<label class="sx-field"><span>Kategorie</span><input class="inp" id="category" list="sxCatList" placeholder="z. B. Jacken"></label>
+<label class="sx-field"><span>Größe</span><input class="inp" id="size" placeholder="z. B. M"></label>
+<label class="sx-field"><span>Farbe</span><input class="inp" id="color" placeholder="z. B. Schwarz"></label>
+<label class="sx-field"><span>Material</span><input class="inp" id="material" placeholder="laut Etikett"></label>
+<label class="sx-field"><span>Made in</span><input class="inp" id="country" placeholder="laut Etikett"></label>
+<label class="sx-field"><span>Artikelnummer</span><span class="sx-input-wrap"><input class="inp" id="sku" placeholder="RV-0001"><button type="button" class="sx-mini" id="sxSkuGen" title="Nummer erzeugen">Auto</button></span></label>
 </div>
-<div class="panel">
-<h2>Listing-Texte</h2>
-<div class="platforms" id="listingTabs">
+<input class="hidden" id="chest"><input class="hidden" id="length">
+<datalist id="sxCatList"><option value="Jacken"><option value="Hoodies &amp; Pullover"><option value="Shirts &amp; Tops"><option value="Hosen"><option value="Kleider &amp; Röcke"><option value="Sneaker &amp; Schuhe"><option value="Accessoires"><option value="Taschen"></datalist>
+<datalist id="sxBrandList"></datalist>
+<div id="detectedGrid" hidden></div>
+</section>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h9"/></svg></span><div class="sx-tt"><h2 class="sx-title">Listing-Texte</h2><span class="sx-sub">Pro Plattform optimiert</span></div><button type="button" class="sx-btn" id="sxLocalTexts">Ohne KI erstellen</button></div>
+<div class="platforms sx-seg" id="listingTabs" role="group" aria-label="Plattform">
 <button class="tab on" data-platform="ebay">eBay</button>
 <button class="tab" data-platform="vinted">Vinted</button>
 <button class="tab" data-platform="instagram">Instagram</button>
 </div>
-<label class="field">Titel</label>
-<input class="inp" id="listingTitle">
-<label class="field">Beschreibung</label>
-<textarea class="inp" id="listingDescription" style="min-height:190px"></textarea>
-<div class="row" style="margin-top:12px">
-<button class="btn secondary" id="copyTitle">Titel kopieren</button>
-<button class="btn secondary" id="copyDescription">Beschreibung kopieren</button>
+<label class="sx-field"><span>Titel <em class="sx-count" id="sxTitleCount"></em></span><input class="inp" id="listingTitle"></label>
+<div class="sx-checks" id="sxTitleChecks"></div>
+<label class="sx-field"><span>Beschreibung <em class="sx-count" id="sxDescCount"></em></span><textarea class="inp" id="listingDescription"></textarea></label>
+<div class="sx-chips sx-tags" id="sxTags"></div>
+<div class="sx-row">
+<button type="button" class="sx-btn" id="copyTitle">Titel kopieren</button>
+<button type="button" class="sx-btn" id="copyDescription">Beschreibung kopieren</button>
+<button type="button" class="sx-btn" id="sxCopyAll">Alles kopieren</button>
+</div>
+</section>
+<details class="sx-panel sx-fold">
+<summary class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span><div class="sx-tt"><h2 class="sx-title">Beschreibungsvorlage</h2><span class="sx-sub">Dein Stil für alle Texte</span></div><svg class="sx-ico sx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+<textarea class="inp" id="template" placeholder="So sollen meine Listings aussehen..."></textarea>
+<p class="sx-hint">Wird auf diesem Gerät gespeichert und für neue Artikel wiederverwendet. Maße werden nie erfunden.</p>
+<button type="button" class="sx-btn" id="saveTemplate">Vorlage merken</button>
+</details>
+<details class="sx-panel sx-fold">
+<summary class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M9 7H6a4 4 0 0 0 0 8h3M15 7h3a4 4 0 0 1 0 8h-3M8 11h8"/></svg></span><div class="sx-tt"><h2 class="sx-title">KI-Verbindung</h2><span class="sx-sub">Anbieter, Server und Passwort</span></div><svg class="sx-ico sx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>KI-Anbieter</span><select class="inp" id="aiProvider"><option value="openai">OpenAI</option><option value="claude">Claude</option></select></label>
+<label class="sx-field"><span>KI-Server (HTTPS)</span><input class="inp" id="endpoint" placeholder="https://deine-rv-app.pages.dev"></label>
+<label class="sx-field"><span>RV-Studio-Passwort</span><input class="inp" id="token" type="password" placeholder="Cloud-/App-Passwort"></label>
+</div>
+<p class="sx-hint">Der API-Schlüssel bleibt auf dem Server. In der App brauchst du nur App-URL und RV-Passwort.</p>
+</details>
+</section>
+<section id="s2" class="hidden sx">
+<section class="sx-panel sx-studio">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Titelbild-Studio</h2><span class="sx-sub">Internes Titelbild für deine Bestandsliste – nicht für Verkaufsplattformen</span></div></div>
+<div class="sx-studio-body">
+<div class="sx-cover sx-cover-lg" id="sxCoverLarge"></div>
+<div class="sx-cut" id="sxCutView" hidden><span class="sx-cut-lbl">Freigestellt (transparent)</span><div class="sx-cut-img" id="sxCutImg"></div><button type="button" class="sx-btn" id="sxCutDownload">PNG speichern</button></div>
+<div class="sx-studio-ctrl">
+<div class="sx-field"><span>Stil</span><div class="sx-seg" id="sxStyle" role="group" aria-label="Titelbild-Stil"><button type="button" data-style="studio">Studio</button><button type="button" data-style="app">App-Look</button><button type="button" data-style="sticker">Sticker</button></div></div>
+<div class="sx-field" id="sxSwWrap"><span>Hintergrund</span><div class="sx-swatches" id="sxSwatches"></div></div>
+<div class="sx-field"><span>Ausgangsfoto</span><div class="sx-srcs" id="sxSources"></div></div>
+<div class="sx-field"><span>Freisteller</span><div class="sx-seg" id="sxEngine" role="group" aria-label="Freisteller">
+<button type="button" data-engine="poof">Poof.bg</button><button type="button" data-engine="ai">KI auf dem Gerät</button><button type="button" data-engine="server">Photoroom</button><button type="button" data-engine="original">Original</button>
+</div></div>
+<label class="sx-field" id="sxTolWrap"><span>Feinheit <em class="sx-count" id="sxTolVal"></em></span><input type="range" id="sxTol" min="0" max="40" step="1" value="0"></label>
+<label class="sx-switch"><input type="checkbox" id="sxAutoCover"><span></span>Titelbild nach dem Hochladen automatisch erstellen</label>
+<div class="sx-actions"><button type="button" class="sx-cta sx-cta-sm" id="sxCoverMake"><span class="sx-cta-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><span class="sx-cta-tx"><b>Titelbild erstellen</b></span></button><button type="button" class="sx-btn" id="sxCutMake">Nur freistellen</button><button type="button" class="sx-btn" id="sxCoverRemove">Entfernen</button></div>
+<p class="sx-hint" id="sxCoverStatus"></p>
+<p class="sx-hint" id="sxPoofInfo"></p>
 </div>
 </div>
 </section>
-<section id="s2" class="hidden">
-<div class="eyebrow">Schritt 3 von 4</div>
-<h1>Jedes Detail zählt.</h1>
-<p class="muted">Öffne jedes Foto im Vollbild. Zuschnitt, Bildposition und Filter sind für jedes Foto einzeln einstellbar.</p>
-<div class="panel">
-<div class="photo-grid" id="editPhotos">
-</div>
-<button class="btn secondary wide" id="addMore">+ Weitere Fotos hinzufügen</button>
-</div>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg></span><div class="sx-tt"><h2 class="sx-title">Alle Fotos</h2><span class="sx-sub">Reihenfolge, Zuschnitt und Filter</span></div><button type="button" class="sx-btn" id="sxAutoEnhance">Automatisch optimieren</button></div>
+<div class="sx-thumbs sx-thumbs-edit" id="editPhotos"></div>
+<button type="button" class="sx-btn" id="addMore">+ Weitere Fotos</button>
 </section>
-<section id="s3" class="hidden">
-<div class="eyebrow">Schritt 4 von 4</div>
-<h1>Drei Plattformen. Drei Preise.</h1>
-<p class="muted">Jede Plattform erhält ihren eigenen Verkaufspreis. Alle Angaben werden zusammen mit dem Artikel gespeichert.</p>
-<div class="panel">
-<div class="grid2">
-<div>
-<label class="field">eBay (€)</label>
-<input class="inp" id="priceEbay" type="number" step="0.01" min="0" placeholder="39,90">
-</div>
-<div>
-<label class="field">Vinted (€)</label>
-<input class="inp" id="priceVinted" type="number" step="0.01" min="0" placeholder="34,90">
-</div>
-<div>
-<label class="field">Instagram (€)</label>
-<input class="inp" id="priceInstagram" type="number" step="0.01" min="0" placeholder="32,90">
-</div>
-<div>
-<label class="field">Einkaufspreis</label>
-<div class="inp" style="opacity:.75">Bereits bei Fotos erfasst</div>
-</div>
-</div>
-<div class="grid2">
-<div>
-<label class="field">Einkaufsdatum</label>
-<input class="inp" id="purchaseDate" type="date">
-</div>
-<div>
-<label class="field">Bezugsquelle</label>
-<input class="inp" id="source" placeholder="z. B. Flohmarkt">
-</div>
-</div>
-<label class="field">Lagerplatz</label>
-<input class="inp" id="location" placeholder="Box A / Fach 3">
-<label class="field">Status</label>
-<select class="inp" id="articleStatus">
-<option>Entwurf</option>
-<option>Bereit</option>
-<option>Online</option>
-<option>Verkauft</option>
-</select>
-</div>
-<div class="panel">
-<h2>Abschließen</h2>
-<button class="btn wide" id="saveArticle">Artikel lokal speichern</button>
-<div style="height:10px">
-</div>
-<button class="btn secondary wide" id="exportArticle">Bilder & Listings als ZIP exportieren</button>
-<p class="status" id="saveStatus">
-</p>
-<p class="muted">Lokal bedeutet: nur auf diesem Gerät. Bitte regelmäßig ein Backup erstellen.</p>
-</div>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></span><div class="sx-tt"><h2 class="sx-title">So sehen Käufer dein erstes Foto</h2><span class="sx-sub">Vorschau im Format der Plattformen</span></div></div>
+<div class="sx-preview" id="sxPreview"></div>
 </section>
-<section id="s4" class="hidden lux-stock-view">
-<div class="lux-stock-hero">
-<div class="eyebrow">LAGERVERWALTUNG · RV STUDIO</div>
-<h1>Dein <em>Bestand.</em>
-</h1>
-<p id="stockSummary" class="muted">Deine gespeicherten Artikel.</p>
-<div class="lux-stock-mark">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-<path d="m12 2 9 5v10l-9 5-9-5V7z"/>
-<path d="m3 7 9 5 9-5M12 12v10"/>
-</svg>
+</section>
+<section id="s3" class="hidden sx">
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="6" ry="2.5"/><path d="M6 6v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V6M6 10v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4M6 14v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4"/></svg></span><div class="sx-tt"><h2 class="sx-title">Preise</h2><span class="sx-sub">Ein Wunschbetrag – drei passende Plattformpreise</span></div></div>
+<div class="sx-target">
+<label class="sx-field"><span>Wunschbetrag (bei dir ankommend)</span><span class="sx-input-wrap"><input class="inp" id="sxTarget" type="number" inputmode="decimal" min="0" step="1" placeholder="z. B. 45"><i>€</i></span></label>
+<button type="button" class="sx-cta sx-cta-sm" id="sxApplyPrices"><span class="sx-cta-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="sx-cta-tx"><b>Preise berechnen</b></span></button>
 </div>
+<p class="sx-hint sx-history" id="sxPriceHint"></p>
+<div class="sx-prices">
+<div class="sx-price" data-p="ebay"><span class="lbl">eBay</span><span class="sx-input-wrap"><input class="inp" id="priceEbay" type="number" inputmode="decimal" step="0.01" min="0" placeholder="39,90"><i>€</i></span><span class="dl" id="sxProfit_ebay"></span></div>
+<div class="sx-price" data-p="vinted"><span class="lbl">Vinted</span><span class="sx-input-wrap"><input class="inp" id="priceVinted" type="number" inputmode="decimal" step="0.01" min="0" placeholder="34,90"><i>€</i></span><span class="dl" id="sxProfit_vinted"></span></div>
+<div class="sx-price" data-p="instagram"><span class="lbl">Instagram</span><span class="sx-input-wrap"><input class="inp" id="priceInstagram" type="number" inputmode="decimal" step="0.01" min="0" placeholder="32,90"><i>€</i></span><span class="dl" id="sxProfit_instagram"></span></div>
 </div>
-<div class="lux-stock-action-row">
-<button id="stockNewArticleQuick" class="btn" type="button">＋ Neuen Artikel anlegen</button>
-<span>Dein Lager. Deine Kontrolle.</span>
+<details class="sx-subfold"><summary>Gebühren &amp; Verhandlungspuffer</summary><div class="sx-fees" id="sxFees"></div><p class="sx-hint">Trage die Gebühren ein, die bei dir als Verkäufer anfallen (z. B. gewerblich bei eBay). Der Puffer lässt Raum für Preisvorschläge. Wird auf diesem Gerät gespeichert.</p></details>
+</section>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg></span><div class="sx-tt"><h2 class="sx-title">Lager</h2><span class="sx-sub">Wo der Artikel liegt und woher er kommt</span></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Lagerplatz</span><input class="inp" id="location" list="sxLocList" placeholder="z. B. Regal A1"></label>
+<label class="sx-field"><span>Status</span><select class="inp" id="articleStatus"><option>Entwurf</option><option>Bereit</option><option>Online</option><option>Verkauft</option></select></label>
+<label class="sx-field"><span>Einkaufsdatum</span><input class="inp" id="purchaseDate" type="date"></label>
+<label class="sx-field"><span>Bezugsquelle</span><input class="inp" id="source" list="sxSrcList" placeholder="z. B. Flohmarkt"></label>
 </div>
-<div id="v5Analysis" class="v5-kpis" aria-label="Bestandszahlen">
+<div class="sx-chips" id="sxLocChips"></div>
+<datalist id="sxLocList"></datalist><datalist id="sxSrcList"></datalist>
+</section>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 15c-1.5 1.3-2 4-2 6 2 0 4.7-.5 6-2M14 6l4 4M9 15l-3-3c1.5-4.5 6-9 13-9 0 7-4.5 11.5-9 13z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Veröffentlichen</h2><span class="sx-sub">Text kopieren, Plattform öffnen, Fotos teilen</span></div></div>
+<div class="sx-publish" id="sxPublish"></div>
+</section>
+<section class="sx-panel sx-finish">
+<div class="sx-ready" id="sxReady"></div>
+<div class="sx-row sx-finish-row">
+<button type="button" class="sx-cta" id="saveArticle"><span class="sx-cta-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span><span class="sx-cta-tx"><b>Im Bestand speichern</b><small>Titelbild erscheint im Bestand</small></span></button>
+<button type="button" class="sx-btn" id="exportArticle">Bilder &amp; Texte als ZIP</button>
 </div>
-<div class="v6-head" id="v6Cockpit">
-<p class="v6-eyebrow">DEIN ARBEITSTAG</p>
-<h2 class="v6-heading">Kommandozentrale.</h2>
-<p class="v6-sub">Tippe eine Kachel an, um direkt zu den betreffenden Artikeln zu springen.</p>
+<p class="status sx-status" id="saveStatus"></p>
+</section>
+</section>
+<section id="s4" class="hidden lux-stock-view bx">
+<div class="bx-top">
+<span class="bx-orb" aria-hidden="true">
+<svg class="bx-ico" viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>
+</span>
+<div class="bx-greet">
+<h1>Dein Bestand</h1>
+<p id="stockSummary">Deine gespeicherten Artikel.</p>
+</div>
+<button id="stockNewArticleQuick" class="bx-cta" type="button">
+<span class="bx-cta-orb" aria-hidden="true"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+<span class="bx-cta-tx"><b>Neuer Artikel</b><small>Fotos, Daten, Listing</small></span>
+<svg class="bx-ico bx-cta-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+</button>
+</div>
+<nav class="bx-tabs v5-tabs" id="v5Tabs" aria-label="Bereiche im Bestand">
+<button type="button" class="bx-tab v5-tab on" data-v5-tab="all"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg></span><span class="lb">Bestand</span></button>
+<button type="button" class="bx-tab v5-tab" data-v5-tab="work"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1.5 1.5L7.5 5M3.5 12l1.5 1.5L7.5 11M3.5 18l1.5 1.5 2.5-2.5"/></svg></span><span class="lb">Arbeitsmodus</span></button>
+<button type="button" class="bx-tab v5-tab" data-v5-tab="analytics"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/></svg></span><span class="lb">Analyse</span></button>
+<button type="button" class="bx-tab v5-tab" data-v5-tab="brands"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><span class="lb">Marken</span></button>
+<button type="button" class="bx-tab v5-tab" data-v5-tab="purchases"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9.5" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg></span><span class="lb">Einkäufe</span></button>
+<button type="button" class="bx-tab v5-tab" data-v5-tab="tasks"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span><span class="lb">Erinnerungen</span></button>
+</nav>
+<section id="v5Analysis" class="bx-panel bx-overview" aria-label="Bestands-Übersicht">
+</section>
+<section class="bx-panel bx-cockpit v6-head" id="v6Cockpit" aria-label="Arbeitszentrale">
+<div class="bx-ph">
+<span class="bx-hx"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7Z" fill="currentColor" stroke="none"/></svg></span>
+<div class="bx-tt"><h2 class="bx-title">Arbeitszentrale</h2><span class="bx-sub">Tippe eine Kachel an – direkt zu den passenden Artikeln</span></div>
+</div>
+<div class="bx-qa">
 <div class="v6-tiles" id="v6Tiles">
 </div>
-<div class="v6-inline" style="margin-top:12px">
-<button type="button" class="v6-small-btn" id="v6Reset">Alle Artikel anzeigen</button>
-<button type="button" class="v6-small-btn" id="v6DuplicateCheck">Doppelte Artikel prüfen</button>
+<button type="button" class="bx-q" id="v6Reset"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span><span class="lb">Alle Artikel<br>anzeigen</span></button>
+<button type="button" class="bx-q" id="v6DuplicateCheck"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg></span><span class="lb">Doppelte<br>prüfen</span></button>
 </div>
-<div id="v6DuplicateStatus" class="v6-hint" role="status" style="margin-top:8px">
+<div id="v6DuplicateStatus" class="v6-hint" role="status">
 </div>
 <div id="v6DuplicateResults">
 </div>
+</section>
+<div id="v7Purchases" class="v7-panel bx-panel v5-hidden">
 </div>
-<div class="panel">
-<button class="btn wide" id="newArticle">+ Neuen Artikel anlegen</button>
-<div class="row" style="margin-top:10px">
-<button class="btn secondary" id="backup">Backup herunterladen</button>
-<label class="btn secondary" style="cursor:pointer">Backup importieren<input id="restore" type="file" accept="application/json" class="hidden">
-</label>
+<div id="v7Tasks" class="v7-panel bx-panel v5-hidden">
 </div>
+<div id="v5Work" class="v5-work bx-work v5-hidden">
 </div>
-<div class="v7-panel" id="v7BackupPanel">
-<h3>DATENSICHERUNG</h3>
-<p class="v7-help">Automatische lokale Sicherheitskopie (maximal eine pro Tag). Zusätzlich regelmäßig eine Backup-Datei herunterladen und außerhalb dieses Browsers sichern.</p>
-<div id="v7BackupState" class="v7-mini">Status wird geladen …</div>
-<div class="v7-row">
-<button type="button" id="v7BackupNow">Jetzt lokale Kopie erstellen</button>
-<button type="button" id="v7RestoreLocal">Lokale Kopie wiederherstellen</button>
+<div id="v6Brands" class="v5-section bx-panel v5-hidden">
 </div>
-<p class="v7-help">Lokale Kopien schützen nicht bei Geräteverlust, Browser-Löschung oder Speicherdefekt. Dafür das reguläre JSON-Backup exportieren.</p>
-</div>
-<div class="stock-controls">
-<input class="inp" id="searchArticles" type="search" placeholder="Marke, Nummer, Lagerplatz, Größe …">
-</div>
-<div class="stock-filters" id="stockFilters">
-<button class="stock-filter selected" data-stock-filter="all">Alle</button>
-<button class="stock-filter" data-stock-filter="active">Aktiv</button>
-<button class="stock-filter" data-stock-filter="draft">Entwurf</button>
-<button class="stock-filter" data-stock-filter="sold">Verkauft</button>
-<button class="stock-filter" data-stock-filter="remove">Listing entfernen</button>
-<button class="stock-filter" data-stock-filter="archived">Archiv</button>
-</div>
-<div class="v5-tabs" id="v5Tabs">
-<button type="button" class="v5-tab on" data-v5-tab="all">Bestand</button>
-<button type="button" class="v5-tab" data-v5-tab="work">Arbeitsmodus</button>
-<button type="button" class="v5-tab" data-v5-tab="analytics">Analyse</button>
-<button type="button" class="v5-tab" data-v5-tab="brands">Marken</button>
-<button type="button" class="v5-tab" data-v5-tab="purchases">Einkäufe</button>
-<button type="button" class="v5-tab" data-v5-tab="tasks">Erinnerungen</button>
-</div>
-<div id="v7Purchases" class="v7-panel v5-hidden">
-</div>
-<div id="v7Tasks" class="v7-panel v5-hidden">
-</div>
-<div id="v5Work" class="v5-work v5-hidden">
-</div>
-<div id="v6Brands" class="v5-section v5-hidden">
-</div>
-<div id="v5InventoryArea">
-<div class="v5-toolbar">
-<span class="muted" id="v5Count">
-</span>
-<div style="display:flex;gap:6px">
+<section id="v5InventoryArea" class="bx-panel bx-inv" aria-label="Deine Artikel">
+<div class="bx-ph">
+<span class="bx-hx"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M12 6a2 2 0 1 1 2-2"/><path d="M12 6v1.5L3.5 14a1.6 1.6 0 0 0 1 2.9h15a1.6 1.6 0 0 0 1-2.9L12 7.5"/></svg></span>
+<div class="bx-tt"><h2 class="bx-title">Deine Artikel</h2><span class="bx-sub" id="v5Count"></span></div>
+<div class="bx-tools v5-toolbar">
 <select id="v5Sort" aria-label="Sortieren">
 <option value="new">Neueste</option>
 <option value="old">Älteste</option>
@@ -857,11 +891,23 @@
 <option value="price">Höchster Preis</option>
 <option value="days">Längste Lagerdauer</option>
 </select>
-<button id="v5View" type="button" aria-label="Ansicht umschalten">▦ Raster</button>
-<button id="v5Multi" type="button">☑ Auswahl</button>
+<button id="v5View" type="button" aria-label="Ansicht umschalten">Liste</button>
+<button id="v5Multi" type="button"><svg class="bx-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><span>Auswahl</span></button>
 </div>
 </div>
-<div class="stock-grid" id="library">
+<div class="stock-controls bx-search">
+<svg class="bx-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+<input class="inp" id="searchArticles" type="search" placeholder="Marke, Modell, Nummer, Lagerplatz, Größe …">
+</div>
+<div class="stock-filters bx-seg" id="stockFilters" role="group" aria-label="Status">
+<button class="stock-filter selected" data-stock-filter="all">Alle</button>
+<button class="stock-filter" data-stock-filter="active">Aktiv</button>
+<button class="stock-filter" data-stock-filter="draft">Entwurf</button>
+<button class="stock-filter" data-stock-filter="sold">Verkauft</button>
+<button class="stock-filter" data-stock-filter="remove">Listing entfernen</button>
+<button class="stock-filter" data-stock-filter="archived">Archiv</button>
+</div>
+<div class="stock-grid bx-grid" id="library">
 </div>
 <div id="v5Bulk" class="v5-bulk v5-hidden" aria-label="Sammelbearbeitung">
 <div class="row">
@@ -895,12 +941,34 @@
 <button id="v5Apply" type="button">Auf Auswahl anwenden</button>
 <p style="font-size:10px">Verkäufe bleiben geschützt: Verkaufte Artikel können hier nicht verändert werden.</p>
 </div>
+</section>
+<details class="bx-panel bx-backup">
+<summary class="bx-ph"><span class="bx-hx"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><div class="bx-tt"><h2 class="bx-title">Datensicherung &amp; Beispiele</h2><span class="bx-sub">Backup, Import, lokale Kopien</span></div><svg class="bx-ico bx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+<div class="panel">
+<button class="btn wide" id="newArticle">+ Neuen Artikel anlegen</button>
+<div class="row" style="margin-top:10px">
+<button class="btn secondary" id="backup">Backup herunterladen</button>
+<label class="btn secondary" style="cursor:pointer">Backup importieren<input id="restore" type="file" accept="application/json" class="hidden">
+</label>
 </div>
+</div>
+<div class="v7-panel" id="v7BackupPanel">
+<h3>DATENSICHERUNG</h3>
+<p class="v7-help">Automatische lokale Sicherheitskopie (maximal eine pro Tag). Zusätzlich regelmäßig eine Backup-Datei herunterladen und außerhalb dieses Browsers sichern.</p>
+<div id="v7BackupState" class="v7-mini">Status wird geladen …</div>
+<div class="v7-row">
+<button type="button" id="v7BackupNow">Jetzt lokale Kopie erstellen</button>
+<button type="button" id="v7RestoreLocal">Lokale Kopie wiederherstellen</button>
+</div>
+<p class="v7-help">Lokale Kopien schützen nicht bei Geräteverlust, Browser-Löschung oder Speicherdefekt. Dafür das reguläre JSON-Backup exportieren.</p>
+</div>
+<div class="bx-demo-slot"></div>
+</details>
 </section>
 </main>
-<div class="footer hidden" id="nav">
-<button class="btn secondary" id="back">Zurück</button>
-<button class="btn" id="next">Weiter →</button>
+<div class="footer sx-nav hidden" id="nav">
+<button class="sx-btn" id="back">Zurück</button>
+<button class="sx-next" id="next">Weiter →</button>
 </div>
 <section id="stockSheet" class="stock-sheet hidden" aria-label="Artikelakte">
 <div class="sheet-header">
@@ -1051,196 +1119,291 @@
 <button id="navSettings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Einstellungen</span></button>
 <button id="navFinance" class="cc-nav-hidden" tabindex="-1" aria-hidden="true"><span>Insights</span></button>
 </nav>
-<section id="finance" class="wrap hidden lux-finance-page">
-<div class="page-head finance-head">
-<div>
-<div class="eyebrow">ANALYTICS</div>
-<h1>Statistiken.</h1>
-<p class="muted">Umsatz, Gewinn und dein aktiver Warenwert auf einen Blick.</p>
+<section id="finance" class="wrap hidden sx in">
+<div class="sx-top">
+<span class="sx-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/></svg></span>
+<div class="sx-greet"><h1>Insights</h1><p id="inSubtitle">Zahlen, Trends und Empfehlungen</p></div>
+<div class="sx-seg in-period" id="inPeriod" role="group" aria-label="Zeitraum"><button type="button" data-p="7">7 Tage</button><button type="button" data-p="30">30 Tage</button><button type="button" data-p="90">90 Tage</button><button type="button" data-p="365">12 Monate</button><button type="button" data-p="all">Alle</button></div>
 </div>
-<div class="finance-mark">€</div>
-</div>
-<div class="finance-hero">
-<div class="finance-big">
-<small>REALISIERTER GEWINN</small>
-<strong id="financeProfitHero">0 €</strong>
-<p id="financeHeroHint">Basierend auf deinen gespeicherten Verkäufen.</p>
-</div>
-<div class="finance-side">
-<div class="stat">
-<span>EINKÄUFE IM BESTAND</span>
-<strong id="financeStock">0 €</strong>
-</div>
-<div class="stat">
-<span>UMSATZ</span>
-<strong id="financeRevenue">0 €</strong>
-</div>
-<div class="stat">
-<span>VERKAUFSKOSTEN</span>
-<strong id="financeFees">0 €</strong>
-</div>
-<div class="stat">
-<span>VERKÄUFE</span>
-<strong id="financeSalesCount">0</strong>
-</div>
-</div>
-</div>
-<div class="finance-split">
-<section class="settings-card">
-<div class="sectionheading">
-<h2>VERKÄUFE</h2>
-</div>
-<div id="salesList" class="library">
-</div>
+<section class="sx-panel" aria-label="Überblick">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/></svg></span><div class="sx-tt"><h2 class="sx-title">Überblick</h2><span class="sx-sub" id="inRangeLabel">Vergleich mit dem Zeitraum davor</span></div></div>
+<div class="in-kpis" id="inKpis"></div>
 </section>
-<section class="settings-card">
-<div class="sectionheading">
-<h2>INTERPRETATION</h2>
-</div>
-<div id="financeInsights" class="finance-insights">
-</div>
-<p class="muted">Gewinn = tatsächlicher Verkaufspreis − Einkauf − Einkaufskosten − Verkaufsgebühren − selbst getragene Versandkosten. Steuerliche Behandlung nicht enthalten.</p>
+<section class="sx-panel" aria-label="Umsatz und Gewinn">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span><div class="sx-tt"><h2 class="sx-title">Umsatz &amp; Gewinn</h2><span class="sx-sub" id="inChartSub">Verlauf im gewählten Zeitraum</span></div>
+<div class="in-legend"><span><i class="sw rev"></i>Umsatz</span><span><i class="sw pro"></i>Gewinn</span></div><button type="button" class="sx-btn in-tbtn" id="inTableBtn" aria-pressed="false">Tabelle</button></div>
+<div class="in-chart" id="inChart"></div>
+<div class="in-table" id="inTable" hidden></div>
 </section>
-</div>
+<div class="sx-split in-split">
+<section class="sx-panel" aria-label="Plattformen">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18M8 4v5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Plattformen</h2><span class="sx-sub">Wo du am besten verkaufst</span></div></div>
+<div class="in-platforms" id="inPlatforms"></div>
 </section>
-<section id="aiChat" class="wrap hidden lux-ai-page">
-<div id="ccChat" class="v11 cc-chat">
-<section class="v11-panel v11-hud red cc-chat-top" aria-label="KI-Assistent">
-<div class="v11-ph">
-<span class="hx"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="2"><path d="M5.5 19.5 12 4.5l6.5 15M8.6 14.2h6.8M12 4.5v4"/></svg></span>
-<div class="tt"><h1 class="v11-title">KI-Assistent</h1><span class="v11-sub">Dein intelligenter Partner für dein Reselling-Business</span></div>
-</div>
-<div class="cc-chat-state">
-<span class="on" id="ccChatState" data-state="setup" role="status">Einrichten</span>
-<span class="v11-modes">
-<button type="button" data-ai-request="Analysiere meinen Bestand und meine Verkäufe">Analysieren</button>
-<button type="button" data-ai-request="Berate mich bei meinen nächsten Schritten">Beraten</button>
-<button type="button" data-ai-request="Wie kann ich mein Business optimieren?">Optimieren</button>
-</span>
-</div>
-<div class="cc-chat-grid">
-<div class="cc-side cc-glass v11-hud">
-<h2><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M13 3 5 13h6l-1 8 9-11h-6l0-7Z"/></svg>Schnelle Anfragen</h2>
-<button type="button" class="cc-q v11-hud gold chat-chip" data-chat-cmd="Bewerte meinen aktuellen Bestand"><span class="ic"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M3 12 12 3h8v8l-9 9-8-8Z"/><circle cx="16" cy="8" r="1.3"/></svg></span><span class="tx"><b>Artikel bewerten</b><small>Marktwert &amp; Nachfrage</small></span><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="m9 5 7 7-7 7"/></svg></button><button type="button" class="cc-q v11-hud gold chat-chip" data-chat-cmd="Erstelle einen Verkaufstext für meinen neuesten Artikel"><span class="ic"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M7 3h7l4 4v14H7V3Z"/><path d="M14 3v4h4M9.5 12h6M9.5 16h6"/></svg></span><span class="tx"><b>Verkaufstext erstellen</b><small>SEO-optimiert</small></span><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="m9 5 7 7-7 7"/></svg></button><button type="button" class="cc-q v11-hud gold chat-chip" data-chat-cmd="Gib mir eine Marktanalyse zu meinem Sortiment"><span class="ic"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M5 20V13M10 20V9M15 20V5M20 20V11" stroke-width="2.4"/></svg></span><span class="tx"><b>Marktanalyse</b><small>Trends &amp; Chancen</small></span><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="m9 5 7 7-7 7"/></svg></button><button type="button" class="cc-q v11-hud gold chat-chip" data-chat-cmd="Welche Preise soll ich anpassen?"><span class="ic"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M4 18l5-6 4 3 7-9"/><path d="M15 6h5v5"/></svg></span><span class="tx"><b>Preisempfehlung</b><small>Optimaler Verkaufspreis</small></span><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="m9 5 7 7-7 7"/></svg></button><button type="button" class="cc-q v11-hud gold chat-chip" data-chat-cmd="Wie kann ich mein Lager optimieren?"><span class="ic"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg></span><span class="tx"><b>Lager optimieren</b><small>Bestandsvorschläge</small></span><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="m9 5 7 7-7 7"/></svg></button><button type="button" class="cc-q v11-hud gold chat-chip" data-chat-cmd="Gib mir Ideen und Strategien für mein Reselling-Business"><span class="ic"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/></svg></span><span class="tx"><b>Ideen &amp; Strategien</b><small>Für mehr Umsatz</small></span><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="m9 5 7 7-7 7"/></svg></button>
-</div>
-<div class="cc-chat-bot" id="ccChatBot" aria-hidden="true"></div>
-<div class="cc-side cc-glass v11-hud">
-<h2><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M5 20V13M10 20V9M15 20V5M20 20V11" stroke-width="2.4"/></svg>Aktuelle Insights</h2>
-<div id="ccChatIns" class="cc-ins"></div>
-</div>
-</div>
-</section>
-<section class="v11-panel v11-hud red cc-chat-talk" aria-label="Unterhaltung">
-<button id="chatClear" type="button" class="cc-clear">Verlauf leeren</button>
-<div class="cc-talk-row">
-<div class="cc-chat-avatar" id="ccChatAvatar" aria-hidden="true"></div>
-<div class="v11-bubble cc-greet"><time id="ccChatTime"></time><b>Hallo! 👋</b> Ich bin dein KI-Assistent. Wie kann ich dir heute helfen?<span>Zum Beispiel: Artikel bewerten, Verkaufstexte erstellen, Markttrends analysieren oder Strategien planen.</span></div>
-</div>
-<div id="chatFeed" class="chat-feed" aria-live="polite"></div>
-<div class="v11-prompts cc-pills"><button type="button" class="chat-chip" data-chat-cmd="Bewerte meinen aktuellen Bestand"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M3 12 12 3h8v8l-9 9-8-8Z"/><circle cx="16" cy="8" r="1.3"/></svg><span>Artikel bewerten</span></button><button type="button" class="chat-chip" data-chat-cmd="Erstelle einen Verkaufstext für meinen neuesten Artikel"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M7 3h7l4 4v14H7V3Z"/><path d="M14 3v4h4M9.5 12h6M9.5 16h6"/></svg><span>Verkaufstext erstellen</span></button><button type="button" class="chat-chip" data-chat-cmd="Gib mir eine Marktanalyse zu meinem Sortiment"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M5 20V13M10 20V9M15 20V5M20 20V11" stroke-width="2.4"/></svg><span>Marktanalyse</span></button><button type="button" class="chat-chip" data-chat-cmd="Welche Preise soll ich anpassen?"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M4 18l5-6 4 3 7-9"/><path d="M15 6h5v5"/></svg><span>Preisempfehlung</span></button><button type="button" class="chat-chip" data-chat-cmd="Wie kann ich mein Lager optimieren?"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg><span>Lager optimieren</span></button><button type="button" class="chat-chip" data-chat-cmd="Gib mir Ideen und Strategien für mein Reselling-Business"><svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true" stroke-width="1.7"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/></svg><span>Ideen &amp; Strategien</span></button></div>
-<div class="cc-entry">
-<button type="button" class="cc-mic" id="ccChatMic" aria-label="Spracheingabe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
-<div class="cc-field">
-<textarea id="chatInput" class="rv-chat-input" rows="1" aria-label="Frage an den KI-Assistenten" placeholder="Stelle eine Frage oder gib einen Befehl ein …"></textarea>
-<button type="button" class="cc-attach" id="ccChatAttach" aria-label="Foto anhängen und neuen Artikel starten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 11-8.5 8.5a5 5 0 0 1-7-7L13 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L14 7"/></svg></button>
-</div>
-<button id="chatSend" type="button" class="cc-send" aria-label="Nachricht senden"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></button>
+<section class="sx-panel" aria-label="Monatsziel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/></svg></span><div class="sx-tt"><h2 class="sx-title">Monatsziel</h2><span class="sx-sub" id="inGoalSub">Fortschritt und Prognose</span></div></div>
+<div class="in-goal" id="inGoal"></div>
+<div class="in-goal-set">
+<label class="sx-field"><span>Ziel pro Monat</span><span class="sx-input-wrap"><input id="inGoalValue" type="number" inputmode="decimal" min="0" step="10" placeholder="z. B. 500"><i>€</i></span></label>
+<div class="sx-seg" id="inGoalType" role="group" aria-label="Zielart"><button type="button" data-v="profit">Gewinn</button><button type="button" data-v="revenue">Umsatz</button></div>
 </div>
 </section>
 </div>
+<div class="sx-split in-split">
+<section class="sx-panel" aria-label="Kategorien">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Kategorien</h2><span class="sx-sub">Gewinn und Tempo pro Kategorie</span></div></div>
+<div class="in-bars" id="inCats"></div>
 </section>
-<section id="settingsPage" class="wrap hidden lux-settings-page">
-<div class="page-head settings-head">
-<div>
-<div class="eyebrow">CONTROL CENTER</div>
-<h1>Einstellungen.</h1>
-<p class="muted">Cloud, Backup, Wiederherstellung und Sicherheitsinfos an einem Ort.</p>
+<section class="sx-panel" aria-label="Marken">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Top-Marken</h2><span class="sx-sub">Nach Gewinn im Zeitraum</span></div></div>
+<div class="in-brands" id="inBrands"></div>
+</section>
 </div>
-<div class="settings-mark">
-<img src="/rv-white.png" alt="RV">
+<section class="sx-panel" aria-label="Lager-Gesundheit">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg></span><div class="sx-tt"><h2 class="sx-title">Lager-Gesundheit</h2><span class="sx-sub">Gebundenes Kapital und Alter deines Bestands</span></div></div>
+<div class="in-kpis in-kpis-3" id="inStockKpis"></div>
+<div class="in-age" id="inAge"></div>
+</section>
+<section class="sx-panel" aria-label="Empfehlungen">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Empfehlungen</h2><span class="sx-sub">Aus deinen eigenen Zahlen abgeleitet</span></div></div>
+<div class="in-tips" id="inTips"></div>
+</section>
+<section class="sx-panel" aria-label="Letzte Verkäufe">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9.5" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Verkäufe</h2><span class="sx-sub" id="inSalesSub">Im gewählten Zeitraum</span></div><button type="button" class="sx-btn" id="inCsv">Tabelle exportieren</button></div>
+<div class="in-sales" id="inSales"></div>
+<p class="sx-note">Gewinn = Verkaufspreis − Einkaufspreis − Verkaufsgebühren − selbst getragene Versandkosten. Steuern sind nicht berücksichtigt.</p>
+</section>
+</section>
+<section id="aiChat" class="wrap hidden sx ch">
+<div id="ccChat" class="ch-root">
+<div class="sx-top">
+<div class="ch-avatar" id="ccChatAvatar" aria-hidden="true"></div>
+<div class="sx-greet"><h1>KI-Assistent</h1><p id="chSub">Dein Partner für Bestand, Preise und Texte</p></div>
+<span class="ch-state" id="ccChatState" data-state="setup" role="status">Einrichten</span>
+<button type="button" class="sx-pill" id="chatClear"><span class="sx-pill-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span class="sx-pill-tx"><b>Neuer Chat</b><small>Verlauf leeren</small></span></button>
+</div>
+<div class="ch-grid">
+<section class="sx-panel ch-main" aria-label="Unterhaltung">
+<div class="ch-feed" id="chFeed" aria-live="polite"></div>
+<div id="chatFeed" hidden></div>
+<div class="ch-follow" id="chFollow"></div>
+<div class="ch-ctx" id="chCtx" hidden></div>
+<div class="ch-entry">
+<button type="button" class="ch-round ch-mic" id="ccChatMic" aria-label="Spracheingabe"><svg class="sx-ico" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+<div class="ch-field">
+<textarea id="chatInput" rows="1" aria-label="Frage an den KI-Assistenten" placeholder="Frag nach Preisen, Texten, Strategien …"></textarea>
+<button type="button" class="ch-ib" id="chCtxBtn" aria-label="Artikel als Kontext anhängen" title="Artikel anhängen"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></button>
+<button type="button" class="ch-ib" id="ccChatAttach" aria-label="Foto aufnehmen und neuen Artikel im Studio starten" title="Neuer Artikel mit Foto"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
+</div>
+<button id="chatSend" type="button" class="ch-round ch-send" aria-label="Nachricht senden"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></button>
+</div>
+<p class="sx-note ch-hint">Enter sendet · Shift + Enter für neue Zeile · Antworten stützen sich auf deine App-Daten, nicht auf Live-Marktpreise.</p>
+</section>
+<aside class="ch-side">
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7Z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Schnelle Anfragen</h2><span class="sx-sub">Mit deinen Bestandsdaten</span></div></div>
+<div class="ch-qs" id="chQuick"></div>
+</section>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 17l6-6 4 4 7-7"/></svg></span><div class="sx-tt"><h2 class="sx-title">App-Befehle</h2><span class="sx-sub">Sofort, ohne KI-Anfrage</span></div></div>
+<div class="sx-chips ch-cmds" id="chCmds"></div>
+</section>
+<section class="sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 20V13M10 20V9M15 20V5M20 20V11"/></svg></span><div class="sx-tt"><h2 class="sx-title">Aktuelle Insights</h2><span class="sx-sub">Antippen öffnet die passende Ansicht</span></div></div>
+<div id="ccChatIns" class="cc-ins ch-ins"></div>
+</section>
+</aside>
+</div>
+<div class="ch-picker" id="chPicker" hidden role="dialog" aria-modal="true" aria-label="Artikel auswählen">
+<div class="ch-picker-box sx-panel">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Artikel anhängen</h2><span class="sx-sub">Die KI bekommt Marke, Größe, Zustand, Preise und Maße – keine Fotos</span></div><button type="button" class="sx-btn" id="chPickerClose">Schließen</button></div>
+<input id="chPickerSearch" type="search" placeholder="Marke, Modell, Nummer …">
+<div class="ch-picker-list" id="chPickerList"></div>
 </div>
 </div>
-<div class="settings-grid">
-<aside class="settings-card">
-<div class="eyebrow">SYNC</div>
-<h2>Geräte verbinden</h2>
-<p class="rvcloud-small">Ein gemeinsamer Bestand auf Android und Mac. Verbindungskennwort nur auf deinen Geräten eingeben.</p>
-<label for="rvCloudPassword">Cloud-Sync-Kennwort</label>
-<input id="rvCloudPassword" type="password" autocomplete="new-password" placeholder="Dein RV_SYNC_PASSWORD">
-<div class="settings-btns">
-<button id="rvCloudConnect" type="button">Cloud verbinden</button>
-<button id="rvCloudSync" class="secondary" type="button">Jetzt synchronisieren</button>
-<button id="rvCloudDisconnect" class="secondary" type="button">Trennen</button>
 </div>
-<p class="rvcloud-small" id="rvCloudStatus" role="status" aria-live="polite">Nicht verbunden · Artikel bleiben lokal, bis du dich verbindest.</p>
+</section>
+<section id="sniper" class="wrap hidden sx sn">
+<div class="sx-top">
+<span class="sx-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></span>
+<div class="sx-greet"><h1>Snipes</h1><p id="snSub">Vinted-Funde mit Gewinnbewertung</p></div>
+<span class="sn-state" id="snState" data-s="off" role="status">Aus</span>
+</div>
+
+<section class="sx-panel" aria-label="Treffer">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7Z" fill="currentColor" stroke="none"/></svg></span><div class="sx-tt"><h2 class="sx-title">Treffer</h2><span class="sx-sub" id="snHitSub">Sortiert nach Gewinn</span></div></div>
+<div class="sx-seg sn-tabs" id="snTabs" role="group" aria-label="Filter"><button type="button" data-t="snipes">Snipes</button><button type="button" data-t="all">Alle</button><button type="button" data-t="saved">Gemerkt</button></div>
+<div class="sn-hits" id="snHits"></div>
+<div class="sn-empty" id="snEmpty" hidden></div>
+</section>
+
+<section class="sx-panel" aria-label="Suchaufträge">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Suchaufträge</h2><span class="sx-sub">Was soll ich für dich beobachten?</span></div></div>
+<div class="sn-list" id="snSearches"></div>
+<form class="sn-form" id="snForm" autocomplete="off">
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Suchbegriff</span><input id="snQ" placeholder="z. B. Nike Tech Fleece" required maxlength="80"></label>
+<label class="sx-field"><span>Höchstpreis</span><span class="sx-input-wrap"><input id="snMax" type="number" inputmode="decimal" min="1" step="1" placeholder="40"><i>€</i></span></label>
+<label class="sx-field"><span>Größe (optional)</span><input id="snSize" placeholder="z. B. M" maxlength="12"></label>
+<label class="sx-field"><span>Wiederverkauf (optional)</span><span class="sx-input-wrap"><input id="snResale" type="number" inputmode="decimal" min="0" step="1" placeholder="auto"><i>€</i></span></label>
+</div>
+<button type="submit" class="sx-btn primary" id="snAdd">Suchauftrag hinzufügen</button>
+</form>
+</section>
+
+<section class="sx-panel" aria-label="Snipe-Regeln">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></span><div class="sx-tt"><h2 class="sx-title">Snipe-Regeln</h2><span class="sx-sub">Ab wann ein Fund Alarm auslöst</span></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Mindestgewinn</span><span class="sx-input-wrap"><input data-sn="minProfit" type="number" inputmode="decimal" min="0" step="1"><i>€</i></span></label>
+<label class="sx-field"><span>Mindestmarge</span><span class="sx-input-wrap"><input data-sn="minMargin" type="number" inputmode="decimal" min="0" step="1"><i>%</i></span></label>
+<label class="sx-field"><span>Eingangsversand (Vinted)</span><span class="sx-input-wrap"><input data-sn="inShip" type="number" inputmode="decimal" min="0" step="0.1"><i>€</i></span></label>
+<label class="sx-field"><span>Gebühr beim Wiederverkauf</span><span class="sx-input-wrap"><input data-sn="sellFee" type="number" inputmode="decimal" min="0" step="0.5"><i>%</i></span></label>
+<label class="sx-field"><span>Abfrage alle</span><span class="sx-input-wrap"><input data-sn="interval" type="number" inputmode="numeric" min="45" step="5"><i>Sek.</i></span></label>
+<label class="sx-field"><span>Vinted-Land</span><select data-sn="domain"><option value="de">Deutschland</option><option value="at">Österreich</option><option value="fr">Frankreich</option><option value="nl">Niederlande</option><option value="pl">Polen</option><option value="it">Italien</option><option value="es">Spanien</option><option value="co.uk">Großbritannien</option></select></label>
+</div>
+<div class="st-toggles">
+<label class="sx-switch"><input type="checkbox" data-sn="auto"><span></span>Automatisch abfragen, solange die App offen ist</label>
+<label class="sx-switch"><input type="checkbox" data-sn="notify"><span></span>Benachrichtigung bei Snipes</label>
+</div>
+<p class="sx-hint">Käuferschutz (0,70 € + 5 %) wird automatisch eingerechnet. Der geschätzte Verkaufspreis kommt aus deinem Wert, deinen eigenen Verkäufen oder dem Marktmedian der Treffer.</p>
+</section>
+
+<section class="sx-panel" aria-label="Verbindung">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></span><div class="sx-tt"><h2 class="sx-title">Verbindung</h2><span class="sx-sub" id="snLinkSub">Userscript auf diesem Gerät</span></div></div>
+<div class="st-checks" id="snLink"></div>
+<ol class="sn-steps">
+<li>Browser mit Userscript-Unterstützung nutzen (Firefox oder Kiwi mit Tampermonkey, am PC jeder Browser mit Tampermonkey).</li>
+<li>Auf „Userscript herunterladen“ tippen und in Tampermonkey installieren, oder Code kopieren und dort als neues Skript einfügen.</li>
+<li>Diese Seite neu laden. Oben muss „Verbunden“ stehen. Abgefragt wird mit deiner eigenen Vinted-Sitzung, kein Passwort wird weitergegeben.</li>
+</ol>
+<div class="settings-btns sn-btns">
+<button type="button" class="sx-btn" id="snDl">Userscript herunterladen</button>
+<button type="button" class="sx-btn" id="snCopy">Code kopieren</button>
+<button type="button" class="sx-btn" id="snPing">Verbindung prüfen</button>
+<button type="button" class="sx-btn primary" id="snRun">Jetzt abfragen</button>
+</div>
+<p class="sx-hint" id="snLog"></p>
+</section>
+</section>
+
+<section id="settingsPage" class="wrap hidden sx st">
+<div class="sx-top">
+<span class="sx-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></span>
+<div class="sx-greet"><h1>Einstellungen</h1><p id="stSubtitle">Dein Kontrollzentrum für Shop, Studio und Daten</p></div>
+</div>
+<section class="sx-panel st-status" aria-label="Systemstatus">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span><div class="sx-tt"><h2 class="sx-title">Systemstatus</h2><span class="sx-sub">Live auf diesem Gerät</span></div></div>
+<div class="st-metrics" id="stMetrics"></div>
+</section>
+<nav class="st-nav" aria-label="Bereiche">
+<button type="button" data-st="stProfil"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span><span class="lb">Profil &amp; Shop</span></button>
+<button type="button" data-st="stVerkauf"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><span class="lb">Verkauf</span></button>
+<button type="button" data-st="stStudio"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span class="lb">Studio</span></button>
+<button type="button" data-st="stKi"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><span class="lb">KI</span></button>
+<button type="button" data-st="stCloud"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M7 18a5 5 0 1 1 .9-9.9A6 6 0 0 1 19 10a4 4 0 0 1-1 8z"/></svg></span><span class="lb">Cloud &amp; Geräte</span></button>
+<button type="button" data-st="stDaten"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span><span class="lb">Daten &amp; Backup</span></button>
+<button type="button" data-st="stDarstellung"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M12 4a8 8 0 0 1 0 16"/></svg></span><span class="lb">Darstellung</span></button>
+<button type="button" data-st="stInfo"><span class="ic"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg></span><span class="lb">Über die App</span></button>
+</nav>
+
+<section class="sx-panel st-sec" id="stProfil">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span><div class="sx-tt"><h2 class="sx-title">Profil &amp; Shop</h2><span class="sx-sub">Persönliche Begrüßung und dein Stil in allen Texten</span></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Dein Vorname</span><input data-st-key="name" placeholder="z. B. Dennis" autocomplete="given-name"></label>
+<label class="sx-field"><span>Shop- oder Verkäufername</span><input data-st-key="shop" placeholder="z. B. RV Vintage"></label>
+</div>
+<label class="sx-field"><span>Abschlusstext in jedem Listing</span><textarea data-st-key="closing" class="st-short"></textarea></label>
+<label class="sx-field"><span>Eigene Hashtags für Instagram</span><input data-st-key="tags" placeholder="#rvvintage #secondhandberlin"></label>
+<label class="sx-field"><span>Beschreibungsvorlage für die KI</span><textarea id="stTemplate"></textarea></label>
+<p class="sx-hint">Begrüßung auf der Startseite, Texte „Ohne KI“ und Hashtags nutzen diese Angaben sofort.</p>
+</section>
+
+<section class="sx-panel st-sec" id="stVerkauf">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Verkauf &amp; Plattformen</h2><span class="sx-sub">Wo du verkaufst und wie Preise entstehen</span></div></div>
+<div class="sx-field"><span>Aktive Plattformen</span><div class="st-toggles" id="stPlatforms"></div></div>
+<div class="sx-field"><span>Preisrundung im Preisrechner</span><div class="sx-seg" id="stRounding" role="group" aria-label="Preisrundung"><button type="button" data-v="59">Endung 5 / 9</button><button type="button" data-v="90">Endung ,90</button><button type="button" data-v="int">Ganze Euro</button></div></div>
+<div class="sx-field"><span>Gebühren &amp; Verhandlungspuffer pro Plattform</span><div class="sx-fees" id="stFees"></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Eigene Versandkosten (Vorschlag beim Verkauf)</span><span class="sx-input-wrap"><input data-st-key="shipping" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0,00"><i>€</i></span></label>
+<label class="sx-field"><span>Artikel gilt als Ladenhüter ab</span><span class="sx-input-wrap"><input data-st-key="staleDays" type="number" min="7" step="1" placeholder="60"><i>Tagen</i></span></label>
+</div>
+</section>
+
+<section class="sx-panel st-sec" id="stStudio">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Studio &amp; Titelbild</h2><span class="sx-sub">Standards für jeden neuen Artikel</span></div></div>
+<label class="sx-switch"><input type="checkbox" id="stCoverAuto"><span></span>Titelbild nach dem Hochladen automatisch erstellen</label>
+<div class="sx-field"><span>Standard-Hintergrund für Titelbilder</span><div class="sx-swatches" id="stBg"></div></div>
+<div class="sx-field"><span>Freisteller</span><div class="sx-seg" id="stEngine" role="group" aria-label="Freisteller"><button type="button" data-engine="poof">Poof.bg</button><button type="button" data-engine="ai">KI auf dem Gerät</button><button type="button" data-engine="server">Photoroom</button><button type="button" data-engine="original">Original</button></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Präfix der Artikelnummer</span><input data-st-key="skuPrefix" placeholder="RV" maxlength="8"></label>
+<label class="sx-field"><span>Status neuer Artikel</span><select data-st-key="defaultStatus"><option>Entwurf</option><option>Bereit</option><option>Online</option></select></label>
+</div>
+</section>
+
+<section class="sx-panel st-sec" id="stKi">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">KI &amp; Server</h2><span class="sx-sub">Anbieter, Server und Verbindungstest</span></div></div>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>KI-Anbieter</span><select id="settingsAiProvider"><option value="openai">OpenAI</option><option value="claude">Claude</option></select></label>
+<label class="sx-field"><span>KI-Server</span><input id="settingsAiEndpoint" type="url" placeholder="https://deine-rv-app.pages.dev"></label>
+<label class="sx-field"><span>RV-Passwort (nur für diese Sitzung)</span><input id="stAiToken" type="password" autocomplete="current-password" placeholder="Cloud-/App-Passwort"></label>
+</div>
+<div class="st-list">
+<div><small>Chat</small><strong id="settingsAiChatState">Nicht verbunden</strong></div>
+<div><small>Listings</small><strong id="settingsAiListingState">Nicht verbunden</strong></div>
+<div><small>Anbieter</small><strong id="settingsAiProviderLabel">OpenAI</strong></div>
+</div>
+<div class="sx-row">
+<button type="button" class="sx-cta sx-cta-sm" id="stAiTest"><span class="sx-cta-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span><span class="sx-cta-tx"><b>Verbindung testen</b></span></button>
+<button type="button" class="sx-btn" id="settingsAiApply">Übernehmen</button>
+<button type="button" class="sx-btn" id="settingsAiUseCloud">Diese App als Server</button>
+</div>
+<div class="st-checks" id="stAiResult"></div>
+<p class="sx-hint">API-Schlüssel liegen nur auf dem Server (OPENAI_API_KEY bzw. ANTHROPIC_API_KEY, optional PHOTOROOM_API_KEY oder REMOVE_BG_API_KEY für den Freisteller).</p>
+</section>
+
+<section class="sx-panel st-sec" id="stCloud">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M7 18a5 5 0 1 1 .9-9.9A6 6 0 0 1 19 10a4 4 0 0 1-1 8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Cloud &amp; Geräte</h2><span class="sx-sub">Ein gemeinsamer Bestand auf Handy und Mac</span></div></div>
+<label class="sx-field" for="rvCloudPassword"><span>Cloud-Sync-Kennwort</span><input id="rvCloudPassword" type="password" autocomplete="new-password" placeholder="Dein RV_SYNC_PASSWORD"></label>
+<div class="sx-row">
+<button type="button" class="sx-cta sx-cta-sm" id="rvCloudConnect"><span class="sx-cta-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M9 7H6a4 4 0 0 0 0 8h3M15 7h3a4 4 0 0 1 0 8h-3M8 11h8"/></svg></span><span class="sx-cta-tx"><b>Cloud verbinden</b></span></button>
+<button type="button" class="sx-btn" id="rvCloudSync">Jetzt synchronisieren</button>
+<button type="button" class="sx-btn" id="rvCloudDisconnect">Trennen</button>
+</div>
+<p class="sx-hint st-cloudstate" id="rvCloudStatus" role="status" aria-live="polite">Nicht verbunden · Artikel bleiben lokal, bis du dich verbindest.</p>
 <section id="rvConflictSection" class="rvconflicts" hidden>
-<h3>⚠️ Versionskonflikte <span id="rvConflictCount">
-</span>
-</h3>
+<h3>⚠️ Versionskonflikte <span id="rvConflictCount"></span></h3>
 <p class="rvcon-notice">Die Änderung bleibt auf diesem Gerät gespeichert. Vor einer Entscheidung ein Backup auf beiden Geräten erstellen.</p>
-<div id="rvConflictList">
-</div>
+<div id="rvConflictList"></div>
 </section>
-</aside>
-<aside class="settings-card">
-<div class="eyebrow">KI</div>
-<h2>Provider & Verbindung</h2>
-<p class="rvcloud-small">Wähle deinen Anbieter und nutze denselben Server wie für die Cloud-Version. So wirkt RV Studio wie eine einzige verbundene App.</p>
-<label for="settingsAiProvider">KI-Anbieter</label>
-<select id="settingsAiProvider">
-<option value="openai">OpenAI</option>
-<option value="claude">Claude</option>
-</select>
-<label for="settingsAiEndpoint">KI-Server</label>
-<input id="settingsAiEndpoint" type="url" placeholder="https://deine-rv-app.pages.dev">
-<div class="settings-list">
-<div>
-<small>Chat</small>
-<strong id="settingsAiChatState">Nicht verbunden</strong>
+<p class="sx-hint">Das Kennwort wird nur für diese Sitzung gemerkt. Synchronisiert wird automatisch alle 30 Sekunden und sobald das Gerät wieder online ist.</p>
+</section>
+
+<section class="sx-panel st-sec" id="stDaten">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span><div class="sx-tt"><h2 class="sx-title">Daten &amp; Backup</h2><span class="sx-sub">Sichern, exportieren, wiederherstellen</span></div></div>
+<div class="st-actions">
+<button type="button" class="st-action" id="settingsBackup"><span class="mi"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg></span><span><b>Backup herunterladen</b><small>Alle Artikel inkl. Fotos als JSON</small></span></button>
+<label class="st-action"><span class="mi"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 20V8M7 13l5-5 5 5M5 4h14"/></svg></span><span><b>Backup importieren</b><small>JSON-Datei wiederherstellen</small></span><input id="settingsRestore" type="file" accept="application/json" hidden></label>
+<button type="button" class="st-action" id="stCsv"><span class="mi"><svg class="sx-ico" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><span><b>Tabelle exportieren</b><small>CSV für Excel, Numbers, Steuer</small></span></button>
+<button type="button" class="st-action" id="stPersist"><span class="mi"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><span><b>Speicher schützen</b><small id="stPersistState">Browser darf Daten nicht automatisch löschen</small></span></button>
 </div>
-<div>
-<small>Listings</small>
-<strong id="settingsAiListingState">Nicht verbunden</strong>
+<div class="sx-fields sx-two">
+<label class="sx-field"><span>Backup-Erinnerung</span><select data-st-key="backupDays"><option value="0">Aus</option><option value="7">Nach 7 Tagen</option><option value="14">Nach 14 Tagen</option><option value="30">Nach 30 Tagen</option></select></label>
+<div class="sx-field"><span>Beispielartikel</span><div class="sx-row bx-demo-slot st-demo-slot"></div></div>
 </div>
-<div>
-<small>Provider</small>
-<strong id="settingsAiProviderLabel">OpenAI</strong>
-</div>
-</div>
-<div class="settings-btns">
-<button id="settingsAiApply" type="button">KI übernehmen</button>
-<button id="settingsAiUseCloud" class="secondary" type="button">Cloud-URL nutzen</button>
-</div>
-</aside>
-<aside class="settings-card">
-<div class="eyebrow">SICHERUNG</div>
-<h2>Backup & Import</h2>
-<p class="rvcloud-small">Erstelle ein JSON-Backup oder spiele einen vorhandenen Export wieder ein.</p>
-<div class="settings-btns stack">
-<button id="settingsBackup" type="button">Backup erstellen</button>
-<label class="settings-import">
-<span>Backup importieren</span>
-<input id="settingsRestore" type="file" accept="application/json">
-</label>
-</div>
-<div class="settings-list">
-<div>
-<small>App-Modell</small>
-<strong>RV Studio Cloud</strong>
-</div>
-<div>
-<small>Version</small>
-<strong>V20 · Blue Glass Command Center</strong>
-</div>
-<div>
-<small>Design</small>
-<strong>Blue Glass · Gold · Bokeh</strong>
-</div>
-</div>
-</aside>
-</div>
-<div id="settingsExtras" class="settings-backup-extra">
-</div>
+<div id="settingsExtras" class="st-extras"></div>
+</section>
+
+<section class="sx-panel st-sec" id="stDarstellung">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M12 4a8 8 0 0 1 0 16"/></svg></span><div class="sx-tt"><h2 class="sx-title">Darstellung &amp; Animationen</h2><span class="sx-sub">Effekte nach Geschmack und Akku</span></div></div>
+<div class="sx-field"><span>Startansicht der Bestandsliste</span><div class="sx-seg" id="stStockView" role="group" aria-label="Bestandsansicht"><button type="button" data-v="grid">Raster</button><button type="button" data-v="list">Liste</button></div></div>
+<div id="stAnimSlot"></div>
+</section>
+
+<section class="sx-panel st-sec" id="stInfo">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg></span><div class="sx-tt"><h2 class="sx-title">Über die App</h2><span class="sx-sub">Version, Speicher und Installation</span></div></div>
+<div class="st-list" id="stInfoList"></div>
+<div class="sx-row"><button type="button" class="sx-btn" id="stInstall" hidden>App auf diesem Gerät installieren</button><button type="button" class="sx-btn" id="stReload">Neueste Version laden</button></div>
+</section>
 </section>
 <div id="editor" class="editor hidden">
 <div class="editor-top">
@@ -1274,11 +1437,17 @@
 </div>
 <script src="/vendor/jszip.min.js">
 </script>
+<script src="/cutout.js">
+</script>
+<script src="/ai-cutout.js">
+</script>
 <script src="/app.js">
 </script>
 <script src="/dashboard.js">
 </script>
 <script src="/fx.js" defer></script>
+<script src="/quotes.js" defer></script>
+<script src="/panda.js" defer></script>
 <script src="/demo.js" defer></script>
 <script src="/anim.js" defer></script>
 </body>

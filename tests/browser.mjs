@@ -48,11 +48,11 @@ try{
     assert.ok(layout.scroll<=width,`Horizontaler Überlauf bei ${width}: ${layout.scroll}`);
     assert.ok(layout.frames>=20,'HUD-Rahmen wurden nicht gezeichnet');
     assert.deepEqual(errors,[],`JavaScriptfehler bei ${width}`);
-    for(const [route,view] of [['studio','#s0'],['stock','#s4'],['purchases','#v7Purchases'],['sales','#s4'],['chat','#aiChat'],['settings','#settingsPage']]){
-      await page.locator(`.v11-tiles [data-go="${route}"]`).click();
+    for(const [route,view] of [['studio','#s0'],['stock','#s4'],['purchases','#v7Purchases'],['sales','#finance'],['chat','#aiChat'],['settings','#settingsPage']]){
+      await page.locator(`#rvTop [data-nav="${route}"]`).click();
       await page.locator(view).waitFor({state:'visible'});
-      if(route==='sales')await page.locator('#navSales[aria-current="page"]').waitFor();
-      await page.locator('#navHome').click();
+      
+      await page.locator('#rvTopHome').click();
       await page.locator('#home').waitFor({state:'visible'});
     }
     await page.locator('.v11-prompts [data-ai-request]').first().click();
