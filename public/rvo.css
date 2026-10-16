@@ -16,7 +16,7 @@
   background:linear-gradient(180deg, rgba(24,28,34,.9), rgba(11,13,17,.9)); box-shadow:inset 0 0 0 1px var(--rv-glass-line), 0 10px 26px rgba(0,0,0,.35); }
 .rvn-seg button { position:relative; z-index:1; display:flex; align-items:center; justify-content:center; gap:6px; min-height:42px; padding:6px 8px; border:0; border-radius:12px; background:none;
   color:var(--rv-muted); font:600 14px/1.1 var(--t-font, Figtree, system-ui, sans-serif); cursor:pointer; transition:color .25s var(--nx-ease); -webkit-tap-highlight-color:transparent; }
-.rvn-seg button b { font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rvn-seg button b { font:inherit !important; font-weight:700 !important; letter-spacing:0 !important; color:inherit !important; background:none !important; -webkit-text-fill-color:currentColor; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .rvn-seg button small { min-width:18px; height:18px; padding:0 5px; border-radius:999px; display:inline-grid; place-items:center; font:700 11px/1 var(--t-font, Figtree, sans-serif); background:rgba(255,255,255,.1); color:var(--rv-text2); }
 .rvn-seg button small:empty, .rvn-seg button small[hidden] { display:none; }
 .rvn-seg button small.warn { background:var(--rv-red); color:#fff; }
@@ -46,15 +46,15 @@ html.rv-reduce .rvo-hub .rvo-p { animation:none !important; }
 .rvo-drop textarea { padding:10px 12px; resize:vertical; min-height:72px; }
 @media (max-width:640px) { .rvo-add { grid-template-columns:1fr 1fr; } .rvo-add #rvoAddTitle { grid-column:1 / -1; } .rvo-add button { grid-column:1 / -1; } }
 
-.rvo-task { display:grid; grid-template-columns:34px 1fr 30px; align-items:center; gap:10px; padding:10px 12px; border-radius:14px; background:var(--rv-card); box-shadow:inset 0 0 0 1px var(--rv-glass); transition:opacity .3s; }
+.rvo-task { display:grid; grid-template-columns:36px 1fr 36px; align-items:center; gap:10px; padding:10px 12px; border-radius:14px; background:var(--rv-card); box-shadow:inset 0 0 0 1px var(--rv-glass); transition:opacity .3s; }
 .rvo-task .nm { display:flex; flex-direction:column; min-width:0; }
 .rvo-task .nm b { font-weight:600; color:var(--rv-text); overflow-wrap:anywhere; }
 .rvo-task .nm small { color:var(--rv-faint); font-size:12px; }
 .rvo-task.late .nm small { color:var(--rv-red-soft); }
 .rvo-task.done { opacity:.55; } .rvo-task.done .nm b { text-decoration:line-through; }
-.rvo-ck { width:30px; height:30px; border-radius:50%; border:1.5px solid var(--rv-silver); background:none; color:#0b0d11; font-weight:800; cursor:pointer; display:grid; place-items:center; }
+.rvo-ck { width:36px; height:36px; border-radius:50%; border:1.5px solid var(--rv-silver); background:none; color:#0b0d11; font-weight:800; cursor:pointer; display:grid; place-items:center; }
 .rvo-task.done .rvo-ck { background:var(--rv-green); border-color:var(--rv-green); }
-.rvo-x { width:30px; height:30px; border:0; border-radius:50%; background:none; color:var(--rv-faint); font-size:20px; cursor:pointer; }
+.rvo-x { width:36px; height:36px; border:0; border-radius:50%; background:none; color:var(--rv-faint); font-size:20px; cursor:pointer; }
 .rvo-x:hover { color:var(--rv-text); background:rgba(255,255,255,.06); }
 .rvo-prio { display:inline-block; width:8px; height:8px; border-radius:50%; margin:0 8px 1px 0; vertical-align:middle; background:var(--rv-faint); }
 .rvo-prio.hoch { background:var(--rv-red-soft); box-shadow:0 0 8px var(--rv-red-glow); } .rvo-prio.mittel { background:var(--rv-silver); }
@@ -118,3 +118,6 @@ html.rv-reduce .rvo-hub .rvo-p { animation:none !important; }
 .rvo-bi.warn { box-shadow:inset 3px 0 0 var(--rv-red), inset 0 0 0 1px var(--rv-glass); }
 .rvo-bi .nm { flex:1; display:flex; flex-direction:column; min-width:0; } .rvo-bi .nm b { font-weight:700; } .rvo-bi .nm small { color:var(--rv-faint); font-size:12px; }
 .rvo-bi .chev { color:var(--rv-faint); font-size:20px; }
+
+/* Bao-Unterseiten: Chat-Werkzeuge nur im Gespräch */
+#aiChat:has(#rvoHub:not([hidden])) #chatClear { display:none; }

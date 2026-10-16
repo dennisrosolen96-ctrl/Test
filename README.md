@@ -1,4 +1,6 @@
-# RV Studio V31.3 — Command Center
+# RVO Studio V35 — Unternehmensportal mit Bao
+
+Neu in V35 (Details: [UEBERGABE-V35.md](UEBERGABE-V35.md)): Navigation 2.0 mit fünf Bereichen (Bestand | Einkäufe | Verkäufe gebündelt), Snipes ausgeblendet, Bao als animiertes Vektor-Rig, RVO Intelligence mit Briefing, Aufgaben, Eingang für Belege und Dokumente, Freigaben, Protokoll und serverseitiger KI-Kostengrenze. Tests: `npm test`, `npm run test:v35`.
 
 Neu in V31.3 (Details: [UEBERGABE-V31.3.md](UEBERGABE-V31.3.md)): Internes RVO-Titelbild getrennt von Fotos und Plattformbildern, Freistellen mit Poof.bg über geschützten Server-Endpunkt, Freistellung wird wiederverwendet (kein doppelter Credit).
 

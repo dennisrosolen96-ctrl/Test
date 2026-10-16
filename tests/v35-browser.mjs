@@ -68,7 +68,7 @@ try{
   await check('Home: Bao-Briefing oben mit echten Zahlen, Beispielartikel ausgeschlossen',async()=>{
     const first=await page.$eval('#hmRoot > section',s=>s.getAttribute('aria-label'));assert.match(first,/Bao/);
     const t=await page.$eval('#hmBrief',e=>e.innerText);
-    assert.match(t,/Gewinn/);assert.match(t,/40,00\s*€/);assert.match(t,/27,00\s*€/);assert.match(t,/Vormonat 22,00/);assert.match(t,/Beispielartikel/);assert.match(t,/versenden/);
+    assert.match(t,/Gewinn/);assert.match(t,/Entwurf fertigstellen/);assert.match(t,/40,00\s*€/);assert.match(t,/27,00\s*€/);assert.match(t,/Vormonat 22,00/);assert.match(t,/Beispielartikel/);assert.match(t,/versenden/);
     assert.ok(await page.$('#hmOrb .bao'));await noOverflow('Home');await page.screenshot({path:out+'home-412.png'});
   });
   await check('Bestand-Gruppe: Bestand | Einkäufe | Verkäufe wechseln, Hauptkachel bleibt aktiv',async()=>{

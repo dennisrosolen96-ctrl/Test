@@ -196,15 +196,15 @@
     if (ship) out.push({ t: ship + (ship === 1 ? ' Verkauf versenden' : ' Verkäufe versenden'), s: 'verkauft, aber nicht als versendet markiert', go: 'ship', warn: true });
     if (ap.length) out.push({ t: ap.length + (ap.length === 1 ? ' Vorschlag prüfen' : ' Vorschläge prüfen'), s: 'Bao wartet auf deine Freigabe', go: 'approve' });
     var rem = F.real.filter(function (a) { try { return R.removeNeeded(a); } catch (e) { return false; } }).length;
-    if (rem) out.push({ t: rem + ' Listings entfernen', s: 'verkaufte Artikel noch auf anderen Plattformen', go: 'remove', warn: true });
+    if (rem) out.push({ t: rem + (rem === 1 ? ' Listing entfernen' : ' Listings entfernen'), s: 'verkaufte Artikel noch auf anderen Plattformen', go: 'remove', warn: true });
     var ready = F.stock.filter(function (a) { return a.articleStatus === 'Bereit'; }).length;
-    if (ready) out.push({ t: ready + ' bereite Artikel online stellen', s: 'fertig, aber noch nicht online', go: 'stock' });
+    if (ready) out.push({ t: ready + (ready === 1 ? ' bereiten Artikel online stellen' : ' bereite Artikel online stellen'), s: 'fertig, aber noch nicht online', go: 'stock' });
     var stale = F.stock.filter(function (a) { return (age(a) || 0) > sd; });
     if (stale.length) out.push({ t: stale.length + ' Ladenhüter prüfen', s: eur(stale.reduce(function (n, a) { return n + (Number(a.cost) || 0); }, 0)) + ' gebunden, älter als ' + sd + ' Tage', go: 'stale' });
     var drafts = F.stock.filter(function (a) { return a.articleStatus === 'Entwurf'; }).length;
-    if (drafts) out.push({ t: drafts + ' Entwürfe fertigstellen', s: 'Fotos, Texte oder Preise fehlen', go: 'drafts' });
+    if (drafts) out.push({ t: drafts + (drafts === 1 ? ' Entwurf fertigstellen' : ' Entwürfe fertigstellen'), s: 'Fotos, Texte oder Preise fehlen', go: 'drafts' });
     var nOpen = Tasks.open().length - od.length - td.length;
-    if (nOpen > 0) out.push({ t: nOpen + ' weitere offene Aufgaben', s: 'in deiner Aufgabenliste', go: 'tasks' });
+    if (nOpen > 0) out.push({ t: nOpen + (nOpen === 1 ? ' weitere offene Aufgabe' : ' weitere offene Aufgaben'), s: 'in deiner Aufgabenliste', go: 'tasks' });
     return out;
   }
   function briefingGo(k) {
@@ -477,9 +477,9 @@
     var hello = (function () { var h = new Date().getHours(); return h < 11 ? 'Guten Morgen' : h < 18 ? 'Hallo' : 'Guten Abend'; })();
     var name = ''; try { name = R.settings().name || ''; } catch (e) {}
     var kpi = '<div class="rvo-kpis"><div><small>Gewinn ' + new Date().toLocaleDateString('de-DE', { month: 'long' }) + '</small><b class="' + (cur.profit < 0 ? 'neg' : cur.profit > 0 ? 'pos' : '') + '">' + eur(cur.profit) + '</b><em>Vormonat ' + eur(prev.profit) + '</em></div>' +
-      '<div><small>Bestandswert (EK)</small><b>' + eur(t.stockCost) + '</b><em>' + t.activeItems + ' Artikel</em></div>' +
+      '<div><small>Bestand (EK)</small><b>' + eur(t.stockCost) + '</b><em>' + t.activeItems + ' Artikel</em></div>' +
       '<div><small>Offene Aufgaben</small><b class="' + (Tasks.overdue().length ? 'neg' : '') + '">' + Tasks.open().length + '</b><em>' + (Tasks.overdue().length ? Tasks.overdue().length + ' überfällig' : 'nichts überfällig') + '</em></div></div>';
-    root.innerHTML = '<p class="rvo-hello"><b>' + esc(hello + (name ? ', ' + name : '')) + '!</b> ' + (b.length ? 'Das ist heute wichtig:' : 'Alles im Blick – heute ist nichts dringend.') + '</p>' + kpi +
+    root.innerHTML = '<p class="rvo-hello">' + (name ? '<b>' + esc(hello + ', ' + name) + '!</b> ' : '') + (b.length ? 'Das ist heute wichtig:' : 'Alles im Blick – heute ist nichts dringend.') + '</p>' + kpi +
       (b.length ? '<div class="rvo-brief">' + b.slice(0, 4).map(function (x) { return '<button type="button" class="rvo-bi' + (x.warn ? ' warn' : '') + '" data-rvo-go="' + x.go + '"><span class="nm"><b>' + esc(x.t) + '</b><small>' + esc(x.s) + '</small></span><span class="chev">›</span></button>'; }).join('') + '</div>' : '') +
       (F.demo ? '<p class="sx-note">' + (F.real.length ? F.demo + ' Beispielartikel sind in diesen Zahlen nicht enthalten.' : 'Es sind nur Beispielartikel vorhanden. Bao rechnet sie bewusst nicht mit.') + '</p>' : '');
   }

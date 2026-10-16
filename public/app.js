@@ -1325,7 +1325,11 @@ $('inCsv').onclick=()=>$('stCsv').click();
 {let rz=0,lastW=0;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if($('finance').classList.contains('hidden'))return;const w=$('inChart').clientWidth;if(Math.abs(w-lastW)>40){lastW=w;inRender()}},250)})}
 // ===================== KI-Chat V25 =====================
 const CH_KEY='rv_chat_v1',CH_MAX=60;
-const CH_QUICK=[['<path d="M3 12 12 3h8v8l-9 9-8-8Z"/><circle cx="16" cy="8" r="1.3"/>','Bestand bewerten','Was ist gut, was liegt zu lange?','Bewerte meinen aktuellen Bestand: Was läuft gut, was liegt zu lange, wo sollte ich handeln?'],
+const CH_QUICK=[['<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/>','Was ist heute wichtig?','Bao priorisiert deinen Tag','Was sollte ich als Nächstes erledigen?'],
+ ['<circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/>','Längste Lagerdauer','Welche Artikel liegen am längsten?','Welche Artikel liegen am längsten im Bestand?'],
+ ['<path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/>','Gewinn diesen Monat','Aus deinen erfassten Verkäufen','Wie viel Gewinn habe ich diesen Monat gemacht?'],
+ ['<path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9.5" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>','Neue Ware einkaufen?','Ehrliche Einschätzung','Lohnt es sich, aktuell neue Ware einzukaufen?'],
+ ['<path d="M3 12 12 3h8v8l-9 9-8-8Z"/><circle cx="16" cy="8" r="1.3"/>','Bestand bewerten','Was ist gut, was liegt zu lange?','Bewerte meinen aktuellen Bestand: Was läuft gut, was liegt zu lange, wo sollte ich handeln?'],
  ['<path d="M4 18l5-6 4 3 7-9"/><path d="M15 6h5v5"/>','Preise prüfen','Welche Preise anpassen?','Welche meiner Preise sollte ich anpassen? Begründe kurz pro Artikel.'],
  ['<path d="M7 3h7l4 4v14H7V3Z"/><path d="M14 3v4h4M9.5 12h6M9.5 16h6"/>','Verkaufstext','Für den neuesten Artikel','Schreibe einen Verkaufstext für meinen neuesten Artikel im Bestand.'],
  ['<path d="M5 20V13M10 20V9M15 20V5M20 20V11"/>','Sortiment-Analyse','Stärken und Lücken','Analysiere mein Sortiment anhand meiner Verkäufe: Welche Kategorien und Marken lohnen sich?'],
@@ -1358,7 +1362,7 @@ function chRender(){const feed=$('chFeed');if(!feed)return;feed.replaceChildren(
  feed.querySelectorAll('[data-retry]').forEach(b=>b.onclick=()=>chSend(chLastUser));
  const last=chHistory[chHistory.length-1],fol=$('chFollow');fol.replaceChildren();
  if(last&&last.role!=='user'&&!last.local&&!last.error&&!chTyping)for(const f of CH_FOLLOW){const b=document.createElement('button');b.type='button';b.textContent=f;b.onclick=()=>chSend(f);fol.append(b)}
- $('chSub').textContent=(rvProviderNames[getAiProvider()]||'KI')+' · '+(chHistory.length?chHistory.filter(m=>m.role==='user').length+' Fragen in diesem Chat':'Dein Partner für Bestand, Preise und Texte');
+ $('chSub').textContent=(rvProviderNames[getAiProvider()]||'KI')+' · '+(chHistory.length?chHistory.filter(m=>m.role==='user').length+' Fragen in diesem Chat':'RVO Intelligence · dein Unternehmensassistent');
  if(!$('aiChat').classList.contains('hidden'))requestAnimationFrame(()=>{const r=feed.lastElementChild;if(r&&chHistory.length)r.scrollIntoView({block:'nearest',behavior:'smooth'})});
 }
 {const prevHM=homeMessage;homeMessage=function(role,text,opts={}){const el=prevHM(role,text,opts);const s=String(text);

@@ -8,3 +8,7 @@ AI_PROVIDER=openai
 # POOF_BG_API_KEY=
 # POOF_MAX_PER_MINUTE=4
 # POOF_MAX_PER_DAY=50
+# V35 (optional): Monatsgrenze für KI-Kosten in US-Dollar (Standard 11, 0 = aus) und Modelle für Bao
+# AI_MONTHLY_LIMIT_USD=11
+# BAO_MODEL=gpt-4.1-mini
+# BAO_DOC_MODEL=gpt-4.1-mini
