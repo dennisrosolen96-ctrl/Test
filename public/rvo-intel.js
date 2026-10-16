@@ -188,23 +188,26 @@
       return '<p>' + verdict + '</p><ul>' + why.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul><p><small>Ich kenne nur deine RVO-Daten, keine aktuellen Marktpreise. Die Entscheidung liegt bei dir.</small></p>';
     } }
   ];
+  // Jeder Punkt: t = Satz für den Chat, l = Titel ohne Zahl, n = Zähler (Abzeichen), s = Erklärung, go = Ziel, warn = dringend
   function briefing(F) {
     var out = [], sd = staleDays(), od = Tasks.overdue(), td = Tasks.dueToday(), ap = Approvals.pending();
-    od.slice(0, 2).forEach(function (t) { out.push({ t: t.title, s: 'überfällig seit ' + fmtDate(t.due), go: 'tasks', warn: true }); });
-    td.slice(0, 2).forEach(function (t) { out.push({ t: t.title, s: 'heute fällig', go: 'tasks' }); });
+    var add = function (n, one, many, s, go, warn) { out.push({ t: (n > 1 || !one ? n + ' ' : '') + (n === 1 && one ? one : many), l: n === 1 && one ? one : many, n: n, s: s, go: go, warn: !!warn }); };
+    od.slice(0, 2).forEach(function (t) { out.push({ t: t.title, l: t.title, n: '!', s: 'überfällig seit ' + fmtDate(t.due), go: 'tasks', warn: true }); });
+    td.slice(0, 2).forEach(function (t) { out.push({ t: t.title, l: t.title, n: '', s: 'heute fällig', go: 'tasks' }); });
     var ship = F.real.filter(function (a) { return a.sale && !a.shippedAt && a.articleStatus === 'Verkauft'; }).length;
-    if (ship) out.push({ t: ship + (ship === 1 ? ' Verkauf versenden' : ' Verkäufe versenden'), s: 'verkauft, aber nicht als versendet markiert', go: 'ship', warn: true });
-    if (ap.length) out.push({ t: ap.length + (ap.length === 1 ? ' Vorschlag prüfen' : ' Vorschläge prüfen'), s: 'Bao wartet auf deine Freigabe', go: 'approve' });
+    if (ship) add(ship, 'Verkauf versenden', 'Verkäufe versenden', 'verkauft, aber nicht als versendet markiert', 'ship', true);
+    if (ap.length) add(ap.length, 'Vorschlag prüfen', 'Vorschläge prüfen', 'Bao wartet auf deine Freigabe', 'approve');
     var rem = F.real.filter(function (a) { try { return R.removeNeeded(a); } catch (e) { return false; } }).length;
-    if (rem) out.push({ t: rem + (rem === 1 ? ' Listing entfernen' : ' Listings entfernen'), s: 'verkaufte Artikel noch auf anderen Plattformen', go: 'remove', warn: true });
+    if (rem) add(rem, 'Listing entfernen', 'Listings entfernen', 'verkaufte Artikel noch auf anderen Plattformen', 'remove', true);
     var ready = F.stock.filter(function (a) { return a.articleStatus === 'Bereit'; }).length;
-    if (ready) out.push({ t: ready + (ready === 1 ? ' bereiten Artikel online stellen' : ' bereite Artikel online stellen'), s: 'fertig, aber noch nicht online', go: 'stock' });
+    if (ready) add(ready, 'Bereiten Artikel online stellen', 'Bereite Artikel online stellen', 'fertig, aber noch nicht online', 'stock');
     var stale = F.stock.filter(function (a) { return (age(a) || 0) > sd; });
-    if (stale.length) out.push({ t: stale.length + ' Ladenhüter prüfen', s: eur(stale.reduce(function (n, a) { return n + (Number(a.cost) || 0); }, 0)) + ' gebunden, älter als ' + sd + ' Tage', go: 'stale' });
+    if (stale.length) add(stale.length, 'Ladenhüter prüfen', 'Ladenhüter prüfen', eur(stale.reduce(function (n, a) { return n + (Number(a.cost) || 0); }, 0)) + ' gebunden, älter als ' + sd + ' Tage', 'stale');
     var drafts = F.stock.filter(function (a) { return a.articleStatus === 'Entwurf'; }).length;
-    if (drafts) out.push({ t: drafts + (drafts === 1 ? ' Entwurf fertigstellen' : ' Entwürfe fertigstellen'), s: 'Fotos, Texte oder Preise fehlen', go: 'drafts' });
+    if (drafts) add(drafts, 'Entwurf fertigstellen', 'Entwürfe fertigstellen', 'Fotos, Texte oder Preise fehlen', 'drafts');
     var nOpen = Tasks.open().length - od.length - td.length;
-    if (nOpen > 0) out.push({ t: nOpen + (nOpen === 1 ? ' weitere offene Aufgabe' : ' weitere offene Aufgaben'), s: 'in deiner Aufgabenliste', go: 'tasks' });
+    if (nOpen > 0) add(nOpen, 'Weitere offene Aufgabe', 'Weitere offene Aufgaben', 'in deiner Aufgabenliste', 'tasks');
+    out.forEach(function (x) { if (x.n !== '' && x.n !== '!' && /^\d/.test(x.t) === false) x.t = x.n + ' ' + x.l; });
     return out;
   }
   function briefingGo(k) {
@@ -368,7 +371,7 @@
         '<div class="sx-ph"><span class="sx-hx">' + ico('<ellipse cx="12" cy="6" rx="6" ry="2.5"/><path d="M6 6v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V6M6 10v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4"/>') + '</span><div class="sx-tt"><h2 class="sx-title">KI-Kosten & Protokoll</h2><span class="sx-sub">Transparenz über Anfragen und Aktionen</span></div><button type="button" class="sx-btn" id="rvoCostRefresh">Server prüfen</button></div>' +
         '<div id="rvoCost" class="rvo-cost"></div><details class="rvo-log"><summary>Protokoll anzeigen</summary><div id="rvoLog"></div></details>' +
       '</section>';
-    top.after(hub);
+    var grid = chat.querySelector('.ch-grid'); if (grid) grid.before(hub); else top.after(hub);
     $('rvoAdd').onsubmit = function (e) { e.preventDefault(); var t = Tasks.add({ title: $('rvoAddTitle').value, due: $('rvoAddDue').value, priority: $('rvoAddPrio').value, source: 'du' }); if (t) { $('rvoAddTitle').value = ''; $('rvoAddDue').value = ''; render(); } };
     $('rvoSuggest').onclick = suggest;
     $('rvoInPick').onclick = function () { $('rvoInFile').click(); };
@@ -470,18 +473,39 @@
   function render() { paintCounts(); if (!$('rvoHub')) return; if (tab === 'tasks') renderTasks(); if (tab === 'inbox') renderInbox(); if (tab === 'approve') { renderApprovals(); renderCost(); } }
 
   /* =============== Startseite: Baos Briefing =============== */
+  var IC = {
+    profit: '<path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/>',
+    stock: '<path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
+    tasks: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1.5 1.5L7.5 5M3.5 12l1.5 1.5L7.5 11M3.5 18l1.5 1.5 2.5-2.5"/>'
+  };
+  function briefShell(root) {
+    if (root.querySelector('.rvo-hero')) return;
+    root.innerHTML = '<div class="rvo-hero"><div class="rvo-hero-bao" id="rvoHeroBao"></div><div class="rvo-hero-tx"><span class="rvo-kicker">Bao · RVO Intelligence</span><h3 id="rvoHello"></h3><p id="rvoSummary"></p></div></div>' +
+      '<div class="hm-kpis rvo-kpis3" id="rvoKpis"></div><div class="rvo-sec" id="rvoBriefHd"><b>Heute wichtig</b><small id="rvoBriefCount"></small></div><div class="hm-tasks rvo-brief" id="rvoBriefList"></div><p class="sx-note rvo-brief-note" id="rvoBriefNote"></p>';
+    var orb = $('hmOrb'); if (orb) $('rvoHeroBao').appendChild(orb);
+  }
   async function renderBrief() {
     var root = $('hmBrief'); if (!root) return;
     var F; try { F = await facts(); } catch (e) { return; }
-    var b = briefing(F), m = months(F, 2), cur = m[1], prev = m[0], t = totals(F);
-    var hello = (function () { var h = new Date().getHours(); return h < 11 ? 'Guten Morgen' : h < 18 ? 'Hallo' : 'Guten Abend'; })();
-    var name = ''; try { name = R.settings().name || ''; } catch (e) {}
-    var kpi = '<div class="rvo-kpis"><div><small>Gewinn ' + new Date().toLocaleDateString('de-DE', { month: 'long' }) + '</small><b class="' + (cur.profit < 0 ? 'neg' : cur.profit > 0 ? 'pos' : '') + '">' + eur(cur.profit) + '</b><em>Vormonat ' + eur(prev.profit) + '</em></div>' +
-      '<div><small>Bestand (EK)</small><b>' + eur(t.stockCost) + '</b><em>' + t.activeItems + ' Artikel</em></div>' +
-      '<div><small>Offene Aufgaben</small><b class="' + (Tasks.overdue().length ? 'neg' : '') + '">' + Tasks.open().length + '</b><em>' + (Tasks.overdue().length ? Tasks.overdue().length + ' überfällig' : 'nichts überfällig') + '</em></div></div>';
-    root.innerHTML = '<p class="rvo-hello">' + (name ? '<b>' + esc(hello + ', ' + name) + '!</b> ' : '') + (b.length ? 'Das ist heute wichtig:' : 'Alles im Blick – heute ist nichts dringend.') + '</p>' + kpi +
-      (b.length ? '<div class="rvo-brief">' + b.slice(0, 4).map(function (x) { return '<button type="button" class="rvo-bi' + (x.warn ? ' warn' : '') + '" data-rvo-go="' + x.go + '"><span class="nm"><b>' + esc(x.t) + '</b><small>' + esc(x.s) + '</small></span><span class="chev">›</span></button>'; }).join('') + '</div>' : '') +
-      (F.demo ? '<p class="sx-note">' + (F.real.length ? F.demo + ' Beispielartikel sind in diesen Zahlen nicht enthalten.' : 'Es sind nur Beispielartikel vorhanden. Bao rechnet sie bewusst nicht mit.') + '</p>' : '');
+    briefShell(root);
+    var b = briefing(F), m = months(F, 2), cur = m[1], prev = m[0], t = totals(F), od = Tasks.overdue().length, op = Tasks.open().length;
+    var h = new Date().getHours(), hello = h < 11 ? 'Guten Morgen' : h < 18 ? 'Hallo' : 'Guten Abend', name = ''; try { name = R.settings().name || ''; } catch (e) {}
+    var urgent = b.filter(function (x) { return x.warn; }).length; b.sort(function (x, y) { return (y.warn ? 1 : 0) - (x.warn ? 1 : 0); });
+    $('rvoHello').textContent = b.length ? (name ? name + ', heute ' : 'Heute ') + (b.length === 1 ? 'ein Punkt' : b.length + ' Punkte') + ' für dich' : (name ? name + ', alles' : 'Alles') + ' im Blick';
+    $('rvoSummary').textContent = !b.length ? 'Heute ist nichts dringend. Gute Zeit für neue Ware oder Fotos.' : urgent ? (urgent === 1 ? 'Eins davon ist dringend' : urgent + ' davon sind dringend') + ' – ich habe sie nach oben gestellt.' : 'Nichts brennt. Ich habe alles nach Wichtigkeit sortiert.';
+    var diff = cur.profit - prev.profit, mon = new Date().toLocaleDateString('de-DE', { month: 'long' });
+    var kpi = function (ic, lbl, val, dl, cls) { return '<div class="st-m hm-m"><span class="mi">' + ico(ic) + '</span><span class="tx"><span class="lbl">' + esc(lbl) + '</span><span class="val">' + esc(val) + '</span><span class="dl ' + cls + '">' + esc(dl) + '</span></span></div>'; };
+    $('rvoKpis').innerHTML =
+      kpi(IC.profit, 'Gewinn ' + mon, eur(cur.profit), (prev.sales || prev.profit ? (diff >= 0 ? '↗ +' : '↘ ') + eur(diff) + ' zum Vormonat' : cur.sales + (cur.sales === 1 ? ' Verkauf' : ' Verkäufe')), cur.profit < 0 || diff < 0 ? 'neg' : cur.profit > 0 ? '' : 'nil') +
+      kpi(IC.stock, 'Bestand (EK)', eur(t.stockCost), t.activeItems + ' Artikel' + (t.avgDaysToSell != null ? ' · Ø ' + t.avgDaysToSell + ' T. bis Verkauf' : ''), 'nil') +
+      kpi(IC.tasks, 'Aufgaben', String(op), od ? od + ' überfällig' : op ? 'nichts überfällig' : 'alles erledigt', od ? 'warn' : op ? 'nil' : '');
+    $('rvoBriefCount').textContent = b.length ? b.length + (b.length === 1 ? ' Punkt' : ' Punkte') : '';
+    $('rvoBriefHd').hidden = !b.length;
+    var list = $('rvoBriefList');
+    list.innerHTML = b.length ? b.slice(0, 5).map(function (x) {
+      return '<button type="button" class="hm-task rvo-bi' + (x.warn ? ' warn' : ' calm') + '" data-rvo-go="' + x.go + '"><span class="ck" aria-hidden="true"></span><span class="nm"><b>' + esc(x.l) + '</b><small>' + esc(x.s) + '</small></span>' + (x.n !== '' ? '<span class="bd">' + esc(x.n) + '</span>' : '') + ico('<path d="m9 5 7 7-7 7"/>') + '</button>';
+    }).join('') : '<p class="hm-empty">Alles erledigt – nichts offen. 🎉</p>';
+    $('rvoBriefNote').textContent = F.demo ? (F.real.length ? F.demo + (F.demo === 1 ? ' Beispielartikel ist' : ' Beispielartikel sind') + ' in Baos Zahlen nicht enthalten.' : 'Es sind nur Beispielartikel vorhanden. Bao rechnet sie bewusst nicht mit.') : '';
   }
 
   /* =============== Erfolgsmomente aus echten Ereignissen =============== */
@@ -495,7 +519,16 @@
   });
 
   /* =============== Start =============== */
+  /* V36: Stylesheet absichern. Wurde es (z. B. durch einen veralteten Cache) nicht angewendet, wird es nachgeladen
+     und notfalls als <style> eingebettet. Erkennungsmerkmal ist eine CSS-Variable in der Datei. */
+  function ensureCss(href, mark) {
+    var ok = function () { return getComputedStyle(document.documentElement).getPropertyValue(mark).trim() === '1'; };
+    if (ok()) return;
+    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=36&r=' + Date.now(); document.head.appendChild(l);
+    setTimeout(function () { if (ok()) return; fetch(href + '?v=36&t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) { if (css && !ok()) { var st = document.createElement('style'); st.setAttribute('data-src', href); st.textContent = css; document.head.appendChild(st); } }).catch(function () {}); }, 1500);
+  }
   function init() {
+    ensureCss('/rvo.css', '--rvo-css');
     if (!R) { console.warn('RVO-Brücke fehlt – Bao-Funktionen deaktiviert.'); return; }
     R.hooks.runHomeAi = hookedRun;
     build(); render(); renderBrief(); loadKnown();

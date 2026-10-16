@@ -25,6 +25,7 @@ await new Promise(ok=>server.listen(0,'127.0.0.1',ok));
 const base=`http://127.0.0.1:${server.address().port}`;
 const results=[];const check=async(name,fn)=>{await fn();results.push(name);console.log('✓',name)};
 const opts={headless:true};if(process.env.RV_BROWSER_EXECUTABLE)opts.executablePath=process.env.RV_BROWSER_EXECUTABLE;
+opts.args=['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'];
 const browser=await chromium.launch(opts);
 const day=n=>new Date(Date.now()-n*864e5).toISOString();
 const articles=[
@@ -37,7 +38,7 @@ const articles=[
 let failed=null;
 try{
   const ctx=await browser.newContext({viewport:{width:412,height:915},deviceScaleFactor:2,hasTouch:true,serviceWorkers:'block'});
-  await ctx.addInitScript(()=>{sessionStorage.setItem('rv_token','qa-test-kennwort');localStorage.setItem('rv_demo_v3','1');localStorage.setItem('rv_demo_done','1');
+  await ctx.addInitScript(()=>{sessionStorage.setItem('rv_token','qa-test-kennwort');localStorage.setItem('rv_demo_v3','1');localStorage.setItem('rv_anim_v1',JSON.stringify({v:2,bao3d:false}));localStorage.setItem('rv_demo_done','1');
     window.__posted=[];const pm=window.postMessage.bind(window);window.postMessage=function(m,o){window.__posted.push(m);return pm(m,o)};});
   const page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
   const api={bao:[],doc:[],chat:[]};let baoMode='ok';
@@ -56,10 +57,10 @@ try{
   await page.reload({waitUntil:'load'});await page.waitForTimeout(1200);
   const noOverflow=async label=>{const w=await page.evaluate(()=>document.documentElement.scrollWidth);assert.ok(w<=412,label+': horizontaler Überlauf '+w+' px')};
 
-  await check('Start ohne Skriptfehler, Version V35',async()=>{assert.deepEqual(errors,[]);assert.equal(await page.evaluate(()=>RV_VERSION),'V35')});
+  await check('Start ohne Skriptfehler, Version V35',async()=>{assert.deepEqual(errors,[]);assert.equal(await page.evaluate(()=>RV_VERSION),'V36')});
   await check('Hauptmenü: genau fünf Bereiche, kein Snipes, Bao mit eigenem Kopf',async()=>{
     const navs=await page.$$eval('#rvTop [data-nav]',l=>l.map(b=>b.dataset.nav));assert.deepEqual(navs,['home','stock','studio','chat','settings']);
-    assert.equal(await page.$('#rvTop [data-nav="snipe"]'),null);assert.ok(await page.$('#rvTop [data-nav="chat"] .bao-head'));
+    assert.equal(await page.$('#rvTop [data-nav="snipe"]'),null);assert.ok(await page.$('#rvTop [data-nav="chat"] :is(.bao-head, img.bao-head3)'));
   });
   await check('Snipes: keine automatische Vinted-Abfrage, kein Userscript-Ping',async()=>{
     await page.waitForTimeout(900);const posted=await page.evaluate(()=>window.__posted.filter(m=>m&&m.rvSnipe));assert.deepEqual(posted,[]);
@@ -68,7 +69,7 @@ try{
   await check('Home: Bao-Briefing oben mit echten Zahlen, Beispielartikel ausgeschlossen',async()=>{
     const first=await page.$eval('#hmRoot > section',s=>s.getAttribute('aria-label'));assert.match(first,/Bao/);
     const t=await page.$eval('#hmBrief',e=>e.innerText);
-    assert.match(t,/Gewinn/);assert.match(t,/Entwurf fertigstellen/);assert.match(t,/40,00\s*€/);assert.match(t,/27,00\s*€/);assert.match(t,/Vormonat 22,00/);assert.match(t,/Beispielartikel/);assert.match(t,/versenden/);
+    assert.match(t,/Gewinn/);assert.match(t,/Entwurf fertigstellen/);assert.ok(await page.$('#hmBrief .rvo-hero #hmOrb'));assert.equal(await page.$$eval('#rvoKpis .st-m',l=>l.length),3);assert.match(t,/40,00\s*€/);assert.match(t,/27,00\s*€/);assert.match(t,/\+18,00\s*€ zum Vormonat/);assert.match(t,/Beispielartikel/);assert.match(t,/versenden/);
     assert.ok(await page.$('#hmOrb .bao'));await noOverflow('Home');await page.screenshot({path:out+'home-412.png'});
   });
   await check('Bestand-Gruppe: Bestand | Einkäufe | Verkäufe wechseln, Hauptkachel bleibt aktiv',async()=>{
@@ -85,7 +86,7 @@ try{
   });
   await check('Bao-Bereich: Gespräch, Aufgaben, Eingang, Freigaben',async()=>{
     await page.click('#rvTop [data-nav="chat"]');await page.waitForTimeout(400);
-    assert.equal(await page.isVisible('#rvnSub [data-group="bao"]'),true);assert.ok(await page.$('#aiChat .pd-stage .bao'));
+    assert.equal(await page.isVisible('#rvnSub [data-group="bao"]'),true);assert.ok(await page.$('#aiChat .pd-stage.bao-hero .bao'));
     for(const t of ['tasks','inbox','approve','talk']){await page.click('#rvnSub [data-sub="'+t+'"]');await page.waitForTimeout(250);
       assert.equal(await page.isVisible('#aiChat .ch-grid'),t==='talk');if(t!=='talk')assert.equal(await page.$eval('#rvoHub',h=>h.dataset.tab),t)}
     await noOverflow('Bao');await page.screenshot({path:out+'bao-chat-412.png'});
@@ -162,10 +163,15 @@ try{
   });
   await check('Keine Skriptfehler im gesamten Ablauf',async()=>{assert.deepEqual(errors,[])});
   // Desktop-Ansicht
-  const d=await browser.newContext({viewport:{width:1440,height:900},serviceWorkers:'block'});
+  const d=await browser.newContext({viewport:{width:1440,height:900},deviceScaleFactor:1,serviceWorkers:'block'});
   await d.addInitScript(()=>{localStorage.setItem('rv_demo_v3','1');localStorage.setItem('rv_demo_done','1')});
   const dp=await d.newPage();const derr=[];dp.on('pageerror',e=>derr.push(e.message));
   await dp.goto(base,{waitUntil:'load'});await dp.waitForTimeout(800);
+  await check('Bao in 3D: WebGL-Figur auf Startseite, Köpfe als 3D-Bild, ohne Fehler',async()=>{
+    await dp.waitForFunction(()=>document.querySelector('#hmOrb .pd-home.b3 canvas.bao3d'),null,{timeout:30000});
+    await dp.waitForFunction(()=>document.querySelector('#rvTop [data-nav="chat"] img.bao-head3'),null,{timeout:30000});
+    assert.ok(await dp.evaluate(()=>RVBao3D.ready));assert.deepEqual(derr,[]);
+  });
   await check('Desktop 1440 × 900: Startseite, Bao folgt der Maus',async()=>{
     await dp.screenshot({path:out+'home-1440.png'});
     const b0=await dp.$eval('#hmOrb .b-pupil',e=>e.getAttribute('transform'));await dp.mouse.move(1400,880);await dp.waitForTimeout(500);

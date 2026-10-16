@@ -116,10 +116,10 @@
     wave: { d: 1500, f: function (P, t) { var up = t < .15 ? ease(t / .15) : t > .85 ? ease((1 - t) / .15) : 1; P.armR = -8 - 148 * up + Math.sin(t * Math.PI * 7) * 18 * up; P.tHead = 7 * up; P.mouth = Math.max(P.mouth, .45 * up); P.tLookX = 0; P.tLookY = 0; } },
     jump: { d: 900, f: function (P, t) { var a = t < .2 ? t / .2 : 0, air = t >= .2 && t < .75 ? (t - .2) / .55 : 0, land = t >= .75 ? (t - .75) / .25 : 0;
       P.sy += -.12 * bump(a) - .1 * bump(land) + .06 * bump(air); P.sx -= -.08 * bump(a) - .07 * bump(land); P.y -= 34 * bump(air); P.armL = 8 + 120 * bump(air); P.armR = -8 - 120 * bump(air); P.happy = Math.max(P.happy, bump(air)); P.mouth = Math.max(P.mouth, .7 * bump(air)); } },
-    spin: { d: 1100, f: function (P, t) { var e = ease(t); P.flip = Math.cos(e * Math.PI * 2); P.y -= 16 * bump(t); P.armL = 8 + 60 * bump(t); P.armR = -8 - 60 * bump(t); P.happy = Math.max(P.happy, bump(t)); } },
+    spin: { d: 1100, f: function (P, t) { var e = ease(t); P.flip = Math.cos(e * Math.PI * 2); P.spin = e * Math.PI * 2; P.y -= 16 * bump(t); P.armL = 8 + 60 * bump(t); P.armR = -8 - 60 * bump(t); P.happy = Math.max(P.happy, bump(t)); } },
     clap: { d: 1500, f: function (P, t) { var up = bump(t), c = Math.abs(Math.sin(t * Math.PI * 6)); P.armL = 8 + (70 + 30 * c) * up * -1 + 0; P.armR = -8 + (70 + 30 * c) * up; P.happy = Math.max(P.happy, up); P.mouth = Math.max(P.mouth, .6 * up); P.spark = Math.max(P.spark, up); P.y -= 3 * c * up; } },
     laugh: { d: 1700, f: function (P, t) { var up = bump(t), s = Math.sin(t * Math.PI * 14); P.happy = Math.max(P.happy, up); P.mouth = Math.max(P.mouth, (.6 + .3 * s) * up); P.hy += 2 * s * up; P.rot += 2 * s * up; P.tHead = 8 * up; P.blush += .4 * up; } },
-    cheer: { d: 2200, f: function (P, t) { var hop = Math.abs(Math.sin(t * Math.PI * 3)) * (1 - t * .3); P.y -= 26 * hop; P.armL = 8 + 140 * bump(t * 1.05); P.armR = -8 - 140 * bump(t * 1.05) + Math.sin(t * 30) * 10 * bump(t); P.happy = Math.max(P.happy, bump(t)); P.mouth = Math.max(P.mouth, .85 * bump(t)); P.spark = Math.max(P.spark, bump(t)); P.blush += .5 * bump(t); if (t > .3 && t < .7) P.flip = Math.cos((t - .3) / .4 * Math.PI * 2); } },
+    cheer: { d: 2200, f: function (P, t) { var hop = Math.abs(Math.sin(t * Math.PI * 3)) * (1 - t * .3); P.y -= 26 * hop; P.armL = 8 + 140 * bump(t * 1.05); P.armR = -8 - 140 * bump(t * 1.05) + Math.sin(t * 30) * 10 * bump(t); P.happy = Math.max(P.happy, bump(t)); P.mouth = Math.max(P.mouth, .85 * bump(t)); P.spark = Math.max(P.spark, bump(t)); P.blush += .5 * bump(t); if (t > .3 && t < .7) { P.flip = Math.cos((t - .3) / .4 * Math.PI * 2); P.spin = ease((t - .3) / .4) * Math.PI * 2; } } },
     love: { d: 1500, f: function (P, t) { P.heart = bump(t); P.happy = Math.max(P.happy, bump(t)); P.blush += .6 * bump(t); P.y -= 6 * bump(t * 2 % 1); } },
     cannon: { d: 4400, ev: [[.34, 'bills'], [.48, 'bills'], [.62, 'bills']], f: function (P, t, B) {
       var out = t < .14 ? ease(t / .14) : t > .86 ? ease((1 - t) / .14) : 1, aim = t < .14 ? 0 : t < .26 ? ease((t - .14) / .12) : t > .78 ? Math.max(0, 1 - (t - .78) / .08) : 1;
@@ -166,9 +166,23 @@
       new IntersectionObserver(function (en) { B.visible = en[0].isIntersecting; if (B.visible) wake(); }, { rootMargin: '40px' }).observe(host);
     }
     all.push(B);
+    if (!opt.head) upgrade3d(B);
     render(B, performance.now(), true);
     wake();
     return B;
+  }
+  /* V36: echte 3D-Figur (bao3d.js / three.js). Die Vektor-Figur bleibt als Rückfall und für Effekte (Denkblasen, Funkeln, Herz). */
+  function upgrade3d(B) {
+    if (!window.RVBao3D) return;
+    RVBao3D.load(function (ok) {
+      if (!ok || B.g3 || !B.svg.isConnected) return;
+      try {
+        var c = doc.createElement('canvas'); c.className = 'bao3d'; c.setAttribute('aria-hidden', 'true');
+        B.host.insertBefore(c, B.svg); B.g3 = RVBao3D.Scene(c, {}); B.host.classList.add('b3');
+        if (window.ResizeObserver) new ResizeObserver(function () { if (B.g3) { B.g3.resize(); render(B, performance.now(), true); } }).observe(c);
+        render(B, performance.now(), true); wake();
+      } catch (e) { console.warn('Bao 3D nicht verfügbar', e); B.host.classList.remove('b3'); }
+    });
   }
   var REACT = ['wave', 'jump', 'spin', 'laugh', 'clap', 'love', 'cheer', 'curious'], lastCannon = 0;
   function react(B) {
@@ -199,7 +213,7 @@
 
   /* ---------- Pose berechnen und anwenden ---------- */
   function pose(B, now) {
-    var P = { x: 0, y: 0, rot: 0, sx: 1, sy: 1, flip: 1, hy: 0, tHead: B.idleHead, tTurn: 0, tLookX: 0, tLookY: 0, blink: 0, armL: -16, armR: 16, earL: 0, earR: 0, mouth: B.head ? 0 : .3, happy: 0, blush: .3, prop: 0, think: 0, spark: 0, heart: 0, brow: 0 };
+    var P = { x: 0, y: 0, rot: 0, sx: 1, sy: 1, flip: 1, spin: 0, hy: 0, tHead: B.idleHead, tTurn: 0, tLookX: 0, tLookY: 0, blink: 0, armL: -16, armR: 16, earL: 0, earR: 0, mouth: B.head ? 0 : .3, happy: 0, blush: .3, prop: 0, think: 0, spark: 0, heart: 0, brow: 0 };
     var t = reduce() ? 0 : now / 1000, br = Math.sin(t * Math.PI * 2 / 3.4); // bei „Bewegung aus“ feste Zeit = Standbild je Zustand
     P.sy += .014 * br; P.sx -= .006 * br; P.hy += 1.1 * br; P.armL += 2 * br; P.armR -= 2 * br; P.earL += Math.sin(t * 1.3) * 1.5; P.earR -= Math.sin(t * 1.1 + 1) * 1.5;
     var m = B.mode;
@@ -247,6 +261,7 @@
       E.bubbles.setAttribute('opacity', f(C.think)); E.spark.setAttribute('opacity', f(P.spark)); E.heart.setAttribute('opacity', f(P.heart));
       E.heart.setAttribute('transform', 'translate(0 ' + f(-P.heart * 14) + ')');
     }
+    if (B.g3) { B.g3.apply(P, C); B.g3.draw(); }
   }
 
   /* ---------- Gemeinsamer Takt ---------- */
@@ -256,7 +271,7 @@
   function tick(now) {
     raf = 0; if (doc.hidden) return;
     var red = reduce(), any = false; frame++;
-    all = all.filter(function (B) { return B.svg.isConnected || B.keep; });
+    all = all.filter(function (B) { var on = B.svg.isConnected || B.keep; if (!on && B.g3) { B.g3.dispose(); B.g3 = null; } return on; });
     all.forEach(function (B) {
       if (B.head) { if (B.dirty) { render(B, now, true); B.dirty = false; } return; }
       if (!active(B)) return;
@@ -447,21 +462,39 @@
       frame.insertAdjacentHTML('beforeend', '<span class="pd-floor" aria-hidden="true"></span>');
       Bao(frame, {});
     }
-    var main = doc.querySelector('#aiChat .ch-main'), feed = doc.getElementById('chFeed');
-    if (main && feed && !main.querySelector('.pd-stage')) {
-      var st = doc.createElement('div'); st.className = 'pd-stage';
-      st.innerHTML = '<span class="pd-state" data-s="idle"><i></i><b>' + LABELS[''] + '</b></span><span class="pd-plate"><b>' + NAME + '</b><small>RVO Intelligence · antippen</small></span><span class="pd-floor" aria-hidden="true"></span><span class="pd-hold" role="button" tabindex="0" aria-label="' + NAME + ' antippen"></span>';
-      main.insertBefore(st, feed);
+    // V36: Bao steht als Bühne oben auf seiner Seite (nicht mehr als Karte im Chatfenster).
+    var chat = doc.getElementById('aiChat'), top = chat && chat.querySelector('.sx-top');
+    if (top && !chat.querySelector('.pd-stage')) {
+      var st = doc.createElement('div'); st.className = 'pd-stage bao-hero';
+      st.innerHTML = '<span class="pd-state" data-s="idle"><i></i><b>' + LABELS[''] + '</b></span><span class="pd-plate"><b>' + NAME + '</b><small>Dein Unternehmensassistent · tipp mich an</small></span><span class="pd-floor" aria-hidden="true"></span><span class="pd-hold" role="button" tabindex="0" aria-label="' + NAME + ' antippen"></span>';
+      top.after(st);
       Bao(st.querySelector('.pd-hold'), {});
     }
     [['#ccChatAvatar', 'pd-mini'], ['#v11AiPill .dot', 'pd-mini pd-dot'], ['#navChat', 'pd-mini pd-nav'], ['.rvt-tile[data-nav="chat"] .ic', 'pd-mini pd-tile']].forEach(function (q) {
       var h = doc.querySelector(q[0]); if (!h || h.querySelector('.bao')) return;
       h.replaceChildren(); q[1].split(' ').forEach(function (c) { h.classList.add(c); }); Bao(h, { head: true, noTap: true });
     });
+    if (window.RVBao3D) RVBao3D.load(function (ok) {
+      if (!ok) return;
+      try {
+        var url = RVBao3D.headImage(256);
+        doc.documentElement.style.setProperty('--pd-head', 'url("' + url + '")');
+        Array.prototype.forEach.call(doc.querySelectorAll('.pd-mini'), function (h) { if (h.querySelector('img.bao-head3')) return; var im = doc.createElement('img'); im.className = 'bao-head3'; im.alt = ''; im.src = url; h.replaceChildren(im); });
+      } catch (e) { console.warn('Bao-Kopfbild', e); }
+    });
     var pill = doc.querySelector('#v11AiPill > span'); if (pill && /KI-Assistent|KI-Panda/.test(pill.textContent)) pill.innerHTML = NAME + ' ist bereit.<br><small>RVO Intelligence</small>';
   }
+  /* V36: Stylesheet absichern. Wurde es (z. B. durch einen veralteten Cache) nicht angewendet, wird es nachgeladen
+     und notfalls als <style> eingebettet. Erkennungsmerkmal ist eine CSS-Variable in der Datei. */
+  function ensureCss(href, mark) {
+    var ok = function () { return getComputedStyle(document.documentElement).getPropertyValue(mark).trim() === '1'; };
+    if (ok()) return;
+    var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + '?v=36&r=' + Date.now(); document.head.appendChild(l);
+    setTimeout(function () { if (ok()) return; fetch(href + '?v=36&t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) { if (css && !ok()) { var st = document.createElement('style'); st.setAttribute('data-src', href); st.textContent = css; document.head.appendChild(st); } }).catch(function () {}); }, 1500);
+  }
   function init() {
-    mount(); hookMessages();
+    mount(); hookMessages();    ensureCss('/bao.css', '--bao-css');
+
     ['chatInput', 'homeAiInput'].forEach(function (id) { var el = doc.getElementById(id); if (el) el.addEventListener('input', onType); });
     doc.addEventListener('rv:ai-state', function (e) {
       var s = e && e.detail && e.detail.state;

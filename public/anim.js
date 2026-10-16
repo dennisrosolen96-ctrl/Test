@@ -3,13 +3,14 @@
 (function () {
   'use strict';
   var KEY = 'rv_anim_v1', root = document.documentElement;
-  var DEF = { v: 2, motion: 'on', gleam: true, gleamRate: 'mittel', glint: true, globeSpin: true, globeFx: true, orb: true, baoCameo: true, shimmer: true, pulse: true, pageFx: true, ambient: true, autoLite: false };
+  var DEF = { v: 2, motion: 'on', gleam: true, gleamRate: 'mittel', glint: true, globeSpin: true, globeFx: true, orb: true, bao3d: true, baoCameo: true, shimmer: true, pulse: true, pageFx: true, ambient: true, autoLite: false };
   var OPTS = [
     ['gleam', 'Glanz', 'Ab und zu gleitet zufällig ein Glanz über ein Element'],
     ['glint', 'Randlicht', 'Lichtpunkt, der um Kacheln und Panels läuft'],
     ['globeSpin', 'Zitate wechseln', 'Alle 8 Sekunden erscheint ein neues Unternehmer-Zitat'],
     ['globeFx', 'Zitat-Effekte', 'Lichtstreif, wandernder Lichtschein und Funken auf der Zitat-Bühne'],
     ['orb', 'Bao bewegt sich', 'Bao atmet, blinzelt, schaut sich um, folgt Maus oder Finger und reagiert auf dich'],
+    ['bao3d', 'Bao in 3D', 'Bao als echte 3D-Figur. Aus: leichtere Vektor-Figur für ältere Geräte (wirkt nach dem nächsten Öffnen)'],
     ['baoCameo', 'Bao-Auftritte', 'Bao schaut selten am Bildschirmrand vorbei und freut sich über Verkäufe – höchstens ein paar Mal am Tag'],
     ['shimmer', 'Schimmer', 'Silberne Symbole und Akzente leuchten langsam auf'],
     ['pulse', 'Sanftes Pulsieren', 'KI-Leiste, aktive Auswahl, Abzeichen und Hauptknöpfe pulsieren leicht'],

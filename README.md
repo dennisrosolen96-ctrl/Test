@@ -1,4 +1,6 @@
-# RVO Studio V35 — Unternehmensportal mit Bao
+# RVO Studio V36 — Unternehmensportal mit Bao
+
+Neu in V36 (Details: [UEBERGABE-V36.md](UEBERGABE-V36.md)): Bao als echte 3D-Figur (WebGL, three.js lokal), Menü mit fünf großen Kacheln, gestaltetes Bereichsmenü, Briefing im RV-Design, Bao-Bühne auf der KI-Seite, farbige Statusanzeige im Bestand, abgesichertes Laden der Stylesheets.
 
 Neu in V35 (Details: [UEBERGABE-V35.md](UEBERGABE-V35.md)): Navigation 2.0 mit fünf Bereichen (Bestand | Einkäufe | Verkäufe gebündelt), Snipes ausgeblendet, Bao als animiertes Vektor-Rig, RVO Intelligence mit Briefing, Aufgaben, Eingang für Belege und Dokumente, Freigaben, Protokoll und serverseitiger KI-Kostengrenze. Tests: `npm test`, `npm run test:v35`.
 

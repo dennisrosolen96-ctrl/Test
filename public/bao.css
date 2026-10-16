@@ -1,4 +1,5 @@
 /* RVO V35 – Bao, der KI-Panda (Vektor-Rig). Layout der Bühnen und Auftritte. */
+:root { --bao-css:1; }
 .bao { display:block; width:100%; height:100%; overflow:visible; }
 .bao .b-root, .bao .b-head { will-change:transform; }
 .pd-home, .pd-hold { cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
@@ -45,3 +46,42 @@
 @keyframes bao-run { 0% { transform:translateX(-90px); } 100% { transform:translateX(calc(100vw + 20px)); } }
 @keyframes bao-say { 0%, 15% { opacity:0; transform:translateY(6px) scale(.9); } 22%, 80% { opacity:1; transform:none; } 100% { opacity:0; } }
 html.rv-reduce .bao-cameo, html.rv-reduce .bao-bill { display:none; }
+
+/* V36: 3D-Figur. Canvas liegt exakt über der Vektor-Figur; deren Körper wird ausgeblendet, Effekte bleiben sichtbar. */
+.b3 > .bao .b-root, .b3 > .bao .b-shadow { display:none; }
+.bao3d { display:block; pointer-events:none; }
+.pd-stage .pd-hold.b3 .bao3d, .bao-cameo-hold.b3 .bao3d { position:absolute; inset:0; width:100%; height:100%; }
+#hmOrb .pd-home.b3 .bao3d { position:absolute; left:50%; bottom:2px; width:86%; height:94%; transform:translateX(-50%); }
+#hmOrb .pd-home.b3 .bao, .pd-stage .pd-hold.b3 .bao, .bao-cameo .b3 .bao { filter:none; }
+.pd-hold.b3 > .bao, #hmOrb .pd-home.b3 > .bao, .bao-cameo-hold.b3 > .bao { position:absolute; inset:0; }
+img.bao-head3 { width:100%; height:100%; object-fit:contain; display:block; transform:scale(1.18); }
+.rvt-tile .ic.pd-tile img.bao-head3 { width:34px; height:34px; }
+
+/* ---------- V36: Bao-Bühne auf der KI-Seite – freistehend mit Lichtkegel, Halo und Bodenlicht, keine Karte ---------- */
+.pd-stage.bao-hero { position:relative; display:flex; flex-direction:column; align-items:center; height:auto; margin:4px 0 16px; padding:6px 0 4px; overflow:visible;
+  background:none !important; box-shadow:none !important; border-radius:0; }
+.pd-stage.bao-hero::before { content:""; position:absolute; left:50%; top:-10px; width:min(440px, 96%); height:330px; transform:translateX(-50%); pointer-events:none; z-index:0;
+  background:conic-gradient(from 180deg at 50% 0%, transparent 152deg, rgba(232,237,243,.075) 172deg, rgba(232,237,243,.11) 180deg, rgba(232,237,243,.075) 188deg, transparent 208deg);
+  -webkit-mask:linear-gradient(180deg, #000 40%, transparent 95%); mask:linear-gradient(180deg, #000 40%, transparent 95%); }
+.pd-stage.bao-hero::after { content:""; position:absolute; left:50%; top:30px; width:250px; height:250px; transform:translateX(-50%); border-radius:50%; pointer-events:none; z-index:0;
+  background:radial-gradient(circle, rgba(201,208,217,.13), rgba(201,208,217,.035) 55%, transparent 70%);
+  box-shadow:0 0 0 1px rgba(255,255,255,.04), inset 0 0 40px rgba(201,208,217,.05); animation:bao-halo 6s ease-in-out infinite; }
+@keyframes bao-halo { 50% { transform:translateX(-50%) scale(1.04); opacity:.8; } }
+html.rv-reduce .pd-stage.bao-hero::after, html.cc-no-orbanim .pd-stage.bao-hero::after { animation:none; }
+.pd-stage.bao-hero .pd-hold { position:relative !important; inset:auto !important; transform:none !important; order:1; z-index:1; width:250px !important; height:265px !important; }
+.pd-stage.bao-hero .pd-hold::after { content:""; position:absolute; left:50%; bottom:6px; width:78%; height:24px; transform:translateX(-50%); border-radius:50%; z-index:-1;
+  background:radial-gradient(closest-side, rgba(232,237,243,.22), rgba(232,237,243,.05) 60%, transparent); }
+.pd-stage.bao-hero .pd-floor { display:none; }
+.pd-stage.bao-hero .pd-plate { position:static !important; order:2; z-index:1; align-items:center; text-align:center; margin-top:2px; }
+.pd-stage.bao-hero .pd-plate b { font-size:22px; font-weight:700; letter-spacing:.01em; color:#f5f7fa; text-shadow:0 0 16px rgba(217,222,229,.2); }
+.pd-stage.bao-hero .pd-plate small { font-size:12.5px; color:#9ea6b2; margin-top:2px; }
+.pd-stage.bao-hero .pd-state { position:static !important; order:3; z-index:1; margin-top:10px; }
+#aiChat .sx-top #ccChatAvatar { display:none !important; }
+/* Auf Aufgaben, Eingang und Freigaben bleibt Bao kompakt dabei */
+#aiChat:has(#rvoHub:not([hidden])) .pd-stage.bao-hero { flex-direction:row; justify-content:center; gap:12px; margin-bottom:8px; }
+#aiChat:has(#rvoHub:not([hidden])) .pd-stage.bao-hero .pd-hold { width:116px !important; height:123px !important; }
+#aiChat:has(#rvoHub:not([hidden])) .pd-stage.bao-hero .pd-plate { align-items:flex-start; text-align:left; }
+#aiChat:has(#rvoHub:not([hidden])) .pd-stage.bao-hero .pd-state { margin-top:0; }
+#aiChat:has(#rvoHub:not([hidden])) .pd-stage.bao-hero::before, #aiChat:has(#rvoHub:not([hidden])) .pd-stage.bao-hero::after { display:none; }
+@media (max-width:480px) { .pd-stage.bao-hero .pd-hold { width:210px !important; height:223px !important; } .pd-stage.bao-hero::after { width:210px; height:210px; top:24px; } }
+@media (min-width:1000px) { .pd-stage.bao-hero .pd-hold { width:270px !important; height:286px !important; } }

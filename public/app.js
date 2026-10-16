@@ -1,7 +1,7 @@
 
 (()=>{'use strict';
 // App-Version: bei jeder Auslieferung hier und in public/sw.js (CACHE) erhöhen. Die Einstellungen zeigen sie unter „Über die App“.
-const RV_VERSION='V35',RV_VERSION_DATE='16.10.2026';window.RV_VERSION=RV_VERSION;
+const RV_VERSION='V36',RV_VERSION_DATE='17.10.2026';window.RV_VERSION=RV_VERSION;
 const $=id=>document.getElementById(id);const platforms=['ebay','vinted','instagram'];let step=0,activePlatform='ebay',article=null,editorIndex=-1,editorRatio='1',db;
 const defaults=()=>({brightness:100,contrast:100,saturation:100,blur:0,sepia:0,grayscale:0,hue:0,warmth:0,sharpness:0,zoom:1,ox:.5,oy:.5});
 const presets={Original:{},'Vintage Clean':{contrast:106,saturation:90,warmth:8},Studio:{brightness:108,contrast:108,saturation:102},Warm:{warmth:30,saturation:106},Cool:{warmth:-25,saturation:95},Retro:{sepia:35,contrast:92,saturation:80},'Film 90s':{contrast:115,saturation:75,sepia:18},'Soft Portrait':{brightness:105,contrast:92,blur:.5},'Schwarzweiß':{grayscale:100,contrast:115},'High Contrast':{contrast:145,saturation:108},'Pastell':{brightness:110,contrast:85,saturation:78},'Muted':{saturation:55,contrast:105},'Golden Hour':{warmth:40,brightness:107},'Kalt & Klar':{warmth:-20,contrast:120},'Faded':{contrast:78,brightness:108},'Dramatic':{contrast:140,brightness:92}};
@@ -268,7 +268,7 @@ const BX_ICONS={
  stale:bxSvg('<path d="M7 3h10M7 21h10M8 3c0 5 8 5 8 9s-8 4-8 9M16 3c0 5-8 5-8 9s8 4 8 9"/>'),
  price:bxSvg('<path d="M3 12V4h8l9 9-8 8-9-9Z"/><path d="M9.5 9.5 14 14M14 9.5 9.5 14"/>')
 };
-const BX_STATUS=[['online','Online','#c1c6cd'],['ready','Bereit','#d9dee5'],['draft','Entwurf','#89929e'],['sold','Verkauft','#c9d0d9']];
+const BX_STATUS=[['online','Online','#4ade80'],['ready','Bereit','#7ab8f5'],['draft','Entwurf','#e9b949'],['sold','Verkauft','#c084fc']]; // V36: unterscheidbare Statusfarben (Grün, Stahlblau, Bernstein, Violett)
 function bxStatusKey(a){return ({Entwurf:'draft',Bereit:'ready',Online:'online',Verkauft:'sold'}[a.articleStatus]||'draft')}
 function bxMaxPrice(a){return Math.max(0,...Object.values(a.prices||{}).map(Number).filter(Number.isFinite))}
 function bxProfit(a){return a.sale?Number(a.sale.price||0)-Number(a.cost||0)-Number(a.sale.fees||0)-Number(a.sale.shipping||0):0}
