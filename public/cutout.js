@@ -7,7 +7,7 @@
   var BACKDROPS = {
     sand: ['#ece7df', '#d9d1c4', 'Sand'], nebel: ['#e6e9ee', '#cdd3dc', 'Nebel'], leinen: ['#e9e3dc', '#d6cbbd', 'Leinen'],
     salbei: ['#e3e8e4', '#c9d2cb', 'Salbei'], rose: ['#efe9e6', '#dacfca', 'Rosé'], stein: ['#e4e6ea', '#c6cbd3', 'Stein'],
-    weiss: ['#fbfbfa', '#ecebe8', 'Weiß'], nacht: ['#2b3446', '#141a26', 'Nacht']
+    weiss: ['#fbfbfa', '#ecebe8', 'Weiß'], nacht: ['#181c22', '#050608', 'Anthrazit']
   };
 
   var STYLES = { studio: 'Studio', app: 'App-Look', sticker: 'Sticker' };
@@ -201,7 +201,7 @@
   function seeded(n) { var v = n * 9301 + 49297; return function () { v = (v * 9301 + 49297) % 233280; return v / 233280; }; }
   function setFilter(ctx, f) { try { ctx.filter = f; } catch (e) {} }
 
-  /* Titelbild 4:5 – drei Stile: studio (ruhiger Verlauf mit Bodenschatten), app (App-Design mit Blau-/Orangelicht
+  /* Titelbild 4:5 – drei Stile: studio (ruhiger Verlauf mit Bodenschatten), app (RVO-Design: Schwarz/Anthrazit, Oberlicht
      und Spiegelung), sticker (Motiv mit weißem Rand, wie ein Aufkleber). */
   function compose(cut, box, bgKey, style) {
     var bgc = BACKDROPS[bgKey] || BACKDROPS.sand, W = 1000, H = 1250, c = canvas(W, H), ctx = c.getContext('2d'), st = STYLES[style] ? style : 'studio';
@@ -209,27 +209,31 @@
     var dy = st === 'app' ? (H * 0.46 - dh / 2) : (H - dh) / 2 + H * 0.015, base = dy + dh, dark = bgKey === 'nacht', i;
     ctx.imageSmoothingQuality = 'high';
     if (st === 'app') {
-      var g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0e2244'); g.addColorStop(0.55, '#08101f'); g.addColorStop(1, '#050912'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-      var r1 = ctx.createRadialGradient(W * 0.5, H * 0.44, 0, W * 0.5, H * 0.44, W * 0.75); r1.addColorStop(0, 'rgba(61,155,255,.42)'); r1.addColorStop(1, 'rgba(61,155,255,0)'); ctx.fillStyle = r1; ctx.fillRect(0, 0, W, H);
-      var r2 = ctx.createRadialGradient(W * 0.86, H * 0.9, 0, W * 0.86, H * 0.9, W * 0.6); r2.addColorStop(0, 'rgba(255,150,60,.34)'); r2.addColorStop(1, 'rgba(255,150,60,0)'); ctx.fillStyle = r2; ctx.fillRect(0, 0, W, H);
-      ctx.lineWidth = 2;
-      [0.30, 0.43, 0.58].forEach(function (k, n) { ctx.strokeStyle = 'rgba(140,200,255,' + (0.20 - n * 0.045) + ')'; ctx.beginPath(); ctx.arc(W / 2, H * 0.44, W * k, 0, 7); ctx.stroke(); });
-      ctx.setLineDash([6, 16]); ctx.strokeStyle = 'rgba(255,180,100,.28)'; ctx.beginPath(); ctx.arc(W / 2, H * 0.44, W * 0.50, 0.3, 4.2); ctx.stroke(); ctx.setLineDash([]);
-      var rnd = seeded(7); for (i = 0; i < 34; i++) { var px = rnd() * W, py = rnd() * H, pr = 1 + rnd() * 2.4; ctx.fillStyle = 'rgba(' + (rnd() > 0.7 ? '255,190,120' : '170,215,255') + ',' + (0.25 + rnd() * 0.5) + ')'; ctx.beginPath(); ctx.arc(px, py, pr, 0, 7); ctx.fill(); }
-      // Glasboden mit Orangerand
-      var ey = base + 10, erx = Math.max(dw * 0.6, W * 0.26), ery = 30;
-      var fl = ctx.createRadialGradient(W / 2, ey, 0, W / 2, ey, erx); fl.addColorStop(0, 'rgba(90,170,255,.30)'); fl.addColorStop(1, 'rgba(90,170,255,0)');
+      // RVO-Design (V34): Tiefschwarz und Anthrazit, weiches Oberlicht, Glasboden mit feinem hellem Rand, Spiegelung.
+      var cy = H * 0.44, g = ctx.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, '#181c22'); g.addColorStop(0.5, '#0b0d11'); g.addColorStop(1, '#050608'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      var r1 = ctx.createRadialGradient(W * 0.5, H * 0.18, 0, W * 0.5, H * 0.18, W * 0.85); r1.addColorStop(0, 'rgba(255,255,255,.13)'); r1.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = r1; ctx.fillRect(0, 0, W, H);
+      var r2 = ctx.createRadialGradient(W * 0.5, cy, 0, W * 0.5, cy, W * 0.55); r2.addColorStop(0, 'rgba(232,237,243,.08)'); r2.addColorStop(1, 'rgba(232,237,243,0)'); ctx.fillStyle = r2; ctx.fillRect(0, 0, W, H);
+      // feiner Glanzstreif von links oben
+      ctx.save(); ctx.translate(W * 0.18, 0); ctx.rotate(-0.42);
+      var sl = ctx.createLinearGradient(-W * 0.12, 0, W * 0.12, 0); sl.addColorStop(0, 'rgba(255,255,255,0)'); sl.addColorStop(0.5, 'rgba(255,255,255,.05)'); sl.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = sl; ctx.fillRect(-W * 0.12, -H * 0.2, W * 0.24, H * 1.6); ctx.restore();
+      var rnd = seeded(7); for (i = 0; i < 26; i++) { var px = rnd() * W, py = rnd() * H * 0.8, pr = 0.8 + rnd() * 1.6; ctx.fillStyle = 'rgba(245,247,250,' + (0.08 + rnd() * 0.22) + ')'; ctx.beginPath(); ctx.arc(px, py, pr, 0, 7); ctx.fill(); }
+      // Glasboden
+      var ey = base + 10, erx = Math.max(dw * 0.62, W * 0.27), ery = 30;
+      var fl = ctx.createRadialGradient(W / 2, ey, 0, W / 2, ey, erx); fl.addColorStop(0, 'rgba(255,255,255,.12)'); fl.addColorStop(1, 'rgba(255,255,255,0)');
       ctx.fillStyle = fl; ctx.beginPath(); ctx.ellipse(W / 2, ey, erx, ery * 1.6, 0, 0, 7); ctx.fill();
-      ctx.strokeStyle = 'rgba(255,190,120,.60)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(W / 2, ey, erx * 0.8, ery, 0, 0, 7); ctx.stroke();
-      ctx.strokeStyle = 'rgba(140,200,255,.35)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(W / 2, ey, erx * 0.95, ery * 1.25, 0, 0, 7); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,.16)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(W / 2, ey, erx * 0.82, ery, 0, 0, 7); ctx.stroke();
       // Spiegelung
       var rf = canvas(Math.ceil(dw), Math.ceil(dh * 0.5)), rx = rf.getContext('2d');
       rx.translate(0, dh); rx.scale(1, -1); rx.drawImage(cut, box.x, box.y, box.w, box.h, 0, 0, Math.ceil(dw), Math.ceil(dh));
       rx.setTransform(1, 0, 0, 1, 0, 0); rx.globalCompositeOperation = 'destination-out';
-      var rg = rx.createLinearGradient(0, 0, 0, rf.height); rg.addColorStop(0, 'rgba(0,0,0,.72)'); rg.addColorStop(1, 'rgba(0,0,0,1)'); rx.fillStyle = rg; rx.fillRect(0, 0, rf.width, rf.height);
-      ctx.save(); ctx.globalAlpha = 0.5; ctx.drawImage(rf, dx, base + 4); ctx.restore();
-      ctx.save(); ctx.shadowColor = 'rgba(90,170,255,.55)'; ctx.shadowBlur = 40; setFilter(ctx, 'saturate(1.1) contrast(1.05) brightness(1.04)'); ctx.drawImage(cut, box.x, box.y, box.w, box.h, dx, dy, dw, dh); ctx.restore();
-      var vv = ctx.createRadialGradient(W / 2, H * 0.44, W * 0.4, W / 2, H * 0.44, W * 1.0); vv.addColorStop(0, 'rgba(0,0,0,0)'); vv.addColorStop(1, 'rgba(0,0,0,.40)'); ctx.fillStyle = vv; ctx.fillRect(0, 0, W, H);
+      var rg = rx.createLinearGradient(0, 0, 0, rf.height); rg.addColorStop(0, 'rgba(0,0,0,.76)'); rg.addColorStop(1, 'rgba(0,0,0,1)'); rx.fillStyle = rg; rx.fillRect(0, 0, rf.width, rf.height);
+      ctx.save(); ctx.globalAlpha = 0.42; ctx.drawImage(rf, dx, base + 4); ctx.restore();
+      // Motiv: heller Saum dahinter, weicher Kontaktschatten, Farben unverfälscht
+      ctx.save(); setFilter(ctx, 'blur(26px)'); ctx.globalAlpha = 0.22; ctx.drawImage(silhouette(cut, box, dw, dh, '#e8edf3'), dx, dy); ctx.restore();
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.65)'; ctx.shadowBlur = 46; ctx.shadowOffsetY = 18; setFilter(ctx, 'saturate(1.04) contrast(1.05) brightness(1.03)'); ctx.drawImage(cut, box.x, box.y, box.w, box.h, dx, dy, dw, dh); ctx.restore();
+      var vv = ctx.createRadialGradient(W / 2, cy, W * 0.42, W / 2, cy, W * 1.0); vv.addColorStop(0, 'rgba(0,0,0,0)'); vv.addColorStop(1, 'rgba(0,0,0,.45)'); ctx.fillStyle = vv; ctx.fillRect(0, 0, W, H);
       return c.toDataURL('image/jpeg', 0.92);
     }
     var bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, bgc[0]); bg.addColorStop(1, bgc[1]); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);

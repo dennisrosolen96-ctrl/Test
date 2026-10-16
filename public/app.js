@@ -1,7 +1,7 @@
 
 (()=>{'use strict';
 // App-Version: bei jeder Auslieferung hier und in public/sw.js (CACHE) erhöhen. Die Einstellungen zeigen sie unter „Über die App“.
-const RV_VERSION='V33',RV_VERSION_DATE='16.10.2026';window.RV_VERSION=RV_VERSION;
+const RV_VERSION='V34',RV_VERSION_DATE='16.10.2026';window.RV_VERSION=RV_VERSION;
 const $=id=>document.getElementById(id);const platforms=['ebay','vinted','instagram'];let step=0,activePlatform='ebay',article=null,editorIndex=-1,editorRatio='1',db;
 const defaults=()=>({brightness:100,contrast:100,saturation:100,blur:0,sepia:0,grayscale:0,hue:0,warmth:0,sharpness:0,zoom:1,ox:.5,oy:.5});
 const presets={Original:{},'Vintage Clean':{contrast:106,saturation:90,warmth:8},Studio:{brightness:108,contrast:108,saturation:102},Warm:{warmth:30,saturation:106},Cool:{warmth:-25,saturation:95},Retro:{sepia:35,contrast:92,saturation:80},'Film 90s':{contrast:115,saturation:75,sepia:18},'Soft Portrait':{brightness:105,contrast:92,blur:.5},'Schwarzweiß':{grayscale:100,contrast:115},'High Contrast':{contrast:145,saturation:108},'Pastell':{brightness:110,contrast:85,saturation:78},'Muted':{saturation:55,contrast:105},'Golden Hour':{warmth:40,brightness:107},'Kalt & Klar':{warmth:-20,contrast:120},'Faded':{contrast:78,brightness:108},'Dramatic':{contrast:140,brightness:92}};
@@ -138,7 +138,7 @@ $('stockSell').onclick=async()=>{const a=(await allArticles()).find(x=>x.id===st
 };
 $('stockFilters').querySelectorAll('[data-stock-filter]').forEach(btn=>btn.onclick=()=>{stockFilter=btn.dataset.stockFilter;$('stockFilters').querySelectorAll('[data-stock-filter]').forEach(b=>b.classList.toggle('selected',b===btn));renderLibrary()});
 async function importBackupFile(file){try{if(!file) return;let data=JSON.parse(await file.text());if(!Array.isArray(data.articles))throw Error('Ungültige Datei');for(const a of data.articles)await store('readwrite',s=>s.put(a));await renderLibrary();await renderHome();alert('Backup importiert')}catch(err){alert('Import fehlgeschlagen: '+err.message)}}$('backup').onclick=async()=>{let all=await store('readonly',s=>s.getAll());download(new Blob([JSON.stringify({version:1,articles:all})],{type:'application/json'}),'rv-studio-backup.json')};$('restore').onchange=async e=>{await importBackupFile(e.target.files&&e.target.files[0]);e.target.value=''};
-$('exportArticle').onclick=async()=>{pull();if(!window.JSZip){alert('ZIP-Bibliothek nicht geladen. Internetverbindung prüfen.');return}const zip=new JSZip(),base=article.sku||'Artikel';for(let i=0;i<article.photos.length;i++){const p=article.photos[i];for(const [k,ratio] of [['ebay','1'],['vinted','0.75'],['instagram','0.8']])zip.file(base+'_'+(i+1)+'_'+k+'.jpg',await blobFrom(p,ratio))}for(const k of platforms){const l=article.listings[k];zip.file(k+'.txt',`Titel: ${l.title}\nPreis: ${article.prices[k]||'-'} €\n\n${l.description}`)}download(await zip.generateAsync({type:'blob'}),base+'.zip')};
+$('exportArticle').onclick=async()=>{pull();if(!window.JSZip){alert('ZIP-Bibliothek nicht geladen. Internetverbindung prüfen.');return}const zip=new JSZip(),base=article.sku||'Artikel';for(let i=0;i<article.photos.length;i++){const p=article.photos[i];for(const [k,ratio] of [['ebay','1'],['vinted','0.75'],['instagram','0.8']])zip.file(base+'_'+(i+1)+'_'+k+'.jpg',await blobFrom(p,ratio,k))}for(const k of platforms){const l=article.listings[k];zip.file(k+'.txt',`Titel: ${l.title}\nPreis: ${article.prices[k]||'-'} €\n\n${l.description}`)}download(await zip.generateAsync({type:'blob'}),base+'.zip')};
 
 const euro=v=>(Number(v)||0).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
 async function allArticles(){return await store('readonly',s=>s.getAll())}
@@ -1683,4 +1683,95 @@ setTimeout(()=>{try{sxPoofRefresh()}catch{}},1500);
 if(window.RVAI&&RVAI.available)RVAI.available().then(ok=>{if(ok)return;document.querySelectorAll('[data-engine="ai"]').forEach(b=>{b.disabled=true;b.title='Lokales KI-Modell ist in dieser Version nicht enthalten';b.setAttribute('aria-disabled','true')});if(sxGet('rv_cutout_engine','poof')==='ai'){sxSet('rv_cutout_engine','poof');try{sxRenderCoverViews()}catch{}}});
 // Externe Datenänderungen (z. B. Beispielartikel laden/entfernen) neu anzeigen.
 window.addEventListener('rv:data-changed',()=>{renderLibrary().catch(()=>{});try{renderHome()}catch(e){}});
+
+// ===================== V34: Plattform-Zuschnitt je Foto =====================
+// Für jedes Foto lässt sich je Plattform (eBay 1:1, Vinted 3:4, Instagram 4:5) der Ausschnitt festlegen:
+// verschieben, zoomen, ganzes Teil zeigen; freie Ränder werden unscharf, weiß oder in Randfarbe gefüllt.
+// Gespeichert in photo.frames[plattform] = {z,x,y,bg}. Der ZIP-Export nutzt diese Ausschnitte; ohne Eintrag gilt der alte Zuschnitt.
+if(sxGet('rv_cover_style_v34','')!=='1'){sxSet('rv_cover_style','app');sxSet('rv_cover_style_v34','1')}
+const PF=[['ebay','eBay','1','1:1'],['vinted','Vinted','0.75','3:4'],['instagram','Instagram','0.8','4:5']];
+const pfImgs=new Map(),pfEdges=new Map();let pfPhoto=0;
+function pfImg(src){if(!pfImgs.has(src))pfImgs.set(src,imageFrom(src));return pfImgs.get(src)}
+function pfDefault(p){const e=p.edit||{};return {z:e.zoom||1,x:e.ox??.5,y:e.oy??.5,bg:'blur'}}
+function pfFrame(p,k){return {...pfDefault(p),...((p.frames||{})[k]||{})}}
+function pfFitZ(img,ratio){const a=+ratio,iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;return Math.min(a/iw,1/ih)/Math.max(a/iw,1/ih)}
+function pfEdge(img){if(pfEdges.has(img.src))return pfEdges.get(img.src);const c=document.createElement('canvas');c.width=40;c.height=40;const x=c.getContext('2d');x.drawImage(img,0,0,40,40);const d=x.getImageData(0,0,40,40).data;let r=0,g=0,b=0,n=0;
+ for(let i=0;i<40;i++)for(const [px,py] of [[i,0],[i,39],[0,i],[39,i]]){const o=(py*40+px)*4;r+=d[o];g+=d[o+1];b+=d[o+2];n++}
+ const col='rgb('+Math.round(r/n)+','+Math.round(g/n)+','+Math.round(b/n)+')';pfEdges.set(img.src,col);return col}
+function pfDraw(canvas,p,img,ratio,f,H=1200){
+ const a=+ratio,W=Math.round(a*H),e={...defaults(),...(p.edit||{})};canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d');
+ const iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height,cover=Math.max(W/iw,H/ih),s=cover*f.z,dw=iw*s,dh=ih*s,dx=(W-dw)*f.x,dy=(H-dh)*f.y;
+ if(dw<W-.5||dh<H-.5){
+  if(f.bg==='white'){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H)}
+  else if(f.bg==='edge'){ctx.fillStyle=pfEdge(img);ctx.fillRect(0,0,W,H)}
+  else{const bw=iw*cover*1.15,bh=ih*cover*1.15;ctx.filter='blur('+Math.round(H/28)+'px) brightness(.88) '+filter({...e,blur:0});ctx.drawImage(img,(W-bw)/2,(H-bh)/2,bw,bh);ctx.filter='none'}
+ }
+ ctx.filter=filter(e);ctx.drawImage(img,dx,dy,dw,dh);ctx.filter='none';
+ if(e.warmth){ctx.globalCompositeOperation='soft-light';ctx.fillStyle=e.warmth>0?`rgba(255,120,25,${Math.abs(e.warmth)/180})`:`rgba(30,120,255,${Math.abs(e.warmth)/180})`;ctx.fillRect(Math.max(0,dx),Math.max(0,dy),Math.min(W,dw),Math.min(H,dh));ctx.globalCompositeOperation='source-over'}
+ if(e.sharpness){ctx.globalAlpha=Math.min(.2,e.sharpness/500);ctx.globalCompositeOperation='overlay';ctx.drawImage(canvas,0,0);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1}
+}
+blobFrom=async function(p,ratio,k){const img=await imageFrom(p.src),c=document.createElement('canvas');if(k&&p.frames&&p.frames[k])pfDraw(c,p,img,ratio,pfFrame(p,k));else drawOn(c,p,img,ratio);return new Promise(ok=>c.toBlob(ok,'image/jpeg',.92))};
+
+sxRenderPreview=function(){if(!article)return;const root=$('sxPreview');if(!root)return;const photos=article.photos||[];if(pfPhoto>=photos.length)pfPhoto=0;
+ const sub=root.closest('.sx-panel')&&root.closest('.sx-panel').querySelector('.sx-sub');if(sub)sub.textContent='Ausschnitt je Plattform – antippen zum Anpassen. Wird beim Export verwendet.';
+ root.replaceChildren();root.classList.add('pf-wrap');
+ if(!photos.length){root.innerHTML='<p class="sx-hint">Lade Fotos hoch, dann kannst du hier den Ausschnitt je Plattform festlegen.</p>';return}
+ const p=photos[pfPhoto];
+ if(photos.length>1){const bar=document.createElement('div');bar.className='pf-photos';photos.forEach((q,i)=>{const b=document.createElement('button');b.type='button';b.className=i===pfPhoto?'on':'';b.setAttribute('aria-label','Foto '+(i+1));b.innerHTML='<img src="'+sxEsc(q.src)+'" alt=""><i>'+(i+1)+'</i>';b.onclick=()=>{pfPhoto=i;sxRenderPreview()};bar.append(b)});root.append(bar)}
+ const grid=document.createElement('div');grid.className='sx-preview pf-grid';root.append(grid);
+ for(const [k,name,ratio,label] of PF){const f=document.createElement('figure');const set=!!(p.frames&&p.frames[k]);
+  f.innerHTML='<button type="button" class="fr pf-fr" style="aspect-ratio:'+ratio.replace('0.75','3/4').replace('0.8','4/5')+'" aria-label="Ausschnitt für '+name+' anpassen"><canvas></canvas><span class="pf-edit">'+sxIcon('<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>')+'</span>'+(set?'<span class="pf-set">Angepasst</span>':'')+'</button><figcaption>'+name+'<small>'+label+'</small></figcaption>';
+  f.querySelector('button').onclick=()=>pfOpen(pfPhoto,k);grid.append(f);
+  pfImg(p.src).then(img=>pfDraw(f.querySelector('canvas'),p,img,ratio,pfFrame(p,k),600)).catch(()=>{})}
+ const row=document.createElement('div');row.className='pf-quick';
+ row.innerHTML='<button type="button" class="sx-btn" data-pf="fit">Überall ganzes Teil zeigen</button><button type="button" class="sx-btn" data-pf="reset">Ausschnitte zurücksetzen</button>';
+ row.querySelector('[data-pf="fit"]').onclick=async()=>{const img=await pfImg(p.src);p.frames=p.frames||{};for(const [k,,ratio] of PF)p.frames[k]={...pfFrame(p,k),z:pfFitZ(img,ratio)*.94,x:.5,y:.5};sxRenderPreview()};
+ row.querySelector('[data-pf="reset"]').onclick=()=>{delete p.frames;sxRenderPreview()};
+ row.querySelector('[data-pf="reset"]').disabled=!p.frames;root.append(row)};
+
+async function pfOpen(pi,k0){
+ const p=article.photos[pi];if(!p)return;const img=await pfImg(p.src);let k=k0,work={};for(const [kk] of PF)work[kk]=pfFrame(p,kk);
+ const sheet=document.createElement('div');sheet.className='pf-sheet sx';sheet.setAttribute('role','dialog');sheet.setAttribute('aria-modal','true');
+ sheet.innerHTML='<div class="pf-box sx-panel"><div class="pf-head"><b>Ausschnitt anpassen</b><span>Foto '+(pi+1)+' · ziehen zum Verschieben, zwei Finger oder Regler zum Zoomen</span><button type="button" class="pf-x" aria-label="Schließen">×</button></div>'
+  +'<div class="sx-seg pf-tabs">'+PF.map(([kk,name,,lab])=>'<button type="button" data-k="'+kk+'">'+name+' <small>'+lab+'</small></button>').join('')+'</div>'
+  +'<div class="pf-stage"><canvas class="pf-canvas"></canvas><i class="pf-grid3" aria-hidden="true"></i></div>'
+  +'<label class="pf-zoom"><span>Zoom</span><input type="range" id="pfZoom" min="0" max="1000" step="1"></label>'
+  +'<div class="pf-btns"><button type="button" class="sx-btn" data-a="fit">Ganzes Teil zeigen</button><button type="button" class="sx-btn" data-a="fill">Bild füllen</button><button type="button" class="sx-btn" data-a="center">Zentrieren</button></div>'
+  +'<div class="sx-field pf-bgf"><span>Freie Ränder füllen</span><div class="sx-seg pf-bg"><button type="button" data-bg="blur">Unscharf</button><button type="button" data-bg="white">Weiß</button><button type="button" data-bg="edge">Randfarbe</button></div></div>'
+  +'<div class="pf-foot"><button type="button" class="sx-btn" data-a="all">Für alle Formate</button><button type="button" class="sx-btn" data-a="reset">Zurücksetzen</button><button type="button" class="sx-cta sx-cta-sm pf-done" data-a="done"><span class="sx-cta-tx"><b>Fertig</b></span></button></div></div>';
+ document.body.append(sheet);document.documentElement.classList.add('pf-open');
+ const cv=sheet.querySelector('.pf-canvas'),zoom=sheet.querySelector('#pfZoom'),stage=sheet.querySelector('.pf-stage');
+ const ratioOf=kk=>PF.find(x=>x[0]===kk)[2];
+ const lim=()=>{const fz=pfFitZ(img,ratioOf(k));return [Math.min(fz*.8,.98),3]};
+ const toSlider=z=>{const [a,b]=lim();return Math.round(Math.log(z/a)/Math.log(b/a)*1000)},fromSlider=v=>{const [a,b]=lim();return a*Math.pow(b/a,v/1000)};
+ let raf=0;const draw=(hq)=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{const f=work[k];const r=+ratioOf(k);stage.style.aspectRatio=String(r);pfDraw(cv,p,img,ratioOf(k),f,hq?1000:640)})};
+ const sync=()=>{sheet.querySelectorAll('.pf-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));sheet.querySelectorAll('.pf-bg button').forEach(b=>b.classList.toggle('on',b.dataset.bg===work[k].bg));zoom.value=toSlider(work[k].z);draw(true)};
+ const clamp=v=>Math.max(0,Math.min(1,v));
+ sheet.querySelectorAll('.pf-tabs button').forEach(b=>b.onclick=()=>{k=b.dataset.k;sync()});
+ sheet.querySelectorAll('.pf-bg button').forEach(b=>b.onclick=()=>{work[k].bg=b.dataset.bg;sync()});
+ zoom.oninput=()=>{work[k].z=fromSlider(+zoom.value);draw(false)};zoom.onchange=()=>draw(true);
+ sheet.querySelector('[data-a="fit"]').onclick=()=>{work[k]={...work[k],z:pfFitZ(img,ratioOf(k))*.94,x:.5,y:.5};sync()};
+ sheet.querySelector('[data-a="fill"]').onclick=()=>{work[k]={...work[k],z:1};sync()};
+ sheet.querySelector('[data-a="center"]').onclick=()=>{work[k]={...work[k],x:.5,y:.5};sync()};
+ sheet.querySelector('[data-a="all"]').onclick=()=>{for(const [kk] of PF)work[kk]={...work[k]};sxToast&&sxToast('Ausschnitt auf alle Formate übertragen');sync()};
+ sheet.querySelector('[data-a="reset"]').onclick=()=>{work[k]=pfDefault(p);sync()};
+ const close=save=>{if(save){p.frames=p.frames||{};for(const [kk] of PF){const d=pfDefault(p),w=work[kk];if(Math.abs(w.z-d.z)>.001||Math.abs(w.x-d.x)>.001||Math.abs(w.y-d.y)>.001||w.bg!==d.bg)p.frames[kk]=w;else delete p.frames[kk]}if(!Object.keys(p.frames).length)delete p.frames}
+  sheet.remove();document.documentElement.classList.remove('pf-open');document.removeEventListener('keydown',esc);sxRenderPreview()};
+ const esc=e=>{if(e.key==='Escape')close(false)};document.addEventListener('keydown',esc);
+ sheet.querySelector('.pf-x').onclick=()=>close(false);sheet.querySelector('[data-a="done"]').onclick=()=>close(true);
+ sheet.addEventListener('click',e=>{if(e.target===sheet)close(false)});
+ // Ziehen, Zwei-Finger-Zoom, Mausrad
+ const pts=new Map();let last=null,pinch=0;
+ const move=(mx,my)=>{const f=work[k],r=cv.getBoundingClientRect(),W=cv.width,H=cv.height,sc=W/r.width,iw=img.naturalWidth,ih=img.naturalHeight,cover=Math.max(W/iw,H/ih),dw=iw*cover*f.z,dh=ih*cover*f.z;
+  if(Math.abs(W-dw)>1)f.x=clamp(f.x+mx*sc/(W-dw));if(Math.abs(H-dh)>1)f.y=clamp(f.y+my*sc/(H-dh));draw(false)};
+ stage.addEventListener('pointerdown',e=>{stage.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);stage.classList.add('drag');if(pts.size===1)last=[e.clientX,e.clientY];if(pts.size===2){const [a,b]=[...pts.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1])}});
+ stage.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,[e.clientX,e.clientY]);
+  if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pinch){const [lo,hi]=lim();work[k].z=Math.max(lo,Math.min(hi,work[k].z*d/pinch));zoom.value=toSlider(work[k].z);draw(false)}pinch=d;return}
+  if(last){move(e.clientX-last[0],e.clientY-last[1]);last=[e.clientX,e.clientY]}});
+ const up=e=>{pts.delete(e.pointerId);if(pts.size<2)pinch=0;if(pts.size===1)last=[...pts.values()][0];if(!pts.size){last=null;stage.classList.remove('drag');draw(true)}};
+ stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+ stage.addEventListener('wheel',e=>{e.preventDefault();const [lo,hi]=lim();work[k].z=Math.max(lo,Math.min(hi,work[k].z*Math.exp(-e.deltaY*.0015)));zoom.value=toSlider(work[k].z);draw(false);clearTimeout(stage._w);stage._w=setTimeout(()=>draw(true),180)},{passive:false});
+ sync();
+}
+window.RVFrames={draw:pfDraw,frame:pfFrame,open:pfOpen};
 })();

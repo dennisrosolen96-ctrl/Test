@@ -1,4 +1,4 @@
-const CACHE='rv-studio-v33';
+const CACHE='rv-studio-v34';
 const FILES=['/','/index.html','/app.css','/dashboard.css','/fx.css','/ref.css','/theme.css','/bestand.css','/studio.css','/settings.css','/insights.css','/chat.css','/topnav.css','/home.css','/snipe.css','/pages.css','/perf.css','/anim.css','/noir.css','/app.js','/dashboard.js','/fx.js','/quotes.js','/panda.js','/demo.js','/cutout.js','/ai-cutout.js','/ai-worker.js','/anim.js',
   '/vendor/jszip.min.js','/fonts/command-sans-regular.otf','/fonts/command-sans-bold.otf',
   '/rv-logo.jpg','/rv-ai-mascot.png','/rv-robot-premium.png','/rv-white.png',
