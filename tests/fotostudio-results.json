@@ -1,6 +1,6 @@
 {
   "scope": "Browser-Ablauftest Fotostudio mit gemockter Poof-API. Kein echter Poof-Aufruf, kein Android-Gerät.",
-  "passed": 13,
+  "passed": 14,
   "failed": 0,
   "tests": [
     "Hochladen löst keinen Poof-Aufruf aus (nur auf Klick)",
@@ -14,6 +14,7 @@
     "Credits aufgebraucht: klare Meldung, Titelbild und Fotos bleiben erhalten, keine Wiederholung",
     "Gespeichert: rvCover und rvCutout getrennt, Fotos ohne Titelbild",
     "Nach Neuladen zeigt die Bestandsliste das RVO-Titelbild",
+    "„KI auf dem Gerät“ nur wählbar, wenn das lokale Modell enthalten ist",
     "Keine Skriptfehler",
     "Alte Artikel: Titelbild in rvCover verschoben, Originalfoto bleibt"
   ]

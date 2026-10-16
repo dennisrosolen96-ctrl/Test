@@ -1674,6 +1674,8 @@ snLoad();snBind();snRender();snRenderLink();setTimeout(snPing,700);snSchedule(80
 // Beim Öffnen eines Artikels im Studio ebenfalls trennen (z. B. aus einem alten Backup).
 {const prevPush=push;push=function(){if(article)rvSplitCover(article);return prevPush.apply(this,arguments)}}
 setTimeout(()=>{try{sxPoofRefresh()}catch{}},1500);
+// Lokales KI-Modell nicht enthalten (kompakte Version): „KI auf dem Gerät“ sperren, Poof bleibt Standard.
+if(window.RVAI&&RVAI.available)RVAI.available().then(ok=>{if(ok)return;document.querySelectorAll('[data-engine="ai"]').forEach(b=>{b.disabled=true;b.title='Lokales KI-Modell ist in dieser Version nicht enthalten';b.setAttribute('aria-disabled','true')});if(sxGet('rv_cutout_engine','poof')==='ai'){sxSet('rv_cutout_engine','poof');try{sxRenderCoverViews()}catch{}}});
 // Externe Datenänderungen (z. B. Beispielartikel laden/entfernen) neu anzeigen.
 window.addEventListener('rv:data-changed',()=>{renderLibrary().catch(()=>{});try{renderHome()}catch(e){}});
 })();

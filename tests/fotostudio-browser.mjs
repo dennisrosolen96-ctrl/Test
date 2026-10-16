@@ -87,6 +87,9 @@ try{
   await page.click('#rvTop [data-nav="stock"]');await page.waitForTimeout(800);
   await check('Nach Neuladen zeigt die Bestandsliste das RVO-Titelbild',async()=>{
     const srcs=await page.$$eval('#s4 img',l=>l.map(i=>i.src));assert.ok(srcs.includes(art.rvCover.src))});
+  await check('„KI auf dem Gerät“ nur wählbar, wenn das lokale Modell enthalten ist',async()=>{
+    const hasModel=await fs.access(path.join(root,'ai-model','isnet-rv1.onnx.part00')).then(()=>true,()=>false);
+    assert.equal(await page.$eval('#sxEngine [data-engine="ai"]',b=>b.disabled),!hasModel)});
   await check('Keine Skriptfehler',async()=>assert.deepEqual(errors,[]));
 
   // Umzug alter Daten: Titelbild war früher Foto Nr. 1 (cover:true)

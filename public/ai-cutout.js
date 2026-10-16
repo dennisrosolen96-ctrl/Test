@@ -61,5 +61,14 @@
     ctx.globalCompositeOperation = 'source-over';
     return c;
   }
-  window.RVAI = { cut: cut, supported: supported, gpu: gpu, device: function () { return lastDevice; }, reset: function () { try { localStorage.removeItem('rv_ai_bad'); } catch (e) {} } };
+  // Ist das lokale Modell überhaupt enthalten? (Die kompakte Version lässt /ai-model/*.part* weg.)
+  var availP = null;
+  function available() {
+    if (!availP) availP = fetch('/ai-model/manifest.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (m) {
+      var spec = m && m.models && m.models.isnet; if (!spec || !spec.parts || !spec.parts.length) return false;
+      return fetch('/ai-model/' + spec.parts[0], { method: 'HEAD', cache: 'no-cache' }).then(function (r) { return r.ok; });
+    }).catch(function () { return false; });
+    return availP;
+  }
+  window.RVAI = { available: available, cut: cut, supported: supported, gpu: gpu, device: function () { return lastDevice; }, reset: function () { try { localStorage.removeItem('rv_ai_bad'); } catch (e) {} } };
 })();

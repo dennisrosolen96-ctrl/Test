@@ -4,3 +4,7 @@ RV_SYNC_PASSWORD=replace-with-your-existing-rv-password
 # OPENAI_API_KEY=
 # ANTHROPIC_API_KEY=
 AI_PROVIDER=openai
+# Poof.bg-Freisteller (nur serverseitig, nie im Frontend):
+# POOF_BG_API_KEY=
+# POOF_MAX_PER_MINUTE=4
+# POOF_MAX_PER_DAY=50
