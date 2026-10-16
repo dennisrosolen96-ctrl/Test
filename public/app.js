@@ -92,7 +92,7 @@ async function renderLibrary(){
  for(const a of visible){
   const btn=document.createElement('button');btn.type='button';btn.className='stock-card';btn.onclick=()=>openStockDetail(a.id);
   const picture=document.createElement('div');picture.className='stock-img';
-  if(a.photos?.[0]?.src){const img=document.createElement('img');img.src=a.photos[0].src;img.loading='lazy';img.alt='Foto '+(a.sku||'Artikel');picture.append(img)}else picture.textContent='RV';
+  if(rvThumb(a)){const img=document.createElement('img');img.src=rvThumb(a);img.loading='lazy';img.alt='Foto '+(a.sku||'Artikel');picture.append(img)}else picture.textContent='RV';
   const info=document.createElement('div');info.className='stock-info';
   const name=document.createElement('div');name.className='stock-name';name.textContent=[a.brand,a.category].filter(Boolean).join(' ')||'Unbenannter Artikel';
   const meta=document.createElement('div');meta.className='stock-muted';meta.textContent=[a.sku,a.size&&('Gr. '+a.size),a.location].filter(Boolean).join(' · ')||'Ohne Details';
@@ -105,7 +105,7 @@ async function openStockDetail(id){
  const a=(await allArticles()).find(x=>x.id===id);if(!a)return;stockSelectedId=id;
  $('stockSku').textContent=a.sku||'Ohne Artikelnummer';$('stockTitle').textContent=[a.brand,a.model].filter(Boolean).join(' ')||[a.brand,a.category].filter(Boolean).join(' ')||'Artikel';
  $('stockMeta').textContent=[a.category,a.size&&'Größe '+a.size,a.color,a.material].filter(Boolean).join(' · ');
- $('stockHero').src=a.photos?.[0]?.src||'rv-logo.jpg';$('stockCost').textContent=euro(a.cost);$('stockCondition').textContent=a.condition?a.condition+'/10':'—';$('stockLocationText').textContent=a.location||'—';
+ $('stockHero').src=rvThumb(a)||'rv-logo.jpg';$('stockCost').textContent=euro(a.cost);$('stockCondition').textContent=a.condition?a.condition+'/10':'—';$('stockLocationText').textContent=a.location||'—';
  $('stockLocation').value=a.location||'';$('stockStatus').value=['Entwurf','Bereit','Online','Verkauft'].includes(a.articleStatus)?a.articleStatus:'Entwurf';
  const pp=$('stockPlatformPrices');pp.replaceChildren();for(const [k,title] of [['ebay','eBay'],['vinted','Vinted'],['instagram','Instagram']]){const row=document.createElement('div');row.className='stock-platform';const l=document.createElement('span'),v=document.createElement('b');l.textContent=title;v.textContent=a.prices?.[k]?euro(a.prices[k]):'Kein Preis';row.append(l,v);pp.append(row)}
  $('stockSalePanel').classList.toggle('hidden',a.articleStatus==='Verkauft');$('stockSoldPanel').classList.toggle('hidden',a.articleStatus!=='Verkauft');
@@ -203,7 +203,7 @@ async function runHomeAi(raw,opts={}){
 }
 document.addEventListener('rv:ai-request',event=>{if(typeof event.detail?.message==='string')runHomeAi(event.detail.message,{remote:true})});
 async function renderHome(){const all=await allArticles(),sold=all.filter(a=>a.articleStatus==='Verkauft'&&a.sale),stock=all.filter(a=>a.articleStatus!=='Verkauft'&&!a.archivedAt);const gain=sold.reduce((v,a)=>v+(Number(a.sale.price)||0)-(Number(a.cost)||0)-(Number(a.sale.fees)||0)-(Number(a.sale.shipping)||0),0);const drafts=stock.filter(a=>a.articleStatus==='Entwurf').length,ready=stock.filter(a=>a.articleStatus==='Bereit').length,online=stock.filter(a=>a.articleStatus==='Online').length,remove=all.filter(a=>stockRemoveNeeded(a)).length;$('statStock').textContent=stock.length;$('statSold').textContent=sold.length;$('statInvest').textContent=euro(stock.reduce((v,a)=>v+(Number(a.cost)||0),0));$('statProfit').textContent=euro(gain);
-const recent=$('homeRecent');recent.replaceChildren();const list=all.slice(-3).reverse();if(!list.length){const el=document.createElement('div');el.className='rv-recent-empty';el.textContent='Noch keine Artikel. Starte mit deinem ersten Produkt.';recent.append(el)}for(const a of list){const b=document.createElement('button');b.type='button';b.className='rv-product-card';const im=document.createElement('img');im.loading='lazy';im.src=a.photos?.[0]?.src||'rv-logo.jpg';im.alt='Artikelfoto';const title=document.createElement('strong');title.textContent=[a.brand,a.category].filter(Boolean).join(' ')||a.sku||'Artikel';const price=document.createElement('b');price.textContent=a.prices?.vinted?euro(a.prices.vinted):a.prices?.ebay?euro(a.prices.ebay):euro(a.cost)+' EK';const badge=document.createElement('small');badge.textContent=a.articleStatus||'Entwurf';b.append(im,title,price,badge);b.onclick=()=>openStockDetail(a.id);recent.append(b)}
+const recent=$('homeRecent');recent.replaceChildren();const list=all.slice(-3).reverse();if(!list.length){const el=document.createElement('div');el.className='rv-recent-empty';el.textContent='Noch keine Artikel. Starte mit deinem ersten Produkt.';recent.append(el)}for(const a of list){const b=document.createElement('button');b.type='button';b.className='rv-product-card';const im=document.createElement('img');im.loading='lazy';im.src=rvThumb(a)||'rv-logo.jpg';im.alt='Artikelfoto';const title=document.createElement('strong');title.textContent=[a.brand,a.category].filter(Boolean).join(' ')||a.sku||'Artikel';const price=document.createElement('b');price.textContent=a.prices?.vinted?euro(a.prices.vinted):a.prices?.ebay?euro(a.prices.ebay):euro(a.cost)+' EK';const badge=document.createElement('small');badge.textContent=a.articleStatus||'Entwurf';b.append(im,title,price,badge);b.onclick=()=>openStockDetail(a.id);recent.append(b)}
 const tasks=$('homeTasks');tasks.replaceChildren();
 const relevant=all.filter(a=>!a.archivedAt&&a.articleStatus!=='Verkauft');
 const actionList=[];
@@ -219,7 +219,7 @@ for(const a of relevant){
 }
 if(actionList.length){for(const {a,title,action} of actionList.slice(0,3)){
  const b=document.createElement('button');b.type='button';b.className='lux-task-item';
- const photo=document.createElement('img');photo.loading='lazy';photo.src=a.photos?.[0]?.src||'/rv-logo.jpg';photo.alt='Artikelfoto';
+ const photo=document.createElement('img');photo.loading='lazy';photo.src=rvThumb(a)||'/rv-logo.jpg';photo.alt='Artikelfoto';
  const text=document.createElement('span');text.className='lux-task-description';
  const heading=document.createElement('strong');heading.textContent=action;
  const subtitle=document.createElement('small');subtitle.textContent=(a.sku?a.sku+' · ':'')+title;
@@ -330,7 +330,7 @@ function bxAnalyticsExtras(available){
   +'<div class="bx-cat"><div class="hd"><b>Lager-Alter</b><small>Artikel</small></div>'+bxBars(buckets.map(([n,c])=>[n,c,c/maxB*100]))+'</div>'
   +'<div class="bx-cat"><div class="hd"><b>Top Marken</b><small>Verkaufswert</small></div>'+(topB.length?bxBars(topB.map(([n,v])=>[n,euro(v),v/maxM*100])):'<p class="bx-empty">Noch keine Daten.</p>')+'</div>'
   +'<div class="bx-cat bx-slow"><div class="hd"><b>Ladenhüter</b><small>längste Lagerdauer</small></div>'
-  +(slow.length?slow.map(a=>'<button type="button" class="bx-slowrow" data-bx-open="'+bxEsc(a.id)+'">'+(a.photos?.[0]?.src?'<img src="'+bxEsc(a.photos[0].src)+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+bxEsc([a.brand,a.model].filter(Boolean).join(' ')||a.category||'Artikel')+'</b><small>'+bxEsc(a.location||a.sku||'')+'</small></span><span class="dd">'+v5Age(a)+' T</span></button>').join(''):'<p class="bx-empty">Keine Artikel im Lager.</p>')
+  +(slow.length?slow.map(a=>'<button type="button" class="bx-slowrow" data-bx-open="'+bxEsc(a.id)+'">'+(rvThumb(a)?'<img src="'+bxEsc(rvThumb(a))+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+bxEsc([a.brand,a.model].filter(Boolean).join(' ')||a.category||'Artikel')+'</b><small>'+bxEsc(a.location||a.sku||'')+'</small></span><span class="dd">'+v5Age(a)+' T</span></button>').join(''):'<p class="bx-empty">Keine Artikel im Lager.</p>')
   +'</div></div>';
 }
 function v5Work(items){
@@ -459,7 +459,7 @@ renderLibrary=async function(){
  else{delta='';deltaCls='nil'}
  const name=[a.brand,a.model].filter(Boolean).join(' ')||[a.brand,a.category].filter(Boolean).join(' ')||'Unbenannter Artikel';
  const meta=[a.size&&('Gr. '+a.size),a.condition&&('Zustand '+a.condition+'/10'),a.color].filter(Boolean).join(' · ');
- btn.innerHTML='<span class="bx-img">'+(a.photos?.[0]?.src?'<img src="'+bxEsc(a.photos[0].src)+'" alt="" loading="lazy" decoding="async">':'<span class="bx-noimg">RV</span>')
+ btn.innerHTML='<span class="bx-img">'+(rvThumb(a)?'<img src="'+bxEsc(rvThumb(a))+'" alt="" loading="lazy" decoding="async">':'<span class="bx-noimg">RV</span>')
   +'<span class="bx-st" data-status="'+rvSt+'"><i></i>'+bxEsc(statusLabel)+'</span>'+(age!==null&&!a.sale?'<span class="bx-age">'+age+' T</span>':'')+'</span>'
   +'<span class="bx-info"><span class="bx-sku">'+bxEsc([a.sku,a.location].filter(Boolean).join(' · ')||'Ohne Nummer')+'</span>'
   +'<span class="bx-name">'+bxEsc(name)+'</span><span class="bx-meta">'+bxEsc(meta)+'</span>'
@@ -639,7 +639,20 @@ async function rvHydratePhoto(p){if(!p?.src?.startsWith('r2:'))return p;
  const photo=await rvAPI('photo/'+encodeURIComponent(p.src.slice(3)));const data=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(r.error);r.readAsDataURL(photo)});
  return {...p,src:data};
 }
-async function rvUploadRecord(a){const clone=structuredClone(a);clone.photos=await Promise.all((clone.photos||[]).map(async p=>({...p,src:await rvUploadPhoto(clone.id,p.src)})));return clone}
+async function rvUploadRecord(a){const clone=structuredClone(rvSplitCover(a));clone.photos=await Promise.all((clone.photos||[]).map(async p=>({...p,src:await rvUploadPhoto(clone.id,p.src)})));
+ // RVO-Titelbild und Freistellung liegen getrennt von den Fotos und werden ebenfalls nach R2 ausgelagert.
+ if(clone.rvCover&&clone.rvCover.src)clone.rvCover={...clone.rvCover,src:await rvUploadPhoto(clone.id,clone.rvCover.src)};
+ if(clone.rvCutout&&clone.rvCutout.src)clone.rvCutout={...clone.rvCutout,src:await rvUploadPhoto(clone.id,await rvFitCutout(clone.rvCutout.src))};
+ return clone}
+async function rvHydrateRecord(a){a=rvSplitCover(a);a.photos=await Promise.all((a.photos||[]).map(rvHydratePhoto));if(a.rvCover)a.rvCover=await rvHydratePhoto(a.rvCover);if(a.rvCutout)a.rvCutout=await rvHydratePhoto(a.rvCutout);return a}
+// Große Freistellungen (> 7,5 MB) für die Cloud als WebP mit Transparenz speichern (R2-Limit 8 MB).
+async function rvFitCutout(src){if(typeof src!=='string'||!src.startsWith('data:')||src.length*0.75<7_500_000)return src;const im=await imageFrom(src),c=document.createElement('canvas');c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0);return c.toDataURL('image/webp',0.95)}
+// Alte Versionen speicherten das Titelbild als erstes Foto (cover:true). Getrennt halten: Fotos bleiben Fotos.
+function rvSplitCover(a){if(!a||!Array.isArray(a.photos)||!a.photos.some(p=>p&&p.cover))return a;const c=a.photos.find(p=>p&&p.cover);
+ a.rvCover=a.rvCover&&a.rvCover.src?a.rvCover:{src:c.src,engine:(a.coverSettings&&a.coverSettings.engine)||'',style:(a.coverSettings&&a.coverSettings.style)||'',bg:(a.coverSettings&&a.coverSettings.bg)||'',at:(a.coverSettings&&a.coverSettings.at)||'',migrated:true};
+ a.photos=a.photos.filter(p=>!(p&&p.cover));return a}
+// Bild für Listen: internes RVO-Titelbild, sonst erstes Originalfoto.
+function rvThumb(a){return (a&&a.rvCover&&a.rvCover.src)||(a&&a.photos&&(a.photos.find(p=>p&&p.cover)||a.photos[0])||{}).src||''}
 function rvCaptureConflict(id,reason='Artikel wurde auf einem anderen Gerät geändert.'){
  const m=rvReadJSON(rvConflictKey);m[id]={reason,date:new Date().toISOString()};rvPersist(rvConflictKey,m);rvRenderConflicts();
 }
@@ -684,7 +697,7 @@ async function rvResolveConflict(id,choice){
   const remote=await rvAPI('articles/'+encodeURIComponent(id));
   const revs=rvReadJSON(rvSyncRevsKey),q=rvReadJSON(rvSyncQueueKey);
   if(choice==='cloud'){
-   const a=remote.article;a.photos=await Promise.all((a.photos||[]).map(rvHydratePhoto));
+   const a=await rvHydrateRecord(remote.article);
    rvApplyingRemote=true;try{await store('readwrite',s=>s.put(a))}finally{rvApplyingRemote=false}
    revs[id]=remote.revision;delete q[id];rvPersist(rvSyncQueueKey,q);rvPersist(rvSyncRevsKey,revs);
   }else{
@@ -737,7 +750,7 @@ async function rvSync(){
    try{
     const result=await rvAPI('articles/'+encodeURIComponent(item.id));
     // Check once more: may have been edited while photo fetch was in flight.
-    const a=result.article;a.photos=await Promise.all((a.photos||[]).map(rvHydratePhoto));
+    const a=await rvHydrateRecord(result.article);
     if(rvReadJSON(rvSyncQueueKey)[item.id])continue;
     rvApplyingRemote=true;try{await store('readwrite',s=>s.put(a))}finally{rvApplyingRemote=false}
     revs[item.id]=result.revision;pulled++;
@@ -791,12 +804,13 @@ const SX_FEES_DEFAULT={ebay:{pct:0,fix:0,buf:10},vinted:{pct:0,fix:0,buf:15},ins
 const sxGet=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch{return d}};
 const sxSet=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
 const sxIcon=d=>'<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true">'+d+'</svg>';
-// V31.1: Früher hieß der einfache Freisteller „Auf dem Gerät“ (device). Alte Wahl einmalig auf Automatisch (= KI) umstellen.
-if(sxGet('rv_cutout_engine','auto')==='device')sxSet('rv_cutout_engine','auto');  // „Einfach“ gibt es nicht mehr zur Auswahl
+// V31.3: Standard-Freisteller ist Poof.bg. „Automatisch“ und „Einfach“ gibt es nicht mehr; Photoroom nur noch bei ausdrücklicher Wahl.
+if(['auto','device'].includes(sxGet('rv_cutout_engine','poof')))sxSet('rv_cutout_engine','poof');
 let sxCoverBusy=false,sxCoverMsg='',sxServerCutout=null,sxCutCache=null,sxAiCache=null;
 const sxClone=c=>{const n=document.createElement('canvas');n.width=c.width;n.height=c.height;n.getContext('2d').drawImage(c,0,0);return n};
 const sxSources=()=>article.photos.filter(p=>!p.cover);
-const sxCover=()=>article.photos[0]&&article.photos[0].cover?article.photos[0]:null;
+// Das RVO-Titelbild ist ausschließlich für die interne Bestandsliste und liegt getrennt von den Fotos (article.rvCover).
+const sxCover=()=>article&&article.rvCover&&article.rvCover.src?article.rvCover:null;
 function sxEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function sxToast(text){let t=$('sxToast');if(!t){t=document.createElement('div');t.id='sxToast';t.setAttribute('role','status');t.style.cssText='position:fixed;left:50%;bottom:170px;transform:translateX(-50%);z-index:60;padding:12px 18px;border-radius:999px;font:500 14px Segoe UI,Inter,system-ui,sans-serif;color:#fff0d6;background:radial-gradient(ellipse at 50% 0,rgba(255,160,80,.35),rgba(40,22,10,.92));box-shadow:inset 0 0 0 1.5px #ffb060,0 0 18px rgba(255,150,60,.5),0 12px 30px rgba(0,0,0,.5);transition:opacity .3s;pointer-events:none';document.body.append(t)}t.textContent=text;t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity='0',2200)}
 async function sxCopy(text,btn){try{await navigator.clipboard.writeText(text)}catch{prompt('Zum Kopieren markieren:',text);return}if(btn){const old=btn.innerHTML;btn.textContent='✓ Kopiert';setTimeout(()=>btn.innerHTML=old,1500)}else sxToast('✓ Kopiert')}
@@ -808,7 +822,7 @@ async function sxAddFiles(files){
  $('photoCount').textContent='Fotos werden geladen …';
  for(const f of list){try{const src=await shrink(await fileToData(f));article.photos.push({src,edit:defaults(),ratio:'1'})}catch{alert('Foto konnte nicht geladen werden: '+f.name)}}
  renderPhotos();
- if(sxGet('rv_cover_auto','1')==='1'&&!sxCover()&&!hadSources)sxMakeCover({source:0});
+ if(sxGet('rv_cover_auto','1')==='1'&&!sxCover()&&!hadSources)sxMakeCover({source:0,auto:true});
 }
 $('upload').onchange=async e=>{await sxAddFiles(e.target.files);e.target.value=''};
 $('sxCamera').onchange=async e=>{await sxAddFiles(e.target.files);e.target.value=''};
@@ -821,6 +835,11 @@ renderPhotos=function(){
  $('photoCount').textContent=n?n+(n===1?' Foto':' Fotos')+(sxCover()?' · Titelbild erstellt':''):'Noch keine Fotos ausgewählt';
  for(const id of ['photos','editPhotos']){
   const el=$(id);el.replaceChildren();let k=0;
+  const cv=sxCover();
+  if(cv){const d=document.createElement('div');d.className='sx-thumb cover';const img=document.createElement('img');img.src=cv.src;img.alt='RVO-Titelbild';img.loading='lazy';
+   const tag=document.createElement('span');tag.className='tag';tag.textContent='★ Titelbild';const bar=document.createElement('div');bar.className='bar';
+   const b=document.createElement('button');b.type='button';b.innerHTML='×';b.title='Titelbild entfernen';b.setAttribute('aria-label','Titelbild entfernen');b.onclick=()=>{if(!confirm('Titelbild entfernen? Die Originalfotos bleiben erhalten.'))return;article.rvCover=null;sxCoverMsg='';renderPhotos()};
+   bar.append(b);d.append(img,tag,bar);el.append(d)}
   article.photos.forEach((p,i)=>{
    const d=document.createElement('div');d.className='sx-thumb'+(p.cover?' cover':'');
    const img=document.createElement('img');img.src=p.src;img.alt=p.cover?'Titelbild':'Foto '+(k+1);img.loading='lazy';if(p.edit)img.style.filter=filter({...defaults(),...p.edit,blur:0});
@@ -849,62 +868,135 @@ async function sxServerCut(src){
  if(!res.ok||!j.image)throw Error(j.error||('Fehler '+res.status));
  sxServerCutout=true;sxCutCache={src,png:j.image};return j.image;
 }
+/* Freistellen (transparentes PNG) und Titelbild erstellen (Freistellung auf RVO-Hintergrund) sind getrennt.
+   Eine Freistellung wird je Foto wiederverwendet (am Artikel und im Gerätespeicher) – Stil/Hintergrund ändern kostet keinen Credit. */
+function sxEngineLabel(e){return {poof:'Poof.bg',ai:'KI auf dem Gerät',server:'Photoroom',original:'Original',device:'Einfach'}[e]||''}
+function sxEngineNow(){const e=sxGet('rv_cutout_engine','poof');return ['poof','ai','server','original'].includes(e)?e:'poof'}
+function sxPaid(e){return e==='poof'||e==='server'}
+var sxInflight=new Map(),sxPoofAccount=null;
+async function sxKeyOf(src){return 'c'+(await rvDigest(String(src))).slice(0,40)}
+async function sxCutStoreGet(key){try{const c=await caches.open('rv-cutouts'),r=await c.match('/__rv_cutout/'+key);return r?await r.json():null}catch{return null}}
+async function sxCutStorePut(v){try{const c=await caches.open('rv-cutouts');await c.put('/__rv_cutout/'+v.key,new Response(JSON.stringify(v),{headers:{'Content-Type':'application/json'}}))}catch{}}
+async function sxPoofCut(src){
+ const token=rvAiPassword();if(!token)throw Object.assign(Error('Cloud-Kennwort fehlt. Bitte unter Einstellungen › Cloud eintragen.'),{code:'no_password'});
+ const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),60000);let res;
+ try{res=await fetch(getAiEndpoint()+'/api/poof',{method:'POST',headers:{'Content-Type':'application/json','X-RV-Password':token},body:JSON.stringify({image:src}),signal:ctrl.signal})}
+ catch(e){throw Object.assign(Error(e.name==='AbortError'?'Zeitüberschreitung bei Poof. Es wurde vermutlich kein Credit berechnet.':'Keine Verbindung zum Server.'),{code:'network'})}
+ finally{clearTimeout(timer)}
+ const j=await res.json().catch(()=>({}));
+ if(!res.ok||!j.image)throw Object.assign(Error(j.error||('Fehler '+res.status)),{code:j.code||('http_'+res.status),status:res.status});
+ return {png:j.image,meta:{confidence:j.confidence??null,ambiguous:j.ambiguous??null,cached:!!j.cached,requestId:j.requestId||''}};
+}
+async function sxCanvasPng(c){return c.toDataURL('image/png')}
+/* Liefert die Freistellung für ein Foto. API nur, wenn allowApi (= ausdrücklicher Klick) und nichts im Speicher liegt. */
+async function sxEnsureCutout(si,{force=false,allowApi=false,engine=sxEngineNow()}={}){
+ const srcs=sxSources();if(!srcs[si])throw Error('Foto nicht gefunden');
+ const src=srcs[si].src,key=await sxKeyOf(src);
+ if(!force){
+  if(article.rvCutout&&article.rvCutout.key===key&&article.rvCutout.src)return article.rvCutout;
+  const c=await sxCutStoreGet(key);if(c&&c.src){article.rvCutout=c;return c}
+ }
+ if(engine==='original')return null;
+ if(sxPaid(engine)&&!allowApi)throw Object.assign(Error('Tippe auf „Titelbild erstellen“ oder „Nur freistellen“ – Poof wird nur auf Klick genutzt.'),{code:'needs_click'});
+ if(sxInflight.has(key))return sxInflight.get(key);
+ const job=(async()=>{
+  let png,meta={};
+  if(engine==='poof'){const r=await sxPoofCut(src);png=r.png;meta=r.meta}
+  else if(engine==='server'){png=await sxServerCut(src)}
+  else if(engine==='ai'){if(!window.RVAI||!RVAI.supported())throw Error('KI auf dem Gerät wird von diesem Browser nicht unterstützt.');let last=-9;
+   const c=await RVAI.cut(src,{onProgress:(f)=>{const pc=Math.round(f*100);if(pc-last>=2||pc===100||pc<last){last=pc;sxCoverMsg=pc<100?'KI-Modell wird einmalig geladen … '+pc+' %':'KI schneidet aus …';sxRenderCoverViews()}}});
+   png=await sxCanvasPng(c);meta={device:RVAI.device()}}
+  const v={src:png,key,engine,source:si,at:new Date().toISOString(),meta};
+  article.rvCutout=v;await sxCutStorePut(v);return v;
+ })();
+ sxInflight.set(key,job);
+ try{return await job}finally{sxInflight.delete(key)}
+}
+function sxErrText(e){
+ if(e&&e.code==='payment_required')return 'Deine Poof-Credits für diesen Monat sind aufgebraucht. Originalfotos und vorhandene Titelbilder bleiben erhalten. Du kannst unter „Freisteller“ auf „KI auf dem Gerät“ wechseln.';
+ return (e&&e.message)||'Unbekannter Fehler';
+}
+async function sxCutOnly({force=false}={}){
+ const srcs=sxSources();if(!srcs.length){sxCoverMsg='Bitte zuerst Fotos hochladen.';sxRenderCoverViews();return}
+ if(sxCoverBusy)return;
+ const si=Math.min((article.coverSettings||{}).source||0,srcs.length-1),engine=sxEngineNow();
+ if(engine==='original'){sxCoverMsg='Mit „Original“ wird nicht freigestellt. Bitte einen Freisteller wählen.';sxRenderCoverViews();return}
+ sxCoverBusy=true;sxCoverMsg=engine==='poof'?'Poof stellt frei …':'Wird freigestellt …';sxRenderCoverViews();
+ try{const c=await sxEnsureCutout(si,{force,allowApi:true,engine});sxCoverMsg='Freigestellt mit '+sxEngineLabel(c.engine)+(c.meta&&c.meta.cached?' (aus dem Zwischenspeicher, kein neuer Credit)':'')+'.';sxPoofRefresh()}
+ catch(e){sxCoverMsg='Freistellen fehlgeschlagen: '+sxErrText(e)}
+ finally{sxCoverBusy=false;sxRenderCoverViews()}
+}
 async function sxMakeCover(opts={}){
  const srcs=sxSources();if(!srcs.length){sxCoverMsg='Bitte zuerst Fotos hochladen.';sxRenderCoverViews();return}
  if(sxCoverBusy)return;
  const prev=article.coverSettings||{};let si=opts.source??prev.source??0;if(si>=srcs.length)si=0;
- const engine=sxGet('rv_cutout_engine','auto'),bg=opts.bg||prev.bg||sxGet('rv_cover_bg','sand'),style=opts.style||prev.style||sxGet('rv_cover_style','app'),tol=Number(opts.tolerance??prev.tolerance??0)||0;
- sxCoverBusy=true;sxCoverMsg=engine==='original'?'Titelbild wird zugeschnitten …':'Hintergrund wird entfernt …';sxRenderCoverViews();
+ const engine=sxEngineNow(),bg=opts.bg||prev.bg||sxGet('rv_cover_bg','sand'),style=opts.style||prev.style||sxGet('rv_cover_style','app');
+ // Automatisch nach dem Hochladen oder nur Stil/Hintergrund geändert: niemals einen kostenpflichtigen Aufruf auslösen.
+ const allowApi=!opts.auto&&!opts.restyle;
+ sxCoverBusy=true;sxCoverMsg=opts.restyle?'Titelbild wird neu gestaltet …':engine==='original'?'Titelbild wird zugeschnitten …':'Titelbild wird erstellt …';sxRenderCoverViews();
  try{
-  let cutoutPng=null,cutCanvas=null,note='';
-  const order=engine==='ai'?['ai']:engine==='server'?['server']:(engine==='device'||engine==='original')?[]:(window.RVAI&&RVAI.supported()?['ai','server']:['server']);
-  for(const k of order){
-   try{
-    if(k==='ai'){if(!window.RVAI||!RVAI.supported())throw Error('dieser Browser unterstützt den KI-Freisteller nicht');let last=0;
-     if(sxAiCache&&sxAiCache.src===srcs[si].src)cutCanvas=sxClone(sxAiCache.c);else{cutCanvas=await RVAI.cut(srcs[si].src,{onProgress:(f,t,m)=>{const pc=Math.round(f*100);if(pc-last>=2||pc===100||pc<last){last=pc;sxCoverMsg=pc<100?'KI-Modell wird einmalig geladen … '+pc+' %':'KI schneidet aus …';sxRenderCoverViews()}}});sxAiCache={src:srcs[si].src,c:sxClone(cutCanvas)}}}
-    else if(engine==='server'||(rvAiPassword()&&sxServerCutout!==false))cutoutPng=await sxServerCut(srcs[si].src);
-    if(cutCanvas||cutoutPng)break;
-   }catch(e){if(order.length===1||k==='ai')note=(k==='ai'?'KI auf dem Gerät: ':'Photoroom: ')+e.message+'. Anderer Freisteller verwendet.'}
+  let cut=null;
+  if(engine!=='original'){
+   try{cut=await sxEnsureCutout(si,{allowApi,engine})}
+   catch(e){
+    if(e.code==='needs_click'){
+     if(opts.restyle&&sxCover()){sxCoverMsg='Für dieses Foto gibt es noch keine Freistellung. Tippe auf „Titelbild erstellen“.';return}
+     if(opts.auto){sxCoverMsg='Fotos geladen. Tippe auf „Titelbild erstellen“ – Poof wird nur auf Klick genutzt.';return}
+    }
+    throw e;
+   }
   }
-  // Ohne KI-Ergebnis lieber das saubere Originalfoto als ein zerfranster Ausschnitt.
-  const useOriginal=engine==='original'||(!cutCanvas&&!cutoutPng);
-  if(useOriginal&&engine!=='original'&&!note)note='KI-Freisteller auf diesem Gerät nicht verfügbar.';
-  const r=await RVCutout.makeCover(srcs[si].src,{engine:useOriginal?'original':'cutout',bg,style,tolerance:tol,cutoutPng,cutCanvas});
-  const cover={src:r.src,edit:defaults(),ratio:'0.8',cover:true};
-  if(sxCover())article.photos[0]=cover;else article.photos.unshift(cover);
-  const warning=r.warning||note;
-  article.coverSettings={bg,style,source:si,tolerance:tol,engine:r.engine,warning,autoTolerance:r.tolerance||null,at:new Date().toISOString()};
-  if(r.engine!=='ai'&&engine!=='original'&&(note||r.warning))sxToast('KI nicht verfügbar – Originalfoto verwendet: '+(note||r.warning).slice(0,80));
-  sxCoverMsg=warning||({ai:'Mit KI auf dem Gerät freigestellt – ohne Upload.',server:'Mit Photoroom freigestellt.',device:'Einfach freigestellt (ohne KI).',original:'Originalfoto im Titelbild-Format zugeschnitten.'}[r.engine]||'');
- }catch(e){sxCoverMsg='Titelbild konnte nicht erstellt werden: '+e.message}
+  const useOriginal=!cut;
+  const r=await RVCutout.makeCover(srcs[si].src,{engine:useOriginal?'original':'cutout',bg,style,cutoutPng:useOriginal?null:cut.src,noRefine:cut&&cut.engine!=='ai'});
+  const used=useOriginal?'original':cut.engine;
+  article.rvCover={src:r.src,engine:used,style,bg,source:si,cutoutKey:cut?cut.key:null,at:new Date().toISOString()};
+  article.coverSettings={...prev,bg,style,source:si,engine:used,warning:r.warning||'',at:article.rvCover.at};
+  sxCoverMsg=r.warning||('Titelbild erstellt'+(used==='original'?' (Originalfoto, ohne Freistellung).':' – freigestellt mit '+sxEngineLabel(used)+(cut.meta&&cut.meta.cached?' (wiederverwendet, kein neuer Credit).':'.')));
+  if(allowApi&&sxPaid(engine))sxPoofRefresh();
+ }catch(e){sxCoverMsg='Titelbild konnte nicht erstellt werden: '+sxErrText(e)+(sxCover()?' Das bisherige Titelbild bleibt erhalten.':'')}
  finally{sxCoverBusy=false;renderPhotos()}
+}
+async function sxPoofRefresh(){
+ const token=rvAiPassword();if(!token||sxEngineNow()!=='poof'){sxPoofAccount=null;return}
+ try{const r=await fetch(getAiEndpoint()+'/api/poof',{headers:{'X-RV-Password':token}});const j=await r.json();sxPoofAccount=r.ok?j:null}catch{sxPoofAccount=null}
+ sxRenderCoverViews();
 }
 function sxCoverHtml(){
  const c=sxCover(),s=article.coverSettings||{};
- if(c){const label={ai:'KI freigestellt',server:'Photoroom',device:'Einfach freigestellt',original:'Original'}[s.engine]||'Titelbild';return '<img src="'+sxEsc(c.src)+'" alt="Titelbild"><span class="badge'+(s.warning?' warn':'')+'"><i></i>'+label+'</span>'}
- return '<div class="empty">'+sxIcon('<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/>')+(sxCoverBusy?'Hintergrund wird entfernt …':sxSources().length?'Noch kein Titelbild – „Neu erstellen“ antippen':'Lade Fotos hoch – das Titelbild entsteht automatisch')+'</div>';
+ if(c){const label=({poof:'Poof.bg',ai:'KI auf dem Gerät',server:'Photoroom',device:'Einfach freigestellt',original:'Original'}[c.engine||s.engine]||'Titelbild');return '<img src="'+sxEsc(c.src)+'" alt="Titelbild"><span class="badge'+(s.warning?' warn':'')+'"><i></i>'+label+'</span>'}
+ return '<div class="empty">'+sxIcon('<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/>')+(sxCoverBusy?'Titelbild wird erstellt …':sxSources().length?'Noch kein Titelbild – „Titelbild erstellen“ antippen':'Lade Fotos hoch und tippe auf „Titelbild erstellen“')+'</div>';
 }
 function sxRenderCoverViews(){
  if(!article)return;
  for(const id of ['sxCover','sxCoverLarge']){const el=$(id);if(!el)continue;el.innerHTML=sxCoverHtml();el.classList.toggle('busy',sxCoverBusy)}
- const s=article.coverSettings||{},bg=s.bg||sxGet('rv_cover_bg','sand'),engine=sxGet('rv_cutout_engine','auto'),style=s.style||sxGet('rv_cover_style','app');
+ const s=article.coverSettings||{},bg=s.bg||sxGet('rv_cover_bg','sand'),engine=sxEngineNow(),style=s.style||sxGet('rv_cover_style','app');
  $('sxStyle').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.style===style));$('sxSwWrap').style.display=style==='app'?'none':'';
- const sw=$('sxSwatches');sw.replaceChildren();for(const [key,[a,b,name]] of Object.entries(RVCutout.BACKDROPS)){const btn=document.createElement('button');btn.type='button';btn.title=name;btn.setAttribute('aria-label','Hintergrund '+name);btn.style.background='linear-gradient(180deg,'+a+','+b+')';btn.classList.toggle('on',key===bg);btn.onclick=()=>{sxSet('rv_cover_bg',key);article.coverSettings={...(article.coverSettings||{}),bg:key};if(sxCover())sxMakeCover({bg:key});else sxRenderCoverViews()};sw.append(btn)}
+ const sw=$('sxSwatches');sw.replaceChildren();for(const [key,[a,b,name]] of Object.entries(RVCutout.BACKDROPS)){const btn=document.createElement('button');btn.type='button';btn.title=name;btn.setAttribute('aria-label','Hintergrund '+name);btn.style.background='linear-gradient(180deg,'+a+','+b+')';btn.classList.toggle('on',key===bg);btn.onclick=()=>{sxSet('rv_cover_bg',key);article.coverSettings={...(article.coverSettings||{}),bg:key};if(sxCover())sxMakeCover({bg:key,restyle:true});else sxRenderCoverViews()};sw.append(btn)}
  const src=$('sxSources');src.replaceChildren();sxSources().forEach((p,i)=>{const btn=document.createElement('button');btn.type='button';btn.setAttribute('aria-label','Foto '+(i+1)+' als Ausgangsfoto');btn.classList.toggle('on',i===(s.source||0));btn.innerHTML='<img src="'+sxEsc(p.src)+'" alt="">';btn.onclick=()=>sxMakeCover({source:i});src.append(btn)});
  $('sxEngine').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.engine===engine));
  $('sxTolWrap').style.display='none';
  $('sxTol').value=s.tolerance||0;$('sxTolVal').textContent=s.tolerance?String(s.tolerance):('Automatisch'+(s.autoTolerance?' ('+s.autoTolerance+')':''));
  $('sxAutoCover').checked=sxGet('rv_cover_auto','1')==='1';
- $('sxCoverStatus').textContent=sxCoverMsg||(engine==='server'?'Nutzt Photoroom oder remove.bg über deinen Server (Secret PHOTOROOM_API_KEY oder REMOVE_BG_API_KEY).':engine==='ai'?'KI auf dem Gerät: kostenlos, ohne Upload. Beim ersten Mal wird das Modell einmalig geladen (ca. 90 MB, danach gespeichert).':engine==='auto'?'Automatisch: KI auf dem Gerät – bei Bedarf Photoroom oder der einfache Freisteller.':'');
- $('sxCoverMake').disabled=sxCoverBusy||!sxSources().length;$('sxCoverRemove').disabled=!sxCover();$('sxCoverRedo').disabled=sxCoverBusy||!sxSources().length;
+ const eng=sxEngineNow();
+ $('sxCoverStatus').textContent=sxCoverMsg||({poof:'Poof.bg stellt über deinen Server frei (1 Credit pro neuer Freistellung). Stil und Hintergrund ändern kostet nichts.',ai:'KI auf dem Gerät: kostenlos, ohne Upload. Beim ersten Mal wird das Modell einmalig geladen (ca. 90 MB).',server:'Photoroom über deinen Server – kostenpflichtig, nur bei ausdrücklicher Wahl.',original:'Originalfoto im Titelbild-Format, ohne Freistellung.'}[eng]||'');
+ for(const id of ['sxCoverMake','sxCoverRedo','sxCutMake'])if($(id))$(id).disabled=sxCoverBusy||!sxSources().length;
+ $('sxCoverRemove').disabled=sxCoverBusy||!sxCover();
+ const cut=article.rvCutout&&article.rvCutout.src?article.rvCutout:null;
+ $('sxCutView').hidden=!cut;if(cut){const im=$('sxCutImg').querySelector('img');if(!im||im.src!==cut.src)$('sxCutImg').innerHTML='<img src="'+sxEsc(cut.src)+'" alt="Freigestelltes Produkt">';$('sxCutView').querySelector('.sx-cut-lbl').textContent='Freigestellt mit '+sxEngineLabel(cut.engine)+' (transparent)'}
+ const acc=sxPoofAccount&&sxPoofAccount.account;
+ $('sxPoofInfo').textContent=eng!=='poof'?'':sxPoofAccount&&sxPoofAccount.available===false?'Poof ist auf dem Server noch nicht eingerichtet (Secret POOF_BG_API_KEY).':acc?('Poof '+acc.plan+': '+Math.max(0,acc.maxCredits-acc.usedCredits)+' von '+acc.maxCredits+' Credits übrig'):'';
  sxRenderPreview();
 }
 function sxRenderPreview(){if(!article)return;const first=article.photos[0],root=$('sxPreview');root.replaceChildren();
  for(const [name,ratio,label] of [['eBay','1/1','1:1'],['Vinted','3/4','3:4'],['Instagram','4/5','4:5']]){const f=document.createElement('figure');f.innerHTML='<div class="fr" style="aspect-ratio:'+ratio+'">'+(first?'<img src="'+sxEsc(first.src)+'" alt="">':'')+'</div><figcaption>'+name+'<small>'+label+'</small></figcaption>';if(first&&first.edit)f.querySelector('img').style.filter=filter({...defaults(),...first.edit,blur:0});root.append(f)}}
 $('sxCoverRedo').onclick=()=>sxMakeCover();$('sxCoverMake').onclick=()=>sxMakeCover();
-$('sxCoverRemove').onclick=()=>{if(!sxCover())return;article.photos.shift();article.coverSettings=null;sxCoverMsg='';renderPhotos()};
-$('sxStyle').onclick=e=>{const b=e.target.closest('[data-style]');if(!b)return;sxSet('rv_cover_style',b.dataset.style);article.coverSettings={...(article.coverSettings||{}),style:b.dataset.style};if(sxCover())sxMakeCover({style:b.dataset.style});else sxRenderCoverViews()};
-$('sxEngine').onclick=e=>{const b=e.target.closest('[data-engine]');if(!b)return;sxSet('rv_cutout_engine',b.dataset.engine);if(b.dataset.engine!=='auto')sxServerCutout=b.dataset.engine==='server'?null:sxServerCutout;if(sxCover())sxMakeCover();else sxRenderCoverViews()};
+$('sxCutMake').onclick=async()=>{const srcs=sxSources(),si=Math.min((article.coverSettings||{}).source||0,Math.max(0,srcs.length-1));if(!srcs.length)return sxCutOnly();const key=await sxKeyOf(srcs[si].src),has=(article.rvCutout&&article.rvCutout.key===key)||await sxCutStoreGet(key);
+ if(has&&sxPaid(sxEngineNow())&&!confirm('Dieses Foto ist schon freigestellt. Erneut freistellen verbraucht 1 Credit. Fortfahren?')){await sxEnsureCutout(si,{allowApi:false}).catch(()=>{});sxRenderCoverViews();return}
+ sxCutOnly({force:!!has})};
+$('sxCutDownload').onclick=()=>{const c=article.rvCutout;if(!c||!c.src)return;const a=document.createElement('a');a.href=c.src;a.download=(article.sku||'artikel')+'_freigestellt.png';document.body.append(a);a.click();a.remove()};
+$('sxCoverRemove').onclick=()=>{if(!sxCover())return;if(!confirm('Titelbild entfernen? Die Originalfotos bleiben erhalten.'))return;article.rvCover=null;sxCoverMsg='';renderPhotos()};
+$('sxStyle').onclick=e=>{const b=e.target.closest('[data-style]');if(!b)return;sxSet('rv_cover_style',b.dataset.style);article.coverSettings={...(article.coverSettings||{}),style:b.dataset.style};if(sxCover())sxMakeCover({style:b.dataset.style,restyle:true});else sxRenderCoverViews()};
+$('sxEngine').onclick=e=>{const b=e.target.closest('[data-engine]');if(!b)return;sxSet('rv_cutout_engine',b.dataset.engine);sxServerCutout=null;sxCoverMsg='';sxRenderCoverViews();if(b.dataset.engine==='poof')sxPoofRefresh()};  // Wechsel löst keinen Aufruf aus
 $('sxTol').oninput=()=>{$('sxTolVal').textContent=+$('sxTol').value?$('sxTol').value:'Automatisch'};
 $('sxTol').onchange=()=>{article.coverSettings={...(article.coverSettings||{}),tolerance:+$('sxTol').value};sxMakeCover({tolerance:+$('sxTol').value})};
 $('sxAutoCover').onchange=()=>sxSet('rv_cover_auto',$('sxAutoCover').checked?'1':'0');
@@ -1084,7 +1176,7 @@ function stFill(){const s=stAll();
  sxRenderFees($('stFees'));
  $('stCoverAuto').checked=sxGet('rv_cover_auto','1')==='1';
  const bg=sxGet('rv_cover_bg','sand'),sw=$('stBg');sw.replaceChildren();for(const [key,[a,b,name]] of Object.entries(RVCutout.BACKDROPS)){const btn=document.createElement('button');btn.type='button';btn.title=name;btn.setAttribute('aria-label','Hintergrund '+name);btn.style.background='linear-gradient(180deg,'+a+','+b+')';btn.classList.toggle('on',key===bg);btn.onclick=()=>{sxSet('rv_cover_bg',key);stFill();sxToast('Standard-Hintergrund: '+name)};sw.append(btn)}
- const eng=sxGet('rv_cutout_engine','auto');$('stEngine').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.engine===eng));
+ const eng=sxEngineNow();$('stEngine').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.engine===eng));
  const view=sxGet('rv_stock_view','grid')==='list'?'list':'grid';$('stStockView').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
  $('stAiToken').value=$('token').value||sessionStorage.getItem('rv_token')||'';
  updateAiConnectionLabels();stRenderPersist();stRenderInfo();stRenderMetrics();}
@@ -1201,7 +1293,7 @@ function inTips(sales,all){const tips=[],avail=all.filter(v5Available),stale=Num
  const root=$('inTips');root.replaceChildren();for(const [ic,t,d,act] of tips){const c=document.createElement('div');c.className='in-tipcard';c.innerHTML='<span class="mi">'+sxIcon(ic)+'</span><div><b>'+sxEsc(t)+'</b><p>'+sxEsc(d)+'</p></div>';if(act){const b=document.createElement('button');b.type='button';b.className='sx-btn';b.textContent=act[0];b.onclick=act[1];c.append(b)}root.append(c)}}
 function inRenderSales(sales){const list=[...sales].sort((a,b)=>inSaleTime(b)-inSaleTime(a)),root=$('inSales');root.replaceChildren();$('inSalesSub').textContent=list.length?list.length+(list.length===1?' Verkauf':' Verkäufe')+' im Zeitraum':'Keine Verkäufe im Zeitraum';
  for(const a of list.slice(0,12)){const b=document.createElement('button');b.type='button';b.className='in-sale';const p=bxProfit(a);
-  b.innerHTML=(a.photos?.[0]?.src?'<img src="'+sxEsc(a.photos[0].src)+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+sxEsc([a.brand,a.model].filter(Boolean).join(' ')||a.sku||'Artikel')+'</b><small><i style="background:'+inPfColor(a.sale.platform)+'"></i>'+sxEsc(inPfName(a.sale.platform))+' · '+new Date(inSaleTime(a)).toLocaleDateString('de-DE')+(inDays(a)!==null?' · nach '+inDays(a)+' T':'')+'</small></span><span class="pr"><b>'+euro(a.sale.price)+'</b><small class="'+(p<0?'neg':'pos')+'">'+(p>=0?'+':'')+euro(p)+'</small></span>';
+  b.innerHTML=(rvThumb(a)?'<img src="'+sxEsc(rvThumb(a))+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+sxEsc([a.brand,a.model].filter(Boolean).join(' ')||a.sku||'Artikel')+'</b><small><i style="background:'+inPfColor(a.sale.platform)+'"></i>'+sxEsc(inPfName(a.sale.platform))+' · '+new Date(inSaleTime(a)).toLocaleDateString('de-DE')+(inDays(a)!==null?' · nach '+inDays(a)+' T':'')+'</small></span><span class="pr"><b>'+euro(a.sale.price)+'</b><small class="'+(p<0?'neg':'pos')+'">'+(p>=0?'+':'')+euro(p)+'</small></span>';
   b.onclick=()=>openStockDetail(a.id);root.append(b)}
  if(list.length>12){const m=document.createElement('p');m.className='sx-hint';m.textContent='+ '+(list.length-12)+' weitere – vollständige Liste über „Tabelle exportieren“.';root.append(m)}}
 async function inRender(){const all=await allArticles(),sales=all.filter(a=>a.sale&&a.articleStatus==='Verkauft'&&inSaleTime(a)!==null),r=inRange(all);
@@ -1288,12 +1380,12 @@ $('chatClear').onclick=()=>{if(chHistory.length&&!confirm('Neuen Chat beginnen? 
 /* Artikel als Kontext */
 async function chSetCtx(id){chCtxId=id;const box=$('chCtx');if(!id){box.hidden=true;box.replaceChildren();return}
  const a=(await allArticles()).find(x=>x.id===id);if(!a){chSetCtx(null);return}
- box.hidden=false;box.innerHTML=(a.photos?.[0]?.src?'<img src="'+sxEsc(a.photos[0].src)+'" alt="">':'')+'<span class="nm"><b>'+sxEsc([a.brand,a.model].filter(Boolean).join(' ')||a.sku||'Artikel')+'</b><small>'+sxEsc([a.sku,a.size&&'Gr. '+a.size,a.articleStatus].filter(Boolean).join(' · '))+'</small></span><span class="asks"></span><button type="button" class="ch-x" aria-label="Artikel entfernen">×</button>';
+ box.hidden=false;box.innerHTML=(rvThumb(a)?'<img src="'+sxEsc(rvThumb(a))+'" alt="">':'')+'<span class="nm"><b>'+sxEsc([a.brand,a.model].filter(Boolean).join(' ')||a.sku||'Artikel')+'</b><small>'+sxEsc([a.sku,a.size&&'Gr. '+a.size,a.articleStatus].filter(Boolean).join(' · '))+'</small></span><span class="asks"></span><button type="button" class="ch-x" aria-label="Artikel entfernen">×</button>';
  const asks=box.querySelector('.asks');for(const [t,q] of CH_CTX_ASK){const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>chSend(q);asks.append(b)}
  box.querySelector('.ch-x').onclick=()=>chSetCtx(null)}
 async function chPickerRender(){const term=$('chPickerSearch').value.trim().toLowerCase(),items=(await allArticles()).filter(a=>!a.archivedAt).filter(a=>!term||[a.sku,a.brand,a.model,a.category,a.size].join(' ').toLowerCase().includes(term)).reverse().slice(0,40),root=$('chPickerList');root.replaceChildren();
  if(!items.length){root.innerHTML='<p class="sx-hint">Keine passenden Artikel.</p>';return}
- for(const a of items){const b=document.createElement('button');b.type='button';b.className='ch-pick';b.innerHTML=(a.photos?.[0]?.src?'<img src="'+sxEsc(a.photos[0].src)+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+sxEsc([a.brand,a.model].filter(Boolean).join(' ')||a.sku||'Artikel')+'</b><small>'+sxEsc([a.sku,a.category,a.size&&'Gr. '+a.size].filter(Boolean).join(' · '))+'</small></span><span class="st">'+sxEsc(a.articleStatus||'Entwurf')+'</span>';b.onclick=()=>{chSetCtx(a.id);$('chPicker').hidden=true;$('chatInput').focus()};root.append(b)}}
+ for(const a of items){const b=document.createElement('button');b.type='button';b.className='ch-pick';b.innerHTML=(rvThumb(a)?'<img src="'+sxEsc(rvThumb(a))+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+sxEsc([a.brand,a.model].filter(Boolean).join(' ')||a.sku||'Artikel')+'</b><small>'+sxEsc([a.sku,a.category,a.size&&'Gr. '+a.size].filter(Boolean).join(' · '))+'</small></span><span class="st">'+sxEsc(a.articleStatus||'Entwurf')+'</span>';b.onclick=()=>{chSetCtx(a.id);$('chPicker').hidden=true;$('chatInput').focus()};root.append(b)}}
 $('chCtxBtn').onclick=()=>{$('chPicker').hidden=false;$('chPickerSearch').value='';chPickerRender();setTimeout(()=>$('chPickerSearch').focus(),50)};
 $('chPickerSearch').addEventListener('input',chPickerRender);
 $('chPickerClose').onclick=()=>{$('chPicker').hidden=true};
@@ -1324,7 +1416,7 @@ $('rvTopHome').onclick=()=>{showHome();window.scrollTo(0,0)};
 const HM_QUICK=[['photo','<path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>','Artikel fotografieren'],['new','<path d="M12 5v14M5 12h14"/>','Neuen Artikel anlegen'],['purchases','<path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9.5" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>','Einkauf erfassen'],['sell','<path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/>','Artikel verkaufen'],['scan','<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8"/>','Barcode scannen'],['stats','<path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/>','Statistiken anzeigen']];
 const HM_PROMPTS=[['Artikel bewerten','Bewerte meinen aktuellen Bestand'],['Verkaufstext','Erstelle einen Verkaufstext für meinen neuesten Artikel'],['Preisempfehlung','Welche Preise soll ich anpassen?'],['Lager optimieren','Wie kann ich mein Lager optimieren?'],['Ideen & Strategien','Gib mir Ideen und Strategien für mein Reselling-Business']];
 const hmName=a=>[a.brand,a.model].filter(Boolean).join(' ')||[a.brand,a.category].filter(Boolean).join(' ')||a.sku||'Artikel';
-const hmImg=a=>a.photos?.[0]?.src?'<img src="'+sxEsc(a.photos[0].src)+'" alt="" loading="lazy">':'<span class="ph">RV</span>';
+const hmImg=a=>rvThumb(a)?'<img src="'+sxEsc(rvThumb(a))+'" alt="" loading="lazy">':'<span class="ph">RV</span>';
 function hmWhen(t){const d=new Date(t),now=new Date(),day=Math.round((new Date(now.getFullYear(),now.getMonth(),now.getDate())-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/DAY),hm=d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});return day===0?'Heute, '+hm:day===1?'Gestern, '+hm:day<7?d.toLocaleDateString('de-DE',{weekday:'long'}):d.toLocaleDateString('de-DE')}
 function hmRange(p){const now=Date.now();if(p==='today'){const s=new Date();s.setHours(0,0,0,0);return {s:s.getTime(),e:now,prev:[s.getTime()-DAY,s.getTime()]}}if(p==='all')return {s:0,e:now,prev:null};const len=Number(p)*DAY;return {s:now-len,e:now,prev:[now-2*len,now-len]}}
 function hmSeries(sales,p,f){const now=Date.now(),n=p==='today'?6:p==='7'?7:p==='30'?10:12,out=Array(n).fill(0);let start;
@@ -1353,7 +1445,7 @@ async function hmRender(){if(!$('hmRoot'))return;const all=await allArticles(),s
  // Kategorien mit Bild
  const cg=new Map();for(const a of avail){const k=a.category||'Sonstiges';if(!cg.has(k))cg.set(k,[]);cg.get(k).push(a)}
  const cats=[...cg.entries()].sort((x,y)=>y[1].length-x[1].length).slice(0,6);
- $('hmCatTiles').innerHTML=cats.length?cats.map(([k,l])=>{const pic=l.find(a=>a.photos?.[0]?.src);return '<button type="button" class="hm-cattile" data-cat="'+sxEsc(k)+'">'+(pic?'<img src="'+sxEsc(pic.photos[0].src)+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<b>'+sxEsc(k)+'</b><small>'+l.length+' Artikel</small></button>'}).join(''):'<p class="hm-empty">Noch keine Artikel im Lager.</p>';
+ $('hmCatTiles').innerHTML=cats.length?cats.map(([k,l])=>{const pic=l.find(a=>rvThumb(a));return '<button type="button" class="hm-cattile" data-cat="'+sxEsc(k)+'">'+(pic?'<img src="'+sxEsc(rvThumb(pic))+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<b>'+sxEsc(k)+'</b><small>'+l.length+' Artikel</small></button>'}).join(''):'<p class="hm-empty">Noch keine Artikel im Lager.</p>';
  hmRenderPerf(all,sales);hmRenderTasks(all,sales,avail);hmRenderTrends(sales);
  $('homeAiInput').placeholder=innerWidth<560?'Frag mich etwas …':'Frag deinen KI-Assistenten …';$('hmAiHello').textContent=stAll().name?'Hallo '+stAll().name+'! 👋':'Hallo! 👋';
  document.querySelectorAll('#hmRoot [data-open]').forEach(b=>b.onclick=()=>openStockDetail(b.dataset.open));
@@ -1396,7 +1488,7 @@ function hmRenderTrends(sales){const now=Date.now(),cur=sales.filter(a=>inSaleTi
  const rows=[...m.entries()].sort((x,y)=>y[1].rev-x[1].rev).slice(0,4),root=$('hmTrends');
  if(!rows.length){root.innerHTML='<p class="hm-empty">Sobald du in den letzten 30 Tagen verkaufst, siehst du hier deine stärksten Marken.</p>';return}
  root.innerHTML=rows.map(([k,o])=>{const d=o.prev?Math.round((o.n-o.prev)/o.prev*100):null,max=Math.max(1,...o.wk),pts=o.wk.map((v,i)=>(i*12).toFixed(0)+','+(22-v/max*18).toFixed(1)).join(' ');
-  const pic=sales.find(a=>key(a)===k&&a.photos?.[0]?.src);return '<div class="hm-trend">'+(pic?'<img src="'+sxEsc(pic.photos[0].src)+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+sxEsc(k)+'</b><small>'+o.n+(o.n===1?' Verkauf':' Verkäufe')+' · '+euro(o.rev)+'</small></span><svg class="sp" viewBox="0 0 60 24" aria-hidden="true"><polyline points="'+pts+'" fill="none" stroke="#2aa57a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg><span class="dl '+(d===null?'new':d<0?'neg':'')+'">'+(d===null?'neu':(d>=0?'+':'')+d+' %')+'</span></div>'}).join('')}
+  const pic=sales.find(a=>key(a)===k&&rvThumb(a));return '<div class="hm-trend">'+(pic?'<img src="'+sxEsc(rvThumb(pic))+'" alt="" loading="lazy">':'<span class="ph">RV</span>')+'<span class="nm"><b>'+sxEsc(k)+'</b><small>'+o.n+(o.n===1?' Verkauf':' Verkäufe')+' · '+euro(o.rev)+'</small></span><svg class="sp" viewBox="0 0 60 24" aria-hidden="true"><polyline points="'+pts+'" fill="none" stroke="#2aa57a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg><span class="dl '+(d===null?'new':d<0?'neg':'')+'">'+(d===null?'neu':(d>=0?'+':'')+d+' %')+'</span></div>'}).join('')}
 $('hmQuick').innerHTML=HM_QUICK.map(([k,ic,l])=>'<button type="button" class="bx-q hm-q" data-q="'+k+'"><span class="ic">'+sxIcon(ic)+'</span><span class="lb">'+l+'</span></button>').join('');
 $('hmQuick').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const k=b.dataset.q;if(k==='new'){article=blank();sxCoverMsg='';push();showStep(0)}else if(k==='purchases')TOP_GO.purchases();else hmOld(k)});
 $('hmPrompts').innerHTML='';for(const [l,q] of HM_PROMPTS){const b=document.createElement('button');b.type='button';b.textContent=l;b.onclick=()=>document.dispatchEvent(new CustomEvent('rv:ai-request',{detail:{message:q}}));$('hmPrompts').append(b)}
@@ -1568,6 +1660,20 @@ function showSniper(){closeStockDetail&&closeStockDetail();hidePrimaryViews();$(
 {const prev=showStep;showStep=function(n){$('sniper')&&$('sniper').classList.add('hidden');return prev.apply(this,arguments)}}
 TOP_GO.snipe=showSniper;
 snLoad();snBind();snRender();snRenderLink();setTimeout(snPing,700);snSchedule(8000);
+// ===================== V31.3: RVO-Titelbild getrennt von den Fotos =====================
+// Einmalig: alte Titelbilder (erstes Foto mit cover:true) in article.rvCover verschieben. Originalfotos bleiben unverändert.
+(async()=>{try{
+ if(sxGet('rv_cover_split_v313','')==='1')return;
+ for(let i=0;i<100&&!db;i++)await new Promise(r=>setTimeout(r,100));
+ if(!db)return;
+ const all=await allArticles();let n=0;
+ for(const a of all){if(Array.isArray(a.photos)&&a.photos.some(p=>p&&p.cover)){rvSplitCover(a);await store('readwrite',st=>st.put(a));n++}}
+ sxSet('rv_cover_split_v313','1');
+ if(n)window.dispatchEvent(new Event('rv:data-changed'));
+}catch(e){console.warn('Titelbild-Umzug',e)}})();
+// Beim Öffnen eines Artikels im Studio ebenfalls trennen (z. B. aus einem alten Backup).
+{const prevPush=push;push=function(){if(article)rvSplitCover(article);return prevPush.apply(this,arguments)}}
+setTimeout(()=>{try{sxPoofRefresh()}catch{}},1500);
 // Externe Datenänderungen (z. B. Beispielartikel laden/entfernen) neu anzeigen.
 window.addEventListener('rv:data-changed',()=>{renderLibrary().catch(()=>{});try{renderHome()}catch(e){}});
 })();

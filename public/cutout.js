@@ -268,7 +268,7 @@
     if (opts.cutoutPng) {
       var cimg = await loadImage(opts.cutoutPng), cc = canvas(cimg.naturalWidth, cimg.naturalHeight); cc.getContext('2d').drawImage(cimg, 0, 0);
       var b = alphaBox(cc);
-      if (b && b.coverage > 0.02) { result.src = compose(refine(cc), b, opts.bg, opts.style); result.engine = 'server'; return result; }
+      if (b && b.coverage > 0.02) { result.src = compose(opts.noRefine ? cc : refine(cc), b, opts.bg, opts.style); result.engine = 'server'; return result; }
       result.warning = 'Der KI-Server hat kein Motiv gefunden – Freisteller auf dem Gerät verwendet.';
     }
     var m = deviceMask(img, opts.tolerance || 0);

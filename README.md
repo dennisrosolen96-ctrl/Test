@@ -1,4 +1,6 @@
-# RV Studio V31 — Command Center
+# RV Studio V31.3 — Command Center
+
+Neu in V31.3 (Details: [UEBERGABE-V31.3.md](UEBERGABE-V31.3.md)): Internes RVO-Titelbild getrennt von Fotos und Plattformbildern, Freistellen mit Poof.bg über geschützten Server-Endpunkt, Freistellung wird wiederverwendet (kein doppelter Credit).
 
 Neu in V31 (Details: [UEBERGABE-V31.md](UEBERGABE-V31.md)): Titelbild-Studio mit KI-Freisteller auf dem Gerät (kostenlos, ohne Upload), drei Stile (Studio, App-Look, Sticker), bessere Kanten und Fremdteil-Entfernung.
 

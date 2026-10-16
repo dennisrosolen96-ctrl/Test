@@ -1,6 +1,6 @@
 {
   "scope": "Isolierte API-Vertragstests mit in-memory D1/R2 und gemocktem KI-fetch. Keine echten Cloudflare- oder Provider-Zugriffe.",
-  "passed": 17,
+  "passed": 18,
   "failed": 0,
   "knownLimits": [
     "Ungültiges vom Provider erzeugtes Listing-JSON liefert aktuell HTTP 200 mit leeren Listings; der Test dokumentiert diesen bestehenden API-Vertrag.",
@@ -73,6 +73,10 @@
     },
     {
       "name": "Freisteller: ohne Dienst 501, mit Photoroom/remove.bg PNG als Data-URL, Schlüssel nur serverseitig",
+      "result": "passed"
+    },
+    {
+      "name": "Poof.bg: geschützt, Typ/Größe geprüft, Schlüssel nur serverseitig, Fehler/Timeout/Limit sauber, kein Doppel-Credit",
       "result": "passed"
     }
   ]

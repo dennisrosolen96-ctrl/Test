@@ -153,11 +153,107 @@ async function handleCutout(request, env){
   const out=new Uint8Array(await res.arrayBuffer());
   return json({image:'data:image/png;base64,'+bytesToBase64(out),provider});
 }
+// ---------- Poof.bg: Freisteller für das interne RVO-Titelbild ----------
+// Der Schlüssel (POOF_BG_API_KEY) wird nur hier aus der Cloudflare-Umgebung gelesen, nie geloggt und nie zurückgegeben.
+// Schutz: RV-Kennwort (wie alle Cloud-Routen), Typ-/Größenprüfung, Zeitlimit, Rate-Limit, keine Wiederholungen,
+// identische Bilder werden aus dem Cloudflare-Cache beantwortet (kein zweiter Credit).
+const POOF_URL='https://api.poof.bg/v1/remove', POOF_ME='https://api.poof.bg/v1/me';
+const POOF_MAX_BYTES=20_000_000, POOF_TIMEOUT_MS=45_000;
+const poofMemory={hits:[]};
+function sniffImage(b){
+  if(b.length>3&&b[0]===0xff&&b[1]===0xd8&&b[2]===0xff)return 'image/jpeg';
+  if(b.length>8&&b[0]===0x89&&b[1]===0x50&&b[2]===0x4e&&b[3]===0x47)return 'image/png';
+  if(b.length>12&&b[0]===0x52&&b[1]===0x49&&b[2]===0x46&&b[3]===0x46&&b[8]===0x57&&b[9]===0x45&&b[10]===0x42&&b[11]===0x50)return 'image/webp';
+  return '';
+}
+async function sha256Hex(buf){const h=new Uint8Array(await crypto.subtle.digest('SHA-256',buf));return [...h].map(x=>x.toString(16).padStart(2,'0')).join('')}
+// Ratenbegrenzung: bevorzugt dauerhaft in D1, sonst pro Worker-Instanz im Speicher.
+async function poofRateCheck(env){
+  const perMin=Math.max(1,Number(env.POOF_MAX_PER_MINUTE)||4), perDay=Math.max(1,Number(env.POOF_MAX_PER_DAY)||50), now=Date.now();
+  if(env.RV_DB){
+    try{
+      await env.RV_DB.prepare('CREATE TABLE IF NOT EXISTS poof_calls (ts INTEGER NOT NULL)').run();
+      const row=await env.RV_DB.prepare('SELECT SUM(CASE WHEN ts>? THEN 1 ELSE 0 END) AS m, COUNT(*) AS d FROM poof_calls WHERE ts>?').bind(now-60_000,now-86_400_000).first();
+      if((row?.m||0)>=perMin)return {ok:false,error:'Zu viele Freistellungen pro Minute. Bitte kurz warten.',code:'rate_limit_local'};
+      if((row?.d||0)>=perDay)return {ok:false,error:'Tageslimit für Freistellungen erreicht ('+perDay+'). Morgen geht es weiter oder das Limit in POOF_MAX_PER_DAY anheben.',code:'daily_limit'};
+      await env.RV_DB.prepare('INSERT INTO poof_calls (ts) VALUES (?)').bind(now).run();
+      await env.RV_DB.prepare('DELETE FROM poof_calls WHERE ts<?').bind(now-2*86_400_000).run();
+      return {ok:true};
+    }catch(e){/* D1 nicht verfügbar: Speicher-Variante */}
+  }
+  poofMemory.hits=poofMemory.hits.filter(t=>t>now-86_400_000);
+  if(poofMemory.hits.filter(t=>t>now-60_000).length>=perMin)return {ok:false,error:'Zu viele Freistellungen pro Minute. Bitte kurz warten.',code:'rate_limit_local'};
+  if(poofMemory.hits.length>=perDay)return {ok:false,error:'Tageslimit für Freistellungen erreicht ('+perDay+').',code:'daily_limit'};
+  poofMemory.hits.push(now);return {ok:true};
+}
+const POOF_ERRORS={
+  payment_required:[402,'Deine Poof-Credits für diesen Monat sind aufgebraucht. Originalfotos und vorhandene Titelbilder bleiben erhalten.'],
+  authentication_error:[502,'Poof-Schlüssel ungültig. Bitte POOF_BG_API_KEY in Cloudflare prüfen.'],
+  permission_denied:[502,'Diese Poof-Funktion ist in deinem Tarif nicht enthalten.'],
+  rate_limit_exceeded:[429,'Poof-Limit pro Minute erreicht. Bitte in einer Minute erneut versuchen.'],
+  image_too_large:[413,'Das Foto ist zu groß (max. 20 MB).'],
+  invalid_image:[422,'Poof konnte das Foto nicht lesen. Bitte JPEG, PNG oder WebP verwenden.'],
+  validation_error:[400,'Poof hat die Anfrage abgelehnt (ungültige Parameter).'],
+  missing_image:[400,'Kein Foto übertragen.'],
+  processing_failed:[502,'Poof konnte dieses Foto nicht freistellen. Bitte ein anderes Foto versuchen.'],
+  upstream_error:[503,'Poof ist gerade nicht erreichbar. Bitte später erneut versuchen.'],
+  internal_server_error:[503,'Poof hatte einen Serverfehler. Bitte später erneut versuchen.']
+};
+async function handlePoof(request, env, ctx){
+  const key=env.POOF_BG_API_KEY;
+  if(request.method==='GET'){
+    if(!key)return json({available:false});
+    try{
+      const r=await fetch(POOF_ME,{headers:{'x-api-key':key},signal:AbortSignal.timeout(10_000)});
+      if(!r.ok)return json({available:true,account:null,status:r.status});
+      const a=await r.json();
+      return json({available:true,account:{plan:String(a.plan||''),maxCredits:Number(a.maxCredits)||0,usedCredits:Number(a.usedCredits)||0}});
+    }catch(e){return json({available:true,account:null})}
+  }
+  if(!key)return json({error:'Poof ist noch nicht eingerichtet.',detail:'Secret POOF_BG_API_KEY in Cloudflare Pages setzen.',code:'not_configured'},501);
+  const len=Number(request.headers.get('Content-Length')||0);
+  if(len>POOF_MAX_BYTES*1.4+4096)return json({error:'Das Foto ist zu groß (max. 20 MB).',code:'image_too_large'},413);
+  const data=await request.json().catch(()=>null);
+  const part=base64Parts(data?.image);
+  if(!part)return json({error:'Foto ungültig. Erlaubt sind JPEG, PNG und WebP.',code:'invalid_image'},415);
+  let raw;try{raw=Uint8Array.from(atob(part.data),c=>c.charCodeAt(0))}catch{return json({error:'Foto ungültig.',code:'invalid_image'},415)}
+  if(!raw.byteLength||raw.byteLength>POOF_MAX_BYTES)return json({error:'Das Foto ist zu groß (max. 20 MB).',code:'image_too_large'},413);
+  const type=sniffImage(raw);
+  if(!type)return json({error:'Foto ungültig. Erlaubt sind JPEG, PNG und WebP.',code:'invalid_image'},415);
+  // Gleiches Bild schon freigestellt? Dann ohne neuen Credit aus dem Cache.
+  const hash=await sha256Hex(raw), cacheKey=new Request('https://rv-cache.invalid/poof/'+hash);
+  const cache=typeof caches!=='undefined'&&caches.default?caches.default:null;
+  if(cache){const hit=await cache.match(cacheKey).catch(()=>null);if(hit){const j=await hit.json().catch(()=>null);if(j&&j.image)return json({...j,cached:true})}}
+  const rate=await poofRateCheck(env);
+  if(!rate.ok)return json({error:rate.error,code:rate.code},429);
+  const form=new FormData();
+  form.append('image_file',new Blob([raw],{type}),'foto.'+(type==='image/png'?'png':type==='image/webp'?'webp':'jpg'));
+  form.append('format','png');form.append('size','full');
+  let res;
+  try{res=await fetch(POOF_URL,{method:'POST',headers:{'x-api-key':key},body:form,signal:AbortSignal.timeout(POOF_TIMEOUT_MS)})}
+  catch(e){const to=e&&(e.name==='TimeoutError'||e.name==='AbortError');return json({error:to?'Poof hat nicht rechtzeitig geantwortet. Es wurde kein Credit berechnet.':'Poof ist nicht erreichbar.',code:to?'timeout':'network'},504)}
+  if(!res.ok){
+    let body=null;try{body=await res.json()}catch{}
+    const code=String(body?.code||''), map=POOF_ERRORS[code];
+    const status=map?map[0]:(res.status===402?402:res.status===429?429:res.status>=500?503:502);
+    const msg=map?map[1]:(res.status===402?POOF_ERRORS.payment_required[1]:'Poof-Fehler ('+res.status+').');
+    return json({error:msg,code:code||('http_'+res.status),requestId:String(body?.request_id||res.headers.get('X-Request-ID')||'')},status);
+  }
+  const ct=res.headers.get('Content-Type')||'';
+  const out=new Uint8Array(await res.arrayBuffer());
+  if(!ct.startsWith('image/png')||sniffImage(out)!=='image/png')return json({error:'Poof hat kein PNG geliefert.',code:'bad_output'},502);
+  const result={image:'data:image/png;base64,'+bytesToBase64(out),engine:'poof',
+    width:Number(res.headers.get('X-Image-Width'))||0,height:Number(res.headers.get('X-Image-Height'))||0,
+    confidence:Number(res.headers.get('X-Matte-Confidence'))||null,ambiguous:Number(res.headers.get('X-Matte-Ambiguous-Ratio'))||null,
+    requestId:String(res.headers.get('X-Request-ID')||'')};
+  if(cache){const put=cache.put(cacheKey,new Response(JSON.stringify(result),{headers:{'Content-Type':'application/json','Cache-Control':'private, max-age=604800'}})).catch(()=>{});if(ctx&&ctx.waitUntil)ctx.waitUntil(put)}
+  return json(result);
+}
 export async function onRequest(context){
   const { request, env } = context;
   const url = new URL(request.url);
   const sub = url.pathname.replace(/^\/api\/?/, '').split('/').filter(Boolean);
-  const protectedRoutes = new Set(['ping','articles','photo','meta','ai-chat','listing','cutout']);
+  const protectedRoutes = new Set(['ping','articles','photo','meta','ai-chat','listing','cutout','poof']);
   if (protectedRoutes.has(sub[0])) {
     if (!env.RV_SYNC_PASSWORD) return json({ error:'RV_SYNC_PASSWORD fehlt.' }, 503);
     if (!same(request.headers.get('X-RV-Password'), env.RV_SYNC_PASSWORD)) return json({ error:'Falsches Cloud-Kennwort.' }, 401);
@@ -166,6 +262,7 @@ export async function onRequest(context){
     if (sub[0] === 'ping' && request.method === 'GET') return json({ ok:true });
     if (sub[0] === 'ai-chat' && request.method === 'POST') return handleAiChat(request, env);
     if (sub[0] === 'listing' && request.method === 'POST') return handleListing(request, env);
+    if (sub[0] === 'poof' && (request.method === 'POST' || request.method === 'GET')) return handlePoof(request, env, context);
     if (sub[0] === 'cutout' && (request.method === 'POST' || request.method === 'GET')) return handleCutout(request, env);
     if (!env.RV_DB || !env.RV_PHOTOS) return json({ error:'Cloudflare-Bindings fehlen.' }, 503);
     if (sub[0]==='articles'&&sub.length===1&&request.method==='GET') { const rows=await env.RV_DB.prepare('SELECT id,revision FROM articles WHERE deleted=0 ORDER BY id').all(); return json({items:rows.results||[]}); }
