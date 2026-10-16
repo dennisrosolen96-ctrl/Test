@@ -21,3 +21,8 @@
 - Der WebGPU-Pfad konnte in der Entwicklungsumgebung nur bis zur Modell-Ausführung getestet werden (Software-GPU hat nur 10 statt der benötigten 11 Speicherpuffer). Modell, Maske, Nachbearbeitung und alle Stile sind mit den echten Modell-Masken geprüft. Der erste Lauf auf dem Handy ist der Praxistest.
 - Selbst hosten (offline): Modelldateien unter `/models/onnx-community/BiRefNet_lite-ONNX/` ablegen und `window.RV_AI_LOCAL=true` setzen.
 - Bei Fotos mit Personen (Hand, Beine) schneidet die KI die Person mit aus. Am besten Artikel ohne Person fotografieren.
+
+## V31.1 — Korrektur
+- Wer früher „Auf dem Gerät“ gewählt hatte (intern `device`), bekam in V31 den einfachen Freisteller statt der KI, weil `device` jetzt „Einfach“ bedeutet. Alte Wahl wird einmalig auf „Automatisch“ umgestellt; eine danach bewusst gewählte Einstellung „Einfach“ bleibt erhalten.
+- Läuft die KI nicht, erscheint jetzt sofort ein Hinweis „Ohne KI freigestellt: …“ mit Grund.
+- Abzeichen am Titelbild: „KI freigestellt“, „Photoroom“, „Einfach freigestellt“ oder „Original“.

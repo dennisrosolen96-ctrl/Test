@@ -791,6 +791,8 @@ const SX_FEES_DEFAULT={ebay:{pct:0,fix:0,buf:10},vinted:{pct:0,fix:0,buf:15},ins
 const sxGet=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch{return d}};
 const sxSet=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
 const sxIcon=d=>'<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true">'+d+'</svg>';
+// V31.1: Früher hieß der einfache Freisteller „Auf dem Gerät“ (device). Alte Wahl einmalig auf Automatisch (= KI) umstellen.
+if(sxGet('rv_engine_v31','')!=='1'){if(sxGet('rv_cutout_engine','auto')==='device')sxSet('rv_cutout_engine','auto');sxSet('rv_engine_v31','1')}
 let sxCoverBusy=false,sxCoverMsg='',sxServerCutout=null,sxCutCache=null,sxAiCache=null;
 const sxClone=c=>{const n=document.createElement('canvas');n.width=c.width;n.height=c.height;n.getContext('2d').drawImage(c,0,0);return n};
 const sxSources=()=>article.photos.filter(p=>!p.cover);
@@ -869,13 +871,14 @@ async function sxMakeCover(opts={}){
   if(sxCover())article.photos[0]=cover;else article.photos.unshift(cover);
   const warning=r.warning||note;
   article.coverSettings={bg,style,source:si,tolerance:tol,engine:r.engine,warning,autoTolerance:r.tolerance||null,at:new Date().toISOString()};
+  if(r.engine!=='ai'&&engine!=='device'&&engine!=='original'&&(note||r.warning))sxToast('Ohne KI freigestellt: '+(note||r.warning).slice(0,90));
   sxCoverMsg=warning||({ai:'Mit KI auf dem Gerät freigestellt – ohne Upload.',server:'Mit Photoroom freigestellt.',device:'Einfach freigestellt (ohne KI).',original:'Originalfoto im Titelbild-Format zugeschnitten.'}[r.engine]||'');
  }catch(e){sxCoverMsg='Titelbild konnte nicht erstellt werden: '+e.message}
  finally{sxCoverBusy=false;renderPhotos()}
 }
 function sxCoverHtml(){
  const c=sxCover(),s=article.coverSettings||{};
- if(c){const label={ai:'KI freigestellt',server:'KI freigestellt',device:'Freigestellt',original:'Original'}[s.engine]||'Titelbild';return '<img src="'+sxEsc(c.src)+'" alt="Titelbild"><span class="badge'+(s.warning?' warn':'')+'"><i></i>'+label+'</span>'}
+ if(c){const label={ai:'KI freigestellt',server:'Photoroom',device:'Einfach freigestellt',original:'Original'}[s.engine]||'Titelbild';return '<img src="'+sxEsc(c.src)+'" alt="Titelbild"><span class="badge'+(s.warning?' warn':'')+'"><i></i>'+label+'</span>'}
  return '<div class="empty">'+sxIcon('<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/>')+(sxCoverBusy?'Hintergrund wird entfernt …':sxSources().length?'Noch kein Titelbild – „Neu erstellen“ antippen':'Lade Fotos hoch – das Titelbild entsteht automatisch')+'</div>';
 }
 function sxRenderCoverViews(){
