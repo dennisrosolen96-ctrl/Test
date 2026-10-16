@@ -1,4 +1,6 @@
-# RV Studio V30 — Command Center
+# RV Studio V31 — Command Center
+
+Neu in V31 (Details: [UEBERGABE-V31.md](UEBERGABE-V31.md)): Titelbild-Studio mit KI-Freisteller auf dem Gerät (kostenlos, ohne Upload), drei Stile (Studio, App-Look, Sticker), bessere Kanten und Fremdteil-Entfernung.
 
 Neu in V30 (Details: [UEBERGABE-V30.md](UEBERGABE-V30.md)): Seite „Snipes“ – Vinted-Suchaufträge mit Gewinnbewertung, Alarm bei Funden und „Gekauft“-Übernahme in den Bestand (Abruf über ein Userscript auf deinem Gerät).
 

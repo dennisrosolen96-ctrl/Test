@@ -761,14 +761,15 @@
 </section>
 <section id="s2" class="hidden sx">
 <section class="sx-panel sx-studio">
-<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Titelbild-Studio</h2><span class="sx-sub">Freigestellt auf Studio-Hintergrund – wie im Bestand</span></div></div>
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Titelbild-Studio</h2><span class="sx-sub">KI-Freisteller auf dem Gerät – kostenlos, ohne Upload</span></div></div>
 <div class="sx-studio-body">
 <div class="sx-cover sx-cover-lg" id="sxCoverLarge"></div>
 <div class="sx-studio-ctrl">
-<div class="sx-field"><span>Hintergrund</span><div class="sx-swatches" id="sxSwatches"></div></div>
+<div class="sx-field"><span>Stil</span><div class="sx-seg" id="sxStyle" role="group" aria-label="Titelbild-Stil"><button type="button" data-style="studio">Studio</button><button type="button" data-style="app">App-Look</button><button type="button" data-style="sticker">Sticker</button></div></div>
+<div class="sx-field" id="sxSwWrap"><span>Hintergrund</span><div class="sx-swatches" id="sxSwatches"></div></div>
 <div class="sx-field"><span>Ausgangsfoto</span><div class="sx-srcs" id="sxSources"></div></div>
 <div class="sx-field"><span>Freisteller</span><div class="sx-seg" id="sxEngine" role="group" aria-label="Freisteller">
-<button type="button" data-engine="auto">Automatisch</button><button type="button" data-engine="server">KI-Server</button><button type="button" data-engine="device">Auf dem Gerät</button><button type="button" data-engine="original">Original</button>
+<button type="button" data-engine="auto">Automatisch</button><button type="button" data-engine="ai">KI auf dem Gerät</button><button type="button" data-engine="server">Photoroom</button><button type="button" data-engine="device">Einfach</button><button type="button" data-engine="original">Original</button>
 </div></div>
 <label class="sx-field" id="sxTolWrap"><span>Feinheit <em class="sx-count" id="sxTolVal"></em></span><input type="range" id="sxTol" min="0" max="40" step="1" value="0"></label>
 <label class="sx-switch"><input type="checkbox" id="sxAutoCover"><span></span>Titelbild nach dem Hochladen automatisch erstellen</label>
@@ -1329,7 +1330,7 @@
 <div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><div class="sx-tt"><h2 class="sx-title">Studio &amp; Titelbild</h2><span class="sx-sub">Standards für jeden neuen Artikel</span></div></div>
 <label class="sx-switch"><input type="checkbox" id="stCoverAuto"><span></span>Titelbild nach dem Hochladen automatisch erstellen</label>
 <div class="sx-field"><span>Standard-Hintergrund für Titelbilder</span><div class="sx-swatches" id="stBg"></div></div>
-<div class="sx-field"><span>Freisteller</span><div class="sx-seg" id="stEngine" role="group" aria-label="Freisteller"><button type="button" data-engine="auto">Automatisch</button><button type="button" data-engine="server">KI-Server</button><button type="button" data-engine="device">Auf dem Gerät</button><button type="button" data-engine="original">Original</button></div></div>
+<div class="sx-field"><span>Freisteller</span><div class="sx-seg" id="stEngine" role="group" aria-label="Freisteller"><button type="button" data-engine="auto">Automatisch</button><button type="button" data-engine="ai">KI auf dem Gerät</button><button type="button" data-engine="server">Photoroom</button><button type="button" data-engine="device">Einfach</button><button type="button" data-engine="original">Original</button></div></div>
 <div class="sx-fields sx-two">
 <label class="sx-field"><span>Präfix der Artikelnummer</span><input data-st-key="skuPrefix" placeholder="RV" maxlength="8"></label>
 <label class="sx-field"><span>Status neuer Artikel</span><select data-st-key="defaultStatus"><option>Entwurf</option><option>Bereit</option><option>Online</option></select></label>
@@ -1434,6 +1435,8 @@
 <script src="/vendor/jszip.min.js">
 </script>
 <script src="/cutout.js">
+</script>
+<script src="/ai-cutout.js">
 </script>
 <script src="/app.js">
 </script>

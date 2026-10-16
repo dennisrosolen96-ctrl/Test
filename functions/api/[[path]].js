@@ -143,6 +143,7 @@ async function handleCutout(request, env){
   form.append('image_file',new Blob([raw],{type:part.mediaType}),'foto.'+(part.mediaType==='image/png'?'png':part.mediaType==='image/webp'?'webp':'jpg'));
   let res;
   if(provider==='photoroom'){
+    form.append('format','png');form.append('despill','true');
     res=await fetch('https://sdk.photoroom.com/v1/segment',{method:'POST',headers:{'x-api-key':env.PHOTOROOM_API_KEY},body:form});
   }else{
     form.append('size','auto');form.append('type','product');form.append('format','png');

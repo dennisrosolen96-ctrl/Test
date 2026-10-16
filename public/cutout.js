@@ -10,6 +10,8 @@
     weiss: ['#fbfbfa', '#ecebe8', 'Weiß'], nacht: ['#2b3446', '#141a26', 'Nacht']
   };
 
+  var STYLES = { studio: 'Studio', app: 'App-Look', sticker: 'Sticker' };
+
   function loadImage(src) {
     return new Promise(function (ok, no) { var im = new Image(); im.onload = function () { ok(im); }; im.onerror = no; im.src = src; });
   }
@@ -170,22 +172,82 @@
     return { x: x0 / s, y: y0 / s, w: (x1 - x0 + 1) / s, h: (y1 - y0 + 1) / s, coverage: cnt / (w * h) };
   }
 
-  /* Titelbild 4:5 im Look der Bestandsbilder */
-  function compose(cut, box, bgKey) {
-    var bgc = BACKDROPS[bgKey] || BACKDROPS.sand, W = 1000, H = 1250, c = canvas(W, H), ctx = c.getContext('2d');
-    var g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, bgc[0]); g.addColorStop(1, bgc[1]); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    var s = Math.min(W * 0.78 / box.w, H * 0.76 / box.h), dw = box.w * s, dh = box.h * s, dx = (W - dw) / 2, dy = (H - dh) / 2 + H * 0.015;
-    var dark = bgKey === 'nacht';
-    // Bodenschatten
-    ctx.save(); ctx.translate(W / 2, dy + dh - dh * 0.01); ctx.scale(1, 0.1);
-    var sg = ctx.createRadialGradient(0, 0, 0, 0, 0, dw * 0.5);
-    sg.addColorStop(0, dark ? 'rgba(0,0,0,.45)' : 'rgba(42,32,22,.24)'); sg.addColorStop(1, 'rgba(42,32,22,0)');
-    ctx.fillStyle = sg; ctx.fillRect(-dw, -dw, dw * 2, dw * 2); ctx.restore();
-    ctx.save(); ctx.shadowColor = dark ? 'rgba(0,0,0,.55)' : 'rgba(42,32,22,.30)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 18;
-    ctx.imageSmoothingQuality = 'high'; ctx.drawImage(cut, box.x, box.y, box.w, box.h, dx, dy, dw, dh); ctx.restore();
+  /* ---------- Nachbearbeitung der Maske: weiche Kante schärfen, Splitter und Fremdteile entfernen ---------- */
+  function refine(cut) {
+    var w = cut.width, h = cut.height, ctx = cut.getContext('2d', { willReadFrequently: true }), id = ctx.getImageData(0, 0, w, h), d = id.data, i, x, y;
+    for (i = 3; i < d.length; i += 4) { var a = d[i] / 255; a = a <= 0.1 ? 0 : a >= 0.9 ? 1 : (a - 0.1) / 0.8; d[i] = Math.round(a * a * (3 - 2 * a) * 255); }
+    var s = Math.min(1, 240 / Math.max(w, h)), gw = Math.max(2, Math.round(w * s)), gh = Math.max(2, Math.round(h * s)), g = new Uint8Array(gw * gh);
+    for (y = 0; y < gh; y++) for (x = 0; x < gw; x++) g[y * gw + x] = d[(Math.min(h - 1, Math.floor(y / s)) * w + Math.min(w - 1, Math.floor(x / s))) * 4 + 3] > 128 ? 1 : 0;
+    var cc = components(g, gw, gh, 1);
+    if (cc.sizes.length > 1) {
+      var max = Math.max.apply(null, cc.sizes), drop = new Uint8Array(gw * gh), any = false;
+      for (i = 0; i < g.length; i++) if (g[i] && cc.sizes[cc.lab[i]] < max * 0.06) { drop[i] = 1; any = true; }
+      if (any) {
+        var wide = new Uint8Array(drop);
+        for (y = 0; y < gh; y++) for (x = 0; x < gw; x++) if (drop[y * gw + x]) for (var dy = -1; dy <= 1; dy++) for (var dx = -1; dx <= 1; dx++) { var nx = x + dx, ny = y + dy; if (nx >= 0 && ny >= 0 && nx < gw && ny < gh && !(g[ny * gw + nx] && !drop[ny * gw + nx])) wide[ny * gw + nx] = 1; }
+        for (y = 0; y < h; y++) { var gy = Math.min(gh - 1, Math.floor(y * s)); for (x = 0; x < w; x++) if (wide[gy * gw + Math.min(gw - 1, Math.floor(x * s))]) d[(y * w + x) * 4 + 3] = 0; }
+      }
+    }
+    ctx.putImageData(id, 0, 0);
+    return cut;
+  }
+
+  function silhouette(cut, box, dw, dh, color) {
+    var c = canvas(Math.max(1, Math.ceil(dw)), Math.max(1, Math.ceil(dh))), x = c.getContext('2d');
+    x.imageSmoothingQuality = 'high'; x.drawImage(cut, box.x, box.y, box.w, box.h, 0, 0, c.width, c.height);
+    x.globalCompositeOperation = 'source-in'; x.fillStyle = color; x.fillRect(0, 0, c.width, c.height);
+    return c;
+  }
+  function seeded(n) { var v = n * 9301 + 49297; return function () { v = (v * 9301 + 49297) % 233280; return v / 233280; }; }
+  function setFilter(ctx, f) { try { ctx.filter = f; } catch (e) {} }
+
+  /* Titelbild 4:5 – drei Stile: studio (ruhiger Verlauf mit Bodenschatten), app (App-Design mit Blau-/Orangelicht
+     und Spiegelung), sticker (Motiv mit weißem Rand, wie ein Aufkleber). */
+  function compose(cut, box, bgKey, style) {
+    var bgc = BACKDROPS[bgKey] || BACKDROPS.sand, W = 1000, H = 1250, c = canvas(W, H), ctx = c.getContext('2d'), st = STYLES[style] ? style : 'studio';
+    var fit = st === 'app' ? 0.66 : 0.74, s = Math.min(W * 0.78 / box.w, H * fit / box.h), dw = box.w * s, dh = box.h * s, dx = (W - dw) / 2;
+    var dy = st === 'app' ? (H * 0.46 - dh / 2) : (H - dh) / 2 + H * 0.015, base = dy + dh, dark = bgKey === 'nacht', i;
+    ctx.imageSmoothingQuality = 'high';
+    if (st === 'app') {
+      var g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0e2244'); g.addColorStop(0.55, '#08101f'); g.addColorStop(1, '#050912'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      var r1 = ctx.createRadialGradient(W * 0.5, H * 0.44, 0, W * 0.5, H * 0.44, W * 0.75); r1.addColorStop(0, 'rgba(61,155,255,.42)'); r1.addColorStop(1, 'rgba(61,155,255,0)'); ctx.fillStyle = r1; ctx.fillRect(0, 0, W, H);
+      var r2 = ctx.createRadialGradient(W * 0.86, H * 0.9, 0, W * 0.86, H * 0.9, W * 0.6); r2.addColorStop(0, 'rgba(255,150,60,.34)'); r2.addColorStop(1, 'rgba(255,150,60,0)'); ctx.fillStyle = r2; ctx.fillRect(0, 0, W, H);
+      ctx.lineWidth = 2;
+      [0.30, 0.43, 0.58].forEach(function (k, n) { ctx.strokeStyle = 'rgba(140,200,255,' + (0.20 - n * 0.045) + ')'; ctx.beginPath(); ctx.arc(W / 2, H * 0.44, W * k, 0, 7); ctx.stroke(); });
+      ctx.setLineDash([6, 16]); ctx.strokeStyle = 'rgba(255,180,100,.28)'; ctx.beginPath(); ctx.arc(W / 2, H * 0.44, W * 0.50, 0.3, 4.2); ctx.stroke(); ctx.setLineDash([]);
+      var rnd = seeded(7); for (i = 0; i < 34; i++) { var px = rnd() * W, py = rnd() * H, pr = 1 + rnd() * 2.4; ctx.fillStyle = 'rgba(' + (rnd() > 0.7 ? '255,190,120' : '170,215,255') + ',' + (0.25 + rnd() * 0.5) + ')'; ctx.beginPath(); ctx.arc(px, py, pr, 0, 7); ctx.fill(); }
+      // Glasboden mit Orangerand
+      var ey = base + 10, erx = Math.max(dw * 0.6, W * 0.26), ery = 30;
+      var fl = ctx.createRadialGradient(W / 2, ey, 0, W / 2, ey, erx); fl.addColorStop(0, 'rgba(90,170,255,.30)'); fl.addColorStop(1, 'rgba(90,170,255,0)');
+      ctx.fillStyle = fl; ctx.beginPath(); ctx.ellipse(W / 2, ey, erx, ery * 1.6, 0, 0, 7); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,190,120,.60)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(W / 2, ey, erx * 0.8, ery, 0, 0, 7); ctx.stroke();
+      ctx.strokeStyle = 'rgba(140,200,255,.35)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(W / 2, ey, erx * 0.95, ery * 1.25, 0, 0, 7); ctx.stroke();
+      // Spiegelung
+      var rf = canvas(Math.ceil(dw), Math.ceil(dh * 0.5)), rx = rf.getContext('2d');
+      rx.translate(0, dh); rx.scale(1, -1); rx.drawImage(cut, box.x, box.y, box.w, box.h, 0, 0, Math.ceil(dw), Math.ceil(dh));
+      rx.setTransform(1, 0, 0, 1, 0, 0); rx.globalCompositeOperation = 'destination-out';
+      var rg = rx.createLinearGradient(0, 0, 0, rf.height); rg.addColorStop(0, 'rgba(0,0,0,.72)'); rg.addColorStop(1, 'rgba(0,0,0,1)'); rx.fillStyle = rg; rx.fillRect(0, 0, rf.width, rf.height);
+      ctx.save(); ctx.globalAlpha = 0.5; ctx.drawImage(rf, dx, base + 4); ctx.restore();
+      ctx.save(); ctx.shadowColor = 'rgba(90,170,255,.55)'; ctx.shadowBlur = 40; setFilter(ctx, 'saturate(1.1) contrast(1.05) brightness(1.04)'); ctx.drawImage(cut, box.x, box.y, box.w, box.h, dx, dy, dw, dh); ctx.restore();
+      var vv = ctx.createRadialGradient(W / 2, H * 0.44, W * 0.4, W / 2, H * 0.44, W * 1.0); vv.addColorStop(0, 'rgba(0,0,0,0)'); vv.addColorStop(1, 'rgba(0,0,0,.40)'); ctx.fillStyle = vv; ctx.fillRect(0, 0, W, H);
+      return c.toDataURL('image/jpeg', 0.92);
+    }
+    var bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, bgc[0]); bg.addColorStop(1, bgc[1]); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    var sh = silhouette(cut, box, dw, dh, dark ? '#000' : '#2a2016');
+    if (st === 'sticker') {
+      var rad = Math.max(10, dw * 0.016), ol = silhouette(cut, box, dw, dh, '#ffffff'), oc = canvas(W, H), ox = oc.getContext('2d');
+      for (i = 0; i < 28; i++) { var an = i / 28 * Math.PI * 2; ox.drawImage(ol, dx + Math.cos(an) * rad, dy + Math.sin(an) * rad); }
+      ox.drawImage(ol, dx, dy);
+      ctx.save(); ctx.shadowColor = dark ? 'rgba(0,0,0,.6)' : 'rgba(42,32,22,.34)'; ctx.shadowBlur = 34; ctx.shadowOffsetY = 16; ctx.drawImage(oc, 0, 0); ctx.restore();
+      ctx.save(); setFilter(ctx, 'saturate(1.06) contrast(1.04)'); ctx.drawImage(cut, box.x, box.y, box.w, box.h, dx, dy, dw, dh); ctx.restore();
+    } else {
+      // Kontaktschatten aus der Silhouette: schmal, weich, direkt unter dem Motiv
+      ctx.save(); ctx.translate(W / 2, base - dh * 0.004); ctx.scale(1, 0.09); setFilter(ctx, 'blur(' + Math.round(10 + dw * 0.02) + 'px)'); ctx.globalAlpha = dark ? 0.7 : 0.42; ctx.drawImage(sh, -dw / 2, -dh); ctx.restore();
+      ctx.save(); ctx.shadowColor = dark ? 'rgba(0,0,0,.5)' : 'rgba(42,32,22,.22)'; ctx.shadowBlur = 38; ctx.shadowOffsetY = 16; setFilter(ctx, 'saturate(1.05) contrast(1.03)'); ctx.drawImage(cut, box.x, box.y, box.w, box.h, dx, dy, dw, dh); ctx.restore();
+    }
     var v = ctx.createRadialGradient(W / 2, H * 0.42, W * 0.35, W / 2, H * 0.42, W * 0.95);
-    v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, dark ? 'rgba(0,0,0,.35)' : 'rgba(0,0,0,.14)'); ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
-    return c.toDataURL('image/jpeg', 0.9);
+    v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, dark ? 'rgba(0,0,0,.35)' : 'rgba(0,0,0,.12)'); ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+    return c.toDataURL('image/jpeg', 0.92);
   }
   /* Ohne Freistellen: Foto im 4:5-Format zuschneiden */
   function coverCrop(img) {
@@ -198,10 +260,15 @@
     opts = opts || {};
     var img = await loadImage(src), result = { engine: 'original', warning: '' };
     if (opts.engine === 'original') { result.src = coverCrop(img); return result; }
+    if (opts.cutCanvas) {
+      var kc = refine(opts.cutCanvas), kb = alphaBox(kc);
+      if (kb && kb.coverage > 0.02) { result.src = compose(kc, kb, opts.bg, opts.style); result.engine = 'ai'; return result; }
+      result.warning = 'Die KI hat kein Motiv gefunden – einfacher Freisteller verwendet.';
+    }
     if (opts.cutoutPng) {
       var cimg = await loadImage(opts.cutoutPng), cc = canvas(cimg.naturalWidth, cimg.naturalHeight); cc.getContext('2d').drawImage(cimg, 0, 0);
       var b = alphaBox(cc);
-      if (b && b.coverage > 0.02) { result.src = compose(cc, b, opts.bg); result.engine = 'server'; return result; }
+      if (b && b.coverage > 0.02) { result.src = compose(refine(cc), b, opts.bg, opts.style); result.engine = 'server'; return result; }
       result.warning = 'Der KI-Server hat kein Motiv gefunden – Freisteller auf dem Gerät verwendet.';
     }
     var m = deviceMask(img, opts.tolerance || 0);
@@ -214,9 +281,9 @@
     }
     if (m.touchesEdge > 0.18) result.warning = 'Das Motiv berührt den Bildrand – Titelbild bitte kurz prüfen.';
     var cut = applyMask(img, m), box = alphaBox(cut);
-    result.src = compose(cut, box, opts.bg);
+    result.src = compose(cut, box, opts.bg, opts.style);
     return result;
   }
 
-  window.RVCutout = { BACKDROPS: BACKDROPS, makeCover: makeCover, deviceMask: deviceMask };
+  window.RVCutout = { BACKDROPS: BACKDROPS, STYLES: STYLES, makeCover: makeCover, deviceMask: deviceMask };
 })();

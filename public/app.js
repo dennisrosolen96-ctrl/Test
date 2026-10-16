@@ -791,7 +791,8 @@ const SX_FEES_DEFAULT={ebay:{pct:0,fix:0,buf:10},vinted:{pct:0,fix:0,buf:15},ins
 const sxGet=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch{return d}};
 const sxSet=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
 const sxIcon=d=>'<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true">'+d+'</svg>';
-let sxCoverBusy=false,sxCoverMsg='',sxServerCutout=null,sxCutCache=null;
+let sxCoverBusy=false,sxCoverMsg='',sxServerCutout=null,sxCutCache=null,sxAiCache=null;
+const sxClone=c=>{const n=document.createElement('canvas');n.width=c.width;n.height=c.height;n.getContext('2d').drawImage(c,0,0);return n};
 const sxSources=()=>article.photos.filter(p=>!p.cover);
 const sxCover=()=>article.photos[0]&&article.photos[0].cover?article.photos[0]:null;
 function sxEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -850,36 +851,45 @@ async function sxMakeCover(opts={}){
  const srcs=sxSources();if(!srcs.length){sxCoverMsg='Bitte zuerst Fotos hochladen.';sxRenderCoverViews();return}
  if(sxCoverBusy)return;
  const prev=article.coverSettings||{};let si=opts.source??prev.source??0;if(si>=srcs.length)si=0;
- const engine=sxGet('rv_cutout_engine','auto'),bg=opts.bg||prev.bg||sxGet('rv_cover_bg','sand'),tol=Number(opts.tolerance??prev.tolerance??0)||0;
+ const engine=sxGet('rv_cutout_engine','auto'),bg=opts.bg||prev.bg||sxGet('rv_cover_bg','sand'),style=opts.style||prev.style||sxGet('rv_cover_style','app'),tol=Number(opts.tolerance??prev.tolerance??0)||0;
  sxCoverBusy=true;sxCoverMsg=engine==='original'?'Titelbild wird zugeschnitten …':'Hintergrund wird entfernt …';sxRenderCoverViews();
  try{
-  let cutoutPng=null,note='';
-  if(engine==='server'||(engine==='auto'&&rvAiPassword()&&sxServerCutout!==false)){try{cutoutPng=await sxServerCut(srcs[si].src)}catch(e){if(engine==='server')note='KI-Server: '+e.message+'. Auf dem Gerät freigestellt.'}}
-  const r=await RVCutout.makeCover(srcs[si].src,{engine:engine==='original'?'original':'cutout',bg,tolerance:tol,cutoutPng});
+  let cutoutPng=null,cutCanvas=null,note='';
+  const order=engine==='ai'?['ai']:engine==='server'?['server']:(engine==='device'||engine==='original')?[]:(window.RVAI&&RVAI.supported()?['ai','server']:['server']);
+  for(const k of order){
+   try{
+    if(k==='ai'){if(!window.RVAI||!RVAI.supported())throw Error('dieser Browser bietet kein WebGPU');let last=0;
+     if(sxAiCache&&sxAiCache.src===srcs[si].src)cutCanvas=sxClone(sxAiCache.c);else{cutCanvas=await RVAI.cut(srcs[si].src,{onProgress:(f)=>{const pc=Math.round(f*100);if(pc-last>=2||pc===100){last=pc;sxCoverMsg=pc<100?'KI-Modell wird einmalig geladen … '+pc+' %':'KI schneidet aus …';sxRenderCoverViews()}}});sxAiCache={src:srcs[si].src,c:sxClone(cutCanvas)}}}
+    else if(engine==='server'||(rvAiPassword()&&sxServerCutout!==false))cutoutPng=await sxServerCut(srcs[si].src);
+    if(cutCanvas||cutoutPng)break;
+   }catch(e){if(order.length===1||k==='ai')note=(k==='ai'?'KI auf dem Gerät: ':'Photoroom: ')+e.message+'. Anderer Freisteller verwendet.'}
+  }
+  const r=await RVCutout.makeCover(srcs[si].src,{engine:engine==='original'?'original':'cutout',bg,style,tolerance:tol,cutoutPng,cutCanvas});
   const cover={src:r.src,edit:defaults(),ratio:'0.8',cover:true};
   if(sxCover())article.photos[0]=cover;else article.photos.unshift(cover);
   const warning=r.warning||note;
-  article.coverSettings={bg,source:si,tolerance:tol,engine:r.engine,warning,autoTolerance:r.tolerance||null,at:new Date().toISOString()};
-  sxCoverMsg=warning||({server:'Mit KI-Server freigestellt.',device:'Auf dem Gerät freigestellt – ohne Upload.',original:'Originalfoto im Titelbild-Format zugeschnitten.'}[r.engine]||'');
+  article.coverSettings={bg,style,source:si,tolerance:tol,engine:r.engine,warning,autoTolerance:r.tolerance||null,at:new Date().toISOString()};
+  sxCoverMsg=warning||({ai:'Mit KI auf dem Gerät freigestellt – ohne Upload.',server:'Mit Photoroom freigestellt.',device:'Einfach freigestellt (ohne KI).',original:'Originalfoto im Titelbild-Format zugeschnitten.'}[r.engine]||'');
  }catch(e){sxCoverMsg='Titelbild konnte nicht erstellt werden: '+e.message}
  finally{sxCoverBusy=false;renderPhotos()}
 }
 function sxCoverHtml(){
  const c=sxCover(),s=article.coverSettings||{};
- if(c){const label={server:'KI freigestellt',device:'Freigestellt',original:'Original'}[s.engine]||'Titelbild';return '<img src="'+sxEsc(c.src)+'" alt="Titelbild"><span class="badge'+(s.warning?' warn':'')+'"><i></i>'+label+'</span>'}
+ if(c){const label={ai:'KI freigestellt',server:'KI freigestellt',device:'Freigestellt',original:'Original'}[s.engine]||'Titelbild';return '<img src="'+sxEsc(c.src)+'" alt="Titelbild"><span class="badge'+(s.warning?' warn':'')+'"><i></i>'+label+'</span>'}
  return '<div class="empty">'+sxIcon('<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/>')+(sxCoverBusy?'Hintergrund wird entfernt …':sxSources().length?'Noch kein Titelbild – „Neu erstellen“ antippen':'Lade Fotos hoch – das Titelbild entsteht automatisch')+'</div>';
 }
 function sxRenderCoverViews(){
  if(!article)return;
  for(const id of ['sxCover','sxCoverLarge']){const el=$(id);if(!el)continue;el.innerHTML=sxCoverHtml();el.classList.toggle('busy',sxCoverBusy)}
- const s=article.coverSettings||{},bg=s.bg||sxGet('rv_cover_bg','sand'),engine=sxGet('rv_cutout_engine','auto');
+ const s=article.coverSettings||{},bg=s.bg||sxGet('rv_cover_bg','sand'),engine=sxGet('rv_cutout_engine','auto'),style=s.style||sxGet('rv_cover_style','app');
+ $('sxStyle').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.style===style));$('sxSwWrap').style.display=style==='app'?'none':'';
  const sw=$('sxSwatches');sw.replaceChildren();for(const [key,[a,b,name]] of Object.entries(RVCutout.BACKDROPS)){const btn=document.createElement('button');btn.type='button';btn.title=name;btn.setAttribute('aria-label','Hintergrund '+name);btn.style.background='linear-gradient(180deg,'+a+','+b+')';btn.classList.toggle('on',key===bg);btn.onclick=()=>{sxSet('rv_cover_bg',key);article.coverSettings={...(article.coverSettings||{}),bg:key};if(sxCover())sxMakeCover({bg:key});else sxRenderCoverViews()};sw.append(btn)}
  const src=$('sxSources');src.replaceChildren();sxSources().forEach((p,i)=>{const btn=document.createElement('button');btn.type='button';btn.setAttribute('aria-label','Foto '+(i+1)+' als Ausgangsfoto');btn.classList.toggle('on',i===(s.source||0));btn.innerHTML='<img src="'+sxEsc(p.src)+'" alt="">';btn.onclick=()=>sxMakeCover({source:i});src.append(btn)});
  $('sxEngine').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.engine===engine));
- $('sxTolWrap').style.display=engine==='original'||engine==='server'?'none':'';
+ $('sxTolWrap').style.display=engine==='device'?'':'none';
  $('sxTol').value=s.tolerance||0;$('sxTolVal').textContent=s.tolerance?String(s.tolerance):('Automatisch'+(s.autoTolerance?' ('+s.autoTolerance+')':''));
  $('sxAutoCover').checked=sxGet('rv_cover_auto','1')==='1';
- $('sxCoverStatus').textContent=sxCoverMsg||(engine==='server'?'Nutzt Photoroom oder remove.bg über deinen Server (Secret PHOTOROOM_API_KEY oder REMOVE_BG_API_KEY).':engine==='auto'?'Automatisch: KI-Server, falls eingerichtet – sonst direkt auf dem Gerät.':'');
+ $('sxCoverStatus').textContent=sxCoverMsg||(engine==='server'?'Nutzt Photoroom oder remove.bg über deinen Server (Secret PHOTOROOM_API_KEY oder REMOVE_BG_API_KEY).':engine==='ai'?'KI auf dem Gerät: kostenlos, ohne Upload. Beim ersten Mal wird das Modell einmalig geladen (ca. 115 MB, danach gespeichert).':engine==='auto'?'Automatisch: KI auf dem Gerät – bei Bedarf Photoroom oder der einfache Freisteller.':'');
  $('sxCoverMake').disabled=sxCoverBusy||!sxSources().length;$('sxCoverRemove').disabled=!sxCover();$('sxCoverRedo').disabled=sxCoverBusy||!sxSources().length;
  sxRenderPreview();
 }
@@ -887,6 +897,7 @@ function sxRenderPreview(){if(!article)return;const first=article.photos[0],root
  for(const [name,ratio,label] of [['eBay','1/1','1:1'],['Vinted','3/4','3:4'],['Instagram','4/5','4:5']]){const f=document.createElement('figure');f.innerHTML='<div class="fr" style="aspect-ratio:'+ratio+'">'+(first?'<img src="'+sxEsc(first.src)+'" alt="">':'')+'</div><figcaption>'+name+'<small>'+label+'</small></figcaption>';if(first&&first.edit)f.querySelector('img').style.filter=filter({...defaults(),...first.edit,blur:0});root.append(f)}}
 $('sxCoverRedo').onclick=()=>sxMakeCover();$('sxCoverMake').onclick=()=>sxMakeCover();
 $('sxCoverRemove').onclick=()=>{if(!sxCover())return;article.photos.shift();article.coverSettings=null;sxCoverMsg='';renderPhotos()};
+$('sxStyle').onclick=e=>{const b=e.target.closest('[data-style]');if(!b)return;sxSet('rv_cover_style',b.dataset.style);article.coverSettings={...(article.coverSettings||{}),style:b.dataset.style};if(sxCover())sxMakeCover({style:b.dataset.style});else sxRenderCoverViews()};
 $('sxEngine').onclick=e=>{const b=e.target.closest('[data-engine]');if(!b)return;sxSet('rv_cutout_engine',b.dataset.engine);if(b.dataset.engine!=='auto')sxServerCutout=b.dataset.engine==='server'?null:sxServerCutout;if(sxCover())sxMakeCover();else sxRenderCoverViews()};
 $('sxTol').oninput=()=>{$('sxTolVal').textContent=+$('sxTol').value?$('sxTol').value:'Automatisch'};
 $('sxTol').onchange=()=>{article.coverSettings={...(article.coverSettings||{}),tolerance:+$('sxTol').value};sxMakeCover({tolerance:+$('sxTol').value})};
