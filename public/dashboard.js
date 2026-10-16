@@ -95,9 +95,9 @@ function trailing(list,days){
 function sparkSvg(vals){
   if(!vals||vals.length<2)return '';
   var max=Math.max.apply(null,vals),min=Math.min.apply(null,vals);
-  if(max===min){return '<svg class="spark" viewBox="0 0 44 22" aria-hidden="true"><path d="M1 16 H43" stroke="#c6c9cd" stroke-width="1.2" stroke-dasharray="2 2" fill="none" opacity=".6"/></svg>'}
+  if(max===min){return '<svg class="spark" viewBox="0 0 44 22" aria-hidden="true"><path d="M1 16 H43" stroke="#c4c9cf" stroke-width="1.2" stroke-dasharray="2 2" fill="none" opacity=".6"/></svg>'}
   var pts=vals.map(function(v,i){return (1+i*(42/(vals.length-1))).toFixed(1)+','+(20-((v-min)/(max-min))*17).toFixed(1)}).join(' ');
-  return '<svg class="spark" viewBox="0 0 44 22" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="spk" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#bfc2c7" stop-opacity=".35"/><stop offset="1" stop-color="#bfc2c7" stop-opacity="0"/></linearGradient></defs><polygon points="1,22 '+pts+' 43,22" fill="url(#spk)"/><polyline points="'+pts+'" fill="none" stroke="#c2c4c8" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" style="filter:drop-shadow(0 0 3px rgba(191,194,199,.9))"/></svg>';
+  return '<svg class="spark" viewBox="0 0 44 22" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="spk" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#bdc2c9" stop-opacity=".35"/><stop offset="1" stop-color="#bdc2c9" stop-opacity="0"/></linearGradient></defs><polygon points="1,22 '+pts+' 43,22" fill="url(#spk)"/><polyline points="'+pts+'" fill="none" stroke="#bfc4cb" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" style="filter:drop-shadow(0 0 3px rgba(189,194,201,.9))"/></svg>';
 }
 function setMetric(key,val,d,spark){
   var v=$('v11-'+key+'-val'),dl=$('v11-'+key+'-dl'),sp=$('v11-'+key+'-sp');
@@ -242,8 +242,8 @@ function scan(){
   function search(){click('homeLibrary');setTimeout(function(){var s=$('searchArticles');if(s){s.focus()}},120)}
   if(!('BarcodeDetector' in window)||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){search();setTimeout(function(){var s=$('searchArticles');if(s)s.placeholder='Barcode eingeben – Kamera-Scan hier nicht unterstützt'},150);return}
   var ov=document.createElement('div');
-  ov.style.cssText='position:fixed;inset:0;z-index:500;background:#000000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#f0ece3;font:600 14px system-ui';
-  ov.innerHTML='<video playsinline muted style="width:100%;max-height:70vh;object-fit:cover"></video><div>Code in den Rahmen halten</div><button type="button" style="padding:10px 18px;border-radius:10px;border:1px solid #c6c9cd;background:#1f2023;color:#e8eaeb;font:600 14px system-ui">Abbrechen</button>';
+  ov.style.cssText='position:fixed;inset:0;z-index:500;background:#050608;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#e8edf3;font:600 14px system-ui';
+  ov.innerHTML='<video playsinline muted style="width:100%;max-height:70vh;object-fit:cover"></video><div>Code in den Rahmen halten</div><button type="button" style="padding:10px 18px;border-radius:10px;border:1px solid #c4c9cf;background:#181c22;color:#e8edf3;font:600 14px system-ui">Abbrechen</button>';
   document.body.appendChild(ov);
   var video=ov.querySelector('video'),stream=null,alive=true;
   function close(){alive=false;if(stream)stream.getTracks().forEach(function(t){t.stop()});ov.remove()}
@@ -303,71 +303,71 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(svg.dataset.size===signature)return;
     svg.dataset.size=signature;svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
     const w=width,h=height,c=panel?18:nav?22:10;
-    const color=gold?'#e0e1e4':red?'#c5c7cb':panel?'#dbdddf':'#cbcdd0';
+    const color=gold?'#d9dee5':red?'#c2c7ce':panel?'#d9dee5':'#c9d0d9';
     const outline=(p,cut)=>`M ${p+cut} ${p} H ${w-p-cut} L ${w-p} ${p+cut} V ${h-p-cut} L ${w-p-cut} ${h-p} H ${p+cut} L ${p} ${h-p-cut} V ${p+cut} Z`;
     const path=(d,stroke,sw=1,extra='')=>`<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="miter" ${extra}/>`;
     if(glass){svg.innerHTML=glassFrame(el,w,h,id);return}
     if(nav){svg.innerHTML=navFrame(w,h,id);return}
     let markup=`<defs>
       <linearGradient id="${id}m" x1="0" y1="0" x2=".75" y2="1" gradientUnits="objectBoundingBox">
-        <stop stop-color="#404348"/><stop offset=".12" stop-color="#0e100f"/><stop offset=".26" stop-color="#50535a"/><stop offset=".4" stop-color="#171818"/><stop offset=".55" stop-color="#3a3d42"/><stop offset=".7" stop-color="#0f1111"/><stop offset=".87" stop-color="#41444a"/><stop offset="1" stop-color="#181b1b"/>
+        <stop stop-color="#3d434b"/><stop offset=".12" stop-color="#0b0d11"/><stop offset=".26" stop-color="#4c545e"/><stop offset=".4" stop-color="#12151a"/><stop offset=".55" stop-color="#383d44"/><stop offset=".7" stop-color="#0b0d11"/><stop offset=".87" stop-color="#3f444c"/><stop offset="1" stop-color="#181c22"/>
       </linearGradient>
       <linearGradient id="${id}e" x1="0" y1="0" x2="1" y2="1">
-        <stop stop-color="#ede8de"/><stop offset=".14" stop-color="${color}"/><stop offset=".28" stop-color="#4d5056"/><stop offset=".42" stop-color="#202124"/><stop offset=".62" stop-color="${color}"/><stop offset=".77" stop-color="#a5a9af"/><stop offset="1" stop-color="#e8eaeb"/>
+        <stop stop-color="#d9dee5"/><stop offset=".14" stop-color="${color}"/><stop offset=".28" stop-color="#49505a"/><stop offset=".42" stop-color="#181c22"/><stop offset=".62" stop-color="${color}"/><stop offset=".77" stop-color="#a2a9b3"/><stop offset="1" stop-color="#e8edf3"/>
       </linearGradient>
-      <linearGradient id="${id}l" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${w}" y2="0"><stop stop-color="${color}" stop-opacity="0"/><stop offset=".48" stop-color="#d5d7d9"/><stop offset=".53" stop-color="#f1ede5"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient>
+      <linearGradient id="${id}l" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${w}" y2="0"><stop stop-color="${color}" stop-opacity="0"/><stop offset=".48" stop-color="#c9d0d9"/><stop offset=".53" stop-color="#e8edf3"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient>
       <filter id="${id}g" filterUnits="userSpaceOnUse" x="-20" y="-20" width="${w+40}" height="${h+40}"><feGaussianBlur stdDeviation="2.2"/></filter>
     </defs>`;
-    markup+=path(outline(2,c-2),'#030303',panel?11:6);
+    markup+=path(outline(2,c-2),'#050608',panel?11:6);
     markup+=path(outline(panel?5:3,c-3),`url(#${id}m)`,panel?7:4);
     markup+=path(outline(2,c-2),`url(#${id}e)`,panel?1.3:.8);
-    markup+=path(outline(panel?9:5,Math.max(3,c-6)),panel?'#696e76':'#9ba0a6',.65);
-    markup+=path(outline(panel?12:7,Math.max(2,c-9)),panel?'#282a2e':'#212326',.6);
+    markup+=path(outline(panel?9:5,Math.max(3,c-6)),panel?'#646e7b':'#979faa',.65);
+    markup+=path(outline(panel?12:7,Math.max(2,c-9)),panel?'#252a32':'#181c22',.6);
     // Bright corner bevels, separated illuminated edges and black metal rails.
     const p=panel?6:3,corner=panel?21:13;
     const cornerLines=`M ${p} ${p+corner+10} V ${p+corner} L ${p+corner} ${p} H ${p+corner+21} M ${w-p-corner-21} ${p} H ${w-p-corner} L ${w-p} ${p+corner} V ${p+corner+10} M ${p} ${h-p-corner-10} V ${h-p-corner} L ${p+corner} ${h-p} H ${p+corner+21} M ${w-p-corner-21} ${h-p} H ${w-p-corner} L ${w-p} ${h-p-corner} V ${h-p-corner-10}`;
-    markup+=path(cornerLines,gold?'#cfd2d5':'#bfc2c6',3,`opacity=".8" filter="url(#${id}g)"`);
+    markup+=path(cornerLines,gold?'#c9d0d9':'#bcc1c9',3,`opacity=".8" filter="url(#${id}g)"`);
     markup+=path(cornerLines,`url(#${id}e)`,1.25);
     if(panel){
       // Bevel plates: opposing dark faces and polished diagonal reflections.
       const left=`M 2 29 L 29 2 H 59 L 50 8 H 30 L 8 30 V 51 L 2 60 Z`;
       const right=`M ${w-2} ${h-29} L ${w-29} ${h-2} H ${w-59} L ${w-50} ${h-8} H ${w-30} L ${w-8} ${h-30} V ${h-51} L ${w-2} ${h-60} Z`;
-      markup+=`<path d="${left}" fill="url(#${id}m)" stroke="#45484d" stroke-width=".5"/><path d="${right}" fill="url(#${id}m)" stroke="#45484d" stroke-width=".5"/>`;
-      markup+=path(`M 7 24 L 24 7 H 46 M ${w-7} ${h-24} L ${w-24} ${h-7} H ${w-46}`,'#e7e8ea',1.1);
-      markup+=path(`M 9 39 V 23 L 23 9 H 38 M ${w-9} ${h-39} V ${h-23} L ${w-23} ${h-9} H ${w-38}`,'#f0ece3',3,`opacity=".7" filter="url(#${id}g)"`);
+      markup+=`<path d="${left}" fill="url(#${id}m)" stroke="#424850" stroke-width=".5"/><path d="${right}" fill="url(#${id}m)" stroke="#424850" stroke-width=".5"/>`;
+      markup+=path(`M 7 24 L 24 7 H 46 M ${w-7} ${h-24} L ${w-24} ${h-7} H ${w-46}`,'#e8edf3',1.1);
+      markup+=path(`M 9 39 V 23 L 23 9 H 38 M ${w-9} ${h-39} V ${h-23} L ${w-23} ${h-9} H ${w-38}`,'#e8edf3',3,`opacity=".7" filter="url(#${id}g)"`);
     }
     const bottom=`M ${w*.30} ${h-(panel?6:3)} H ${w*.70}`;
-    markup+=path(bottom,gold?'#d4d6d9':'#bec1c6',4,`filter="url(#${id}g)"`);
+    markup+=path(bottom,gold?'#c9d0d9':'#bcc1c8',4,`filter="url(#${id}g)"`);
     markup+=path(bottom,`url(#${id}l)`,1.5);
     if(panel||nav){
       const shine=`M ${w*.42} ${h-6} H ${w*.58}`;
-      markup+=path(shine,'#d4d6d8',6,`opacity=".8" filter="url(#${id}g)"`);
+      markup+=path(shine,'#c9d0d9',6,`opacity=".8" filter="url(#${id}g)"`);
       markup+=path(shine,`url(#${id}l)`,2);
       const x=w*.5,y=h-6;
-      markup+=`<circle cx="${x}" cy="${y}" r="3" fill="#ede8de" filter="url(#${id}g)"/><path d="M ${x} ${y-7} V ${y+6}" stroke="#c8cace" stroke-width=".5" opacity=".7"/>`;
+      markup+=`<circle cx="${x}" cy="${y}" r="3" fill="#d9dee5" filter="url(#${id}g)"/><path d="M ${x} ${y-7} V ${y+6}" stroke="#c6cad0" stroke-width=".5" opacity=".7"/>`;
     }
     if(panel||nav){
       const n=w*.16,mid=w/2;
-      markup+=`<path d="M ${mid-n-11} 2 L ${mid-n} 13 H ${mid+n} L ${mid+n+11} 2" fill="#080908" stroke="#5b6066" stroke-width=".7"/>
-       <path d="M ${mid-n+9} 3 L ${mid-n+17} 8 H ${mid+n-17} L ${mid+n-9} 3" fill="#161719" stroke="#2b2d31" stroke-width=".8"/>`;
+      markup+=`<path d="M ${mid-n-11} 2 L ${mid-n} 13 H ${mid+n} L ${mid+n+11} 2" fill="#050608" stroke="#575f6a" stroke-width=".7"/>
+       <path d="M ${mid-n+9} 3 L ${mid-n+17} 8 H ${mid+n-17} L ${mid+n-9} 3" fill="#12151a" stroke="#252a32" stroke-width=".8"/>`;
       markup+=path(`M ${mid-n*.58} 3 H ${mid+n*.58}`,`url(#${id}l)`,1.8);
-      markup+=path(`M ${mid-n-9} ${h-2} L ${mid-n} ${h-11} H ${mid+n} L ${mid+n+9} ${h-2}`,'#4d5056',.7);
-      markup+=path(`M 4 ${h*.26} V ${h*.42} M ${w-4} ${h*.60} V ${h*.77}`,red?'#bec1c5':'#bfc2c6',1.5);
+      markup+=path(`M ${mid-n-9} ${h-2} L ${mid-n} ${h-11} H ${mid+n} L ${mid+n+9} ${h-2}`,'#49505a',.7);
+      markup+=path(`M 4 ${h*.26} V ${h*.42} M ${w-4} ${h*.60} V ${h*.77}`,red?'#bbc0c8':'#bcc1c9',1.5);
       // Rote Lichtstreifen an den Seiten, glühende Ecken und feine Skalen wie in der Referenz
       const strips=`M 4 ${h*.14} V ${h*.6} M ${w-4} ${h*.4} V ${h*.88}`;
-      markup+=`<g class="cc-edge-strip">${path(strips,'#bbbec2',12,`opacity=".85" filter="url(#${id}g)"`)}${path(strips,'#bdc0c5',3.4)}${path(strips,'#ede8de',1.1)}</g>`;
+      markup+=`<g class="cc-edge-strip">${path(strips,'#b8bdc5',12,`opacity=".85" filter="url(#${id}g)"`)}${path(strips,'#bbc0c7',3.4)}${path(strips,'#d9dee5',1.1)}</g>`;
       const cg=`M 3 ${Math.min(70,h*.3)} V 22 L 22 3 H ${Math.min(120,w*.18)} M ${w-3} ${h-Math.min(70,h*.3)} V ${h-22} L ${w-22} ${h-3} H ${w-Math.min(120,w*.18)}`;
-      markup+=`<g class="cc-edge-corner">${path(cg,'#c8cbcf',5,`opacity=".55" filter="url(#${id}g)"`)}${path(cg,'#e6e7e9',1.2)}</g>`;
+      markup+=`<g class="cc-edge-corner">${path(cg,'#c6cbd1',5,`opacity=".55" filter="url(#${id}g)"`)}${path(cg,'#e8edf3',1.2)}</g>`;
       let ticks='';for(let i=0;i<9;i++){const x=w*.22+i*7;ticks+=`M ${x} 6 V ${i%4?9:11} `;const x2=w*.78-i*7;ticks+=`M ${x2} ${h-6} V ${h-(i%4?9:11)} `}
       for(let i=0;i<6;i++){const y=h*.64+i*6;ticks+=`M 7 ${y} H ${i%3?10:13} `;const y2=h*.36-i*6;ticks+=`M ${w-7} ${y2} H ${w-(i%3?10:13)} `}
-      markup+=path(ticks,'#bdc0c4',.7,'opacity=".7"');
-      markup+=`<circle cx="4" cy="${h*.6}" r="2" fill="#e8eaeb" filter="url(#${id}g)"/><circle cx="${w-4}" cy="${h*.4}" r="2" fill="#e8eaeb" filter="url(#${id}g)"/>`;
-      for(const x of [15,w-15])for(const y of [30,h-30])markup+=`<circle cx="${x}" cy="${y}" r="1.25" fill="#bec1c5" opacity=".55"/>`;
+      markup+=path(ticks,'#babfc7',.7,'opacity=".7"');
+      markup+=`<circle cx="4" cy="${h*.6}" r="2" fill="#e8edf3" filter="url(#${id}g)"/><circle cx="${w-4}" cy="${h*.4}" r="2" fill="#e8edf3" filter="url(#${id}g)"/>`;
+      for(const x of [15,w-15])for(const y of [30,h-30])markup+=`<circle cx="${x}" cy="${y}" r="1.25" fill="#bbc0c8" opacity=".55"/>`;
       // Small circuitry marks carry depth without competing with the content.
-      markup+=path(`M 17 ${h-15} H 48 L 54 ${h-21} M ${w-54} 20 L ${w-48} 14 H ${w-18}`,'#53565d',.6);
+      markup+=path(`M 17 ${h-15} H 48 L 54 ${h-21} M ${w-54} 20 L ${w-48} 14 H ${w-18}`,'#4f5761',.6);
     }else{
-      markup+=path(`M ${w*.20} 3 H ${w*.43}`,gold?'#d3d5d8':'#bfc2c6',1.4);
-      markup+=path(`M 3 ${h-17} L 10 ${h-10} M ${w-3} 17 L ${w-10} 10`,'#6d737b',.8);
+      markup+=path(`M ${w*.20} 3 H ${w*.43}`,gold?'#c9d0d9':'#bcc1c9',1.4);
+      markup+=path(`M 3 ${h-17} L 10 ${h-10} M ${w-3} 17 L ${w-10} 10`,'#687280',.8);
     }
     svg.innerHTML=markup;
   }
@@ -378,42 +378,42 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const panel=(s)=>{const X=x=>s?w-x:x;return `M ${X(2)} ${b} V ${t+c} L ${X(2+c)} ${t} H ${X(L)} L ${X(L2)} ${b} Z`};
     const innerP=(s)=>{const X=x=>s?w-x:x;return `M ${X(2+bv)} ${b-bv} V ${t+c+bv*.4} L ${X(2+c+bv*.4)} ${t+bv} H ${X(L-bv*.3)} L ${X(L2-bv*1.2)} ${b-bv}`};
     let m=`<defs>
-      <linearGradient id="${id}nf" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#2e3033"/><stop offset=".12" stop-color="#151617"/><stop offset=".45" stop-color="#080a0c"/><stop offset="1" stop-color="#030304"/></linearGradient>
-      <linearGradient id="${id}nb2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3c3f44"/><stop offset=".3" stop-color="#111213"/><stop offset=".6" stop-color="#222326"/><stop offset="1" stop-color="#070809"/></linearGradient>
-      <linearGradient id="${id}ne" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#c3c5c9"/><stop offset=".1" stop-color="#c6c8cc"/><stop offset=".3" stop-color="#50535a"/><stop offset=".5" stop-color="#ede8de"/><stop offset=".7" stop-color="#50535a"/><stop offset=".9" stop-color="#c6c8cc"/><stop offset="1" stop-color="#c3c5c9"/></linearGradient>
-      <radialGradient id="${id}ns" cx=".5" cy=".5" r=".5"><stop offset=".55" stop-color="#08090a"/><stop offset=".8" stop-color="#171819"/><stop offset="1" stop-color="#000000" stop-opacity="0"/></radialGradient>
-      <radialGradient id="${id}nr"><stop stop-color="#ede8de"/><stop offset=".5" stop-color="#aaaeb4"/><stop offset="1" stop-color="#1c1d20"/></radialGradient>
+      <linearGradient id="${id}nf" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#252a32"/><stop offset=".12" stop-color="#12151a"/><stop offset=".45" stop-color="#050608"/><stop offset="1" stop-color="#050608"/></linearGradient>
+      <linearGradient id="${id}nb2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3a3f46"/><stop offset=".3" stop-color="#0b0d11"/><stop offset=".6" stop-color="#181c22"/><stop offset="1" stop-color="#050608"/></linearGradient>
+      <linearGradient id="${id}ne" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#c0c5cc"/><stop offset=".1" stop-color="#c4c8ce"/><stop offset=".3" stop-color="#4c545e"/><stop offset=".5" stop-color="#d9dee5"/><stop offset=".7" stop-color="#4c545e"/><stop offset=".9" stop-color="#c4c8ce"/><stop offset="1" stop-color="#c0c5cc"/></linearGradient>
+      <radialGradient id="${id}ns" cx=".5" cy=".5" r=".5"><stop offset=".55" stop-color="#050608"/><stop offset=".8" stop-color="#12151a"/><stop offset="1" stop-color="#050608" stop-opacity="0"/></radialGradient>
+      <radialGradient id="${id}nr"><stop stop-color="#d9dee5"/><stop offset=".5" stop-color="#a7aeb7"/><stop offset="1" stop-color="#181c22"/></radialGradient>
       <filter id="${id}nb" filterUnits="userSpaceOnUse" x="-30" y="-80" width="${w+60}" height="${h+120}"><feGaussianBlur stdDeviation="2.6"/></filter>
       <filter id="${id}nb3" filterUnits="userSpaceOnUse" x="-30" y="-80" width="${w+60}" height="${h+120}"><feGaussianBlur stdDeviation="5"/></filter></defs>`;
-    m+=`<path d="M 0 0 H ${w} V ${h} H 0 Z" fill="#030303"/>`;
+    m+=`<path d="M 0 0 H ${w} V ${h} H 0 Z" fill="#050608"/>`;
     // Mittelbrücke mit Chevron-Platten über dem Auge
-    m+=`<path d="M ${w*.33} 0 L ${w*.38} ${t+4} H ${w*.62} L ${w*.67} 0 Z" fill="url(#${id}nb2)" stroke="#000000" stroke-width="1"/>`;
-    m+=`<path d="M ${w*.345} 2 L ${w*.39} ${t+1} H ${w*.61} L ${w*.655} 2" fill="none" stroke="#d3d5d8" stroke-width="4" opacity=".5" filter="url(#${id}nb)"/><path d="M ${w*.345} 2 L ${w*.39} ${t+1} H ${w*.61} L ${w*.655} 2" fill="none" stroke="#ede8de" stroke-width="1.1"/>`;
+    m+=`<path d="M ${w*.33} 0 L ${w*.38} ${t+4} H ${w*.62} L ${w*.67} 0 Z" fill="url(#${id}nb2)" stroke="#050608" stroke-width="1"/>`;
+    m+=`<path d="M ${w*.345} 2 L ${w*.39} ${t+1} H ${w*.61} L ${w*.655} 2" fill="none" stroke="#c9d0d9" stroke-width="4" opacity=".5" filter="url(#${id}nb)"/><path d="M ${w*.345} 2 L ${w*.39} ${t+1} H ${w*.61} L ${w*.655} 2" fill="none" stroke="#d9dee5" stroke-width="1.1"/>`;
     for(const sd of [0,1]){
       const X=x=>sd?w-x:x, d=panel(sd);
-      m+=`<path d="${d}" fill="url(#${id}nf)" stroke="#000000" stroke-width="1.2"/>`;
+      m+=`<path d="${d}" fill="url(#${id}nf)" stroke="#050608" stroke-width="1.2"/>`;
       // Fasenband oben
       m+=`<path d="M ${X(2+c)} ${t} H ${X(L)} L ${X(L+1.2)} ${t+bv} H ${X(2+c+bv*.4)} Z" fill="url(#${id}nb2)" opacity=".9"/>`;
-      m+=`<path d="${innerP(sd)}" fill="none" stroke="#2f3134" stroke-width="1"/>`;
-      m+=`<path d="${d}" fill="none" stroke="#c8cbcf" stroke-width="5" opacity=".38" filter="url(#${id}nb)"/>`;
+      m+=`<path d="${innerP(sd)}" fill="none" stroke="#252a32" stroke-width="1"/>`;
+      m+=`<path d="${d}" fill="none" stroke="#c6cbd1" stroke-width="5" opacity=".38" filter="url(#${id}nb)"/>`;
       m+=`<path d="${d}" fill="none" stroke="url(#${id}ne)" stroke-width="1.4"/>`;
       // glühende Oberkante und Reflex, der entlang läuft
       const top=`M ${X(2+c)} ${t} H ${X(L)}`;
-      m+=`<path d="${top}" stroke="#d3d5d8" stroke-width="6" opacity=".55" filter="url(#${id}nb)"/><path d="${top}" stroke="#f0ece5" stroke-width="1.2"/>`;
-      m+=`<path d="${top}" stroke="#f6f4ef" stroke-width="2.4" pathLength="1000" stroke-dasharray="120 880" class="cc-bz-sweep" style="animation-duration:${sd?5.5:4.5}s" filter="url(#${id}nb)"/>`;
+      m+=`<path d="${top}" stroke="#c9d0d9" stroke-width="6" opacity=".55" filter="url(#${id}nb)"/><path d="${top}" stroke="#e8edf3" stroke-width="1.2"/>`;
+      m+=`<path d="${top}" stroke="#e8edf3" stroke-width="2.4" pathLength="1000" stroke-dasharray="120 880" class="cc-bz-sweep" style="animation-duration:${sd?5.5:4.5}s" filter="url(#${id}nb)"/>`;
       // rote Lichtbalken: außen senkrecht, an der Schräge, unten
       const red=`M ${X(2)} ${t+c+10} V ${b-8}`, slant=`M ${X(L+(L2-L)*.25)} ${t+(b-t)*.25} L ${X(L+(L2-L)*.8)} ${t+(b-t)*.8}`, low=`M ${X(w*.08)} ${b-1} H ${X(w*.2)}`;
-      for(const q of [red,slant,low])m+=`<g class="cc-bz-light"><path d="${q}" stroke="#b7babf" stroke-width="9" opacity=".7" filter="url(#${id}nb3)" stroke-linecap="round"/><path d="${q}" stroke="#bdc0c4" stroke-width="2.6" stroke-linecap="round"/><path d="${q}" stroke="#efebe2" stroke-width=".8" stroke-linecap="round"/></g>`;
+      for(const q of [red,slant,low])m+=`<g class="cc-bz-light"><path d="${q}" stroke="#b4bac2" stroke-width="9" opacity=".7" filter="url(#${id}nb3)" stroke-linecap="round"/><path d="${q}" stroke="#babfc7" stroke-width="2.6" stroke-linecap="round"/><path d="${q}" stroke="#e8edf3" stroke-width=".8" stroke-linecap="round"/></g>`;
       for(const [x,y] of [[2+c+8,t+bv+6],[L-14,t+bv+6]])m+=`<circle cx="${X(x)}" cy="${y}" r="1.8" fill="url(#${id}nr)"/>`;
     }
     // Runde Fassung des Auges: dunkle Mulde, Goldring, roter Segmentring, Skalenstriche
     m+=`<circle cx="${mx}" cy="${cy}" r="${rr+12}" fill="url(#${id}ns)"/>`;
-    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+3}" fill="#040407" stroke="#000000" stroke-width="2"/>`;
-    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+3}" fill="none" stroke="#ced0d3" stroke-width="4" opacity=".45" filter="url(#${id}nb)"/><circle cx="${mx}" cy="${cy}" r="${rr+3}" fill="none" stroke="url(#${id}ne)" stroke-width="1.4"/>`;
-    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+8}" fill="none" stroke="#bdc0c4" stroke-width="2" stroke-dasharray="14 6 4 6" opacity=".85" filter="url(#${id}nb)"/>`;
+    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+3}" fill="#050608" stroke="#050608" stroke-width="2"/>`;
+    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+3}" fill="none" stroke="#c9d0d9" stroke-width="4" opacity=".45" filter="url(#${id}nb)"/><circle cx="${mx}" cy="${cy}" r="${rr+3}" fill="none" stroke="url(#${id}ne)" stroke-width="1.4"/>`;
+    m+=`<circle cx="${mx}" cy="${cy}" r="${rr+8}" fill="none" stroke="#babfc7" stroke-width="2" stroke-dasharray="14 6 4 6" opacity=".85" filter="url(#${id}nb)"/>`;
     let tk='';for(let i=0;i<48;i++){const a=i*Math.PI/24,r0=rr+12,r1=rr+(i%4?15:18);tk+=`M ${(mx+Math.cos(a)*r0).toFixed(1)} ${(cy+Math.sin(a)*r0).toFixed(1)} L ${(mx+Math.cos(a)*r1).toFixed(1)} ${(cy+Math.sin(a)*r1).toFixed(1)} `}
-    m+=`<path d="${tk}" stroke="#bdc0c4" stroke-width=".8" opacity=".6"/>`;
-    m+=`<path d="M ${L2} ${b} H ${R2}" stroke="#bdc0c4" stroke-width="6" opacity=".65" filter="url(#${id}nb)"/><path d="M ${mx-w*.05} ${b} H ${mx+w*.05}" stroke="#e8eaeb" stroke-width="1.4"/>`;
+    m+=`<path d="${tk}" stroke="#babfc7" stroke-width=".8" opacity=".6"/>`;
+    m+=`<path d="M ${L2} ${b} H ${R2}" stroke="#babfc7" stroke-width="6" opacity=".65" filter="url(#${id}nb)"/><path d="M ${mx-w*.05} ${b} H ${mx+w*.05}" stroke="#e8edf3" stroke-width="1.4"/>`;
     return m;
   }
   // Glasfelder: feiner, leuchtender Goldrand statt Metallrahmen; Kennzahlen laufen nach rechts aus.
@@ -421,18 +421,18 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const fade=el.classList.contains('v11-m'),c=9;
     const o=`M ${c} .75 H ${w-c} L ${w-.75} ${c} V ${h-c} L ${w-c} ${h-.75} H ${c} L .75 ${h-c} V ${c} Z`;
     let m=`<defs>
-      <linearGradient id="${id}ge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e8eaeb"/><stop offset=".3" stop-color="#b7babf"/><stop offset=".65" stop-color="#50535a"/><stop offset="1" stop-color="#cbced1"/></linearGradient>
+      <linearGradient id="${id}ge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e8edf3"/><stop offset=".3" stop-color="#b4bac2"/><stop offset=".65" stop-color="#4c545e"/><stop offset="1" stop-color="#c9d0d9"/></linearGradient>
       <filter id="${id}gg" filterUnits="userSpaceOnUse" x="-20" y="-20" width="${w+40}" height="${h+40}"><feGaussianBlur stdDeviation="2.4"/></filter>`;
     if(fade)m+=`<linearGradient id="${id}fm" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#ffffff"/><stop offset=".62" stop-color="#ffffff"/><stop offset="1" stop-color="#ffffff" stop-opacity=".08"/></linearGradient><mask id="${id}mk" maskUnits="userSpaceOnUse" x="-20" y="-20" width="${w+40}" height="${h+40}"><rect x="-20" y="-20" width="${w+40}" height="${h+40}" fill="url(#${id}fm)"/></mask>`;
     m+=`</defs><g ${fade?`mask="url(#${id}mk)"`:''}>`;
-    m+=`<path d="${o}" fill="none" stroke="#c8cbcf" stroke-width="3.5" opacity=".28" filter="url(#${id}gg)"/>`;
+    m+=`<path d="${o}" fill="none" stroke="#c6cbd1" stroke-width="3.5" opacity=".28" filter="url(#${id}gg)"/>`;
     m+=`<path d="${o}" fill="none" stroke="url(#${id}ge)" stroke-width="1.1"/>`;
-    m+=`<path d="M 3.5 ${c+3} V ${c} L ${c} 3.5" fill="none" stroke="#27292d" stroke-width=".6"/>`;
+    m+=`<path d="M 3.5 ${c+3} V ${c} L ${c} 3.5" fill="none" stroke="#252a32" stroke-width=".6"/>`;
     const tl=`M .75 ${Math.min(h*.6,34)} V ${c} L ${c} .75 H ${Math.min(w*.4,90)}`;
-    m+=`<path d="${tl}" fill="none" stroke="#d7d9dc" stroke-width="3" opacity=".7" filter="url(#${id}gg)"/><path d="${tl}" fill="none" stroke="#efebe2" stroke-width="1.1"/>`;
+    m+=`<path d="${tl}" fill="none" stroke="#d9dee5" stroke-width="3" opacity=".7" filter="url(#${id}gg)"/><path d="${tl}" fill="none" stroke="#e8edf3" stroke-width="1.1"/>`;
     const bt=`M ${w*.12} ${h-.75} H ${w*.55}`;
-    m+=`<path d="${bt}" fill="none" stroke="#c8cbcf" stroke-width="3" opacity=".55" filter="url(#${id}gg)"/><path d="${bt}" fill="none" stroke="#e3e5e7" stroke-width=".9" opacity=".9"/>`;
-    if(!fade){const br=`M ${w-.75} ${h-Math.min(h*.5,30)} V ${h-c} L ${w-c} ${h-.75} H ${w-Math.min(w*.3,60)}`;m+=`<path d="${br}" fill="none" stroke="#d7d9dc" stroke-width="3" opacity=".5" filter="url(#${id}gg)"/><path d="${br}" fill="none" stroke="#ebecee" stroke-width=".9"/>`}
+    m+=`<path d="${bt}" fill="none" stroke="#c6cbd1" stroke-width="3" opacity=".55" filter="url(#${id}gg)"/><path d="${bt}" fill="none" stroke="#d9dee5" stroke-width=".9" opacity=".9"/>`;
+    if(!fade){const br=`M ${w-.75} ${h-Math.min(h*.5,30)} V ${h-c} L ${w-c} ${h-.75} H ${w-Math.min(w*.3,60)}`;m+=`<path d="${br}" fill="none" stroke="#d9dee5" stroke-width="3" opacity=".5" filter="url(#${id}gg)"/><path d="${br}" fill="none" stroke="#e8edf3" stroke-width=".9"/>`}
     return m+`</g>`;
   }
   const resize='ResizeObserver' in window?new ResizeObserver(entries=>entries.forEach(e=>draw(e.target))):null;
