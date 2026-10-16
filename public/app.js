@@ -1,22 +1,22 @@
 
 (()=>{'use strict';
 // App-Version: bei jeder Auslieferung hier und in public/sw.js (CACHE) erhöhen. Die Einstellungen zeigen sie unter „Über die App“.
-const RV_VERSION='V34',RV_VERSION_DATE='16.10.2026';window.RV_VERSION=RV_VERSION;
+const RV_VERSION='V35',RV_VERSION_DATE='16.10.2026';window.RV_VERSION=RV_VERSION;
 const $=id=>document.getElementById(id);const platforms=['ebay','vinted','instagram'];let step=0,activePlatform='ebay',article=null,editorIndex=-1,editorRatio='1',db;
 const defaults=()=>({brightness:100,contrast:100,saturation:100,blur:0,sepia:0,grayscale:0,hue:0,warmth:0,sharpness:0,zoom:1,ox:.5,oy:.5});
 const presets={Original:{},'Vintage Clean':{contrast:106,saturation:90,warmth:8},Studio:{brightness:108,contrast:108,saturation:102},Warm:{warmth:30,saturation:106},Cool:{warmth:-25,saturation:95},Retro:{sepia:35,contrast:92,saturation:80},'Film 90s':{contrast:115,saturation:75,sepia:18},'Soft Portrait':{brightness:105,contrast:92,blur:.5},'Schwarzweiß':{grayscale:100,contrast:115},'High Contrast':{contrast:145,saturation:108},'Pastell':{brightness:110,contrast:85,saturation:78},'Muted':{saturation:55,contrast:105},'Golden Hour':{warmth:40,brightness:107},'Kalt & Klar':{warmth:-20,contrast:120},'Faded':{contrast:78,brightness:108},'Dramatic':{contrast:140,brightness:92}};
 const controls=[['brightness','Helligkeit',50,150,1],['contrast','Kontrast',50,160,1],['saturation','Sättigung',0,180,1],['warmth','Wärme',-60,60,1],['sharpness','Schärfe',0,100,1],['blur','Weichzeichnen',0,5,.1],['sepia','Sepia',0,100,1],['grayscale','Schwarzweiß',0,100,1],['hue','Farbton',-180,180,1],['zoom','Zoom',1,3,.05]];
 function blank(){return {id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),sku:'',brand:'',size:'',condition:'',category:'',notes:'',cost:'',measurements:'',material:'',color:'',country:'',model:'',location:'',chest:'',length:'',purchaseDate:'',source:'',sale:null,articleStatus:'Entwurf',prices:{ebay:'',vinted:'',instagram:''},listings:{ebay:{title:'',description:''},vinted:{title:'',description:''},instagram:{title:'',description:''}},photos:[]}}
 function dbOpen(){return new Promise((ok,no)=>{let q=indexedDB.open('RVStudioDB',1);q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains('articles'))q.result.createObjectStore('articles',{keyPath:'id'})};q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})}
-function store(mode,fn){return new Promise((ok,no)=>{const t=db.transaction('articles',mode),s=t.objectStore('articles');let touched=null;
+function store(mode,fn){return new Promise((ok,no)=>{const t=db.transaction('articles',mode),s=t.objectStore('articles');let touched=null,saved=null;
  const wrapped=mode==='readwrite'?new Proxy(s,{get(target,key){
-   if(key==='put')return function(a){if(!rvApplyingRemote){a.rvSyncModifiedAt=new Date().toISOString();touched={id:a.id,type:'put'}}return target.put(a)};
+   if(key==='put')return function(a){if(!rvApplyingRemote){a.rvSyncModifiedAt=new Date().toISOString();touched={id:a.id,type:'put'};saved={id:a.id,status:a.articleStatus||'',sold:Boolean(a.sale)}}return target.put(a)};
    if(key==='delete')return function(id){if(!rvApplyingRemote)touched={id,type:'delete'};return target.delete(id)};
    const value=target[key];return typeof value==='function'?value.bind(target):value;
  }}):s;
  let r;try{r=fn(wrapped)}catch(e){no(e);return}
  r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);
- t.oncomplete=()=>{if(touched){rvQueue(touched.id,touched.type);rvScheduleSync()}};
+ t.oncomplete=()=>{if(touched){rvQueue(touched.id,touched.type);rvScheduleSync()}if(saved)try{document.dispatchEvent(new CustomEvent('rv:article-saved',{detail:saved}))}catch(e){}};
  })}
 const fields=['sku','brand','size','condition','category','notes','cost','measurements','material','color','country','model','location','articleStatus','chest','length','purchaseDate','source'];function pull(){fields.forEach(k=>article[k]=$(k).value);platforms.forEach(k=>article.prices[k]=$('price'+k[0].toUpperCase()+k.slice(1)).value);article.listings[activePlatform]={title:$('listingTitle').value,description:$('listingDescription').value}}
 function push(){fields.forEach(k=>$(k).value=article[k]||'');platforms.forEach(k=>$('price'+k[0].toUpperCase()+k.slice(1)).value=article.prices[k]||'');showListing();renderPhotos();paintCondition()}
@@ -1400,18 +1400,35 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('chPicker').hidd
 {const prevOpenCh=openStockDetail;openStockDetail=async function(id){await prevOpenCh(id);let b=$('chAskArticle');if(!b){b=document.createElement('button');b.type='button';b.id='chAskArticle';b.className='btn secondary';b.textContent='✦ KI zu diesem Artikel fragen';const head=document.querySelector('#stockSheet .sheet-header');head&&head.after(b)}b.onclick=()=>{const sid=stockSelectedId;closeStockDetail();showChat();chSetCtx(sid)}}}
 {const prevShowChat=showChat;showChat=function(){prevShowChat();$('chatInput').placeholder=innerWidth<560?'Frag mich etwas …':'Frag nach Preisen, Texten, Strategien …';chRender();chAutosize();if(matchMedia('(hover:hover)').matches)setTimeout(()=>$('chatInput').focus(),120)}}
 chRender();
-// ===================== Kopfmenü V26 (ersetzt das untere Menü) =====================
+// ===================== Kopfmenü V26 (ersetzt das untere Menü) · Navigation 2.0 (V35) =====================
+// Fünf Hauptbereiche: Home · Bestand · Studio · Bao · Einstellungen. Zusammengehöriges liegt im Bereichsmenü darunter:
+// Bestand | Einkäufe | Verkäufe und Gespräch | Aufgaben | Eingang | Freigaben. Snipes ist ausgeblendet (siehe SN_ENABLED).
 const TOP_MAP={navHome:'home',navStudio:'studio',navStock:'stock',navPurchases:'purchases',navSales:'sales',navFinance:'sales',navChat:'chat',navSettings:'settings'};
-function topActive(key){document.querySelectorAll('#rvTop [data-nav]').forEach(b=>{const on=b.dataset.nav===key;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
- $('rvTopSub').textContent=key==='home'?'Dein Reselling Command Center':'‹ Zur Startseite';$('rvTopHome').setAttribute('aria-current',key==='home'?'page':'false')}
+const RVN_GROUP={stock:['stock','stock'],purchases:['stock','stock'],sales:['stock','stock'],chat:['chat','bao']}; // Bereich → [Hauptkachel, Bereichsmenü]
+let rvnBaoTab='talk',rvnKey='home';
+function topActive(key){rvnKey=key;const tile=RVN_GROUP[key]?RVN_GROUP[key][0]:key;
+ document.querySelectorAll('#rvTop [data-nav]').forEach(b=>{const on=b.dataset.nav===tile;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+ rvnSub(key);document.body.dataset.area=tile||'none';
+ $('rvTopSub').textContent=key==='home'?'Dein Unternehmensportal':'‹ Zur Startseite';$('rvTopHome').setAttribute('aria-current',key==='home'?'page':'false')}
+function rvnSub(key){const sub=$('rvnSub');if(!sub)return;const g=RVN_GROUP[key];sub.hidden=!g;if(!g)return;const group=g[1],active=group==='bao'?rvnBaoTab:key;
+ sub.querySelectorAll('.rvn-seg').forEach(seg=>{const on=seg.dataset.group===group;seg.hidden=!on;if(!on)return;
+  seg.querySelectorAll('[data-sub]').forEach(b=>{const a=b.dataset.sub===active;b.classList.toggle('on',a);b.setAttribute('aria-selected',String(a));b.tabIndex=a?0:-1});requestAnimationFrame(()=>rvnInk(seg))})}
+function rvnInk(seg){const on=seg.querySelector('.on'),ink=seg.querySelector('.rvn-ink');if(!on||!ink||!on.offsetWidth)return;ink.style.width=on.offsetWidth+'px';ink.style.transform='translateX('+on.offsetLeft+'px)'}
+function rvnSetBaoTab(t){rvnBaoTab=t;if(RVN_GROUP[rvnKey]&&RVN_GROUP[rvnKey][1]==='bao')rvnSub(rvnKey)}
 {const prevSel=selectBottomNav;selectBottomNav=function(id){prevSel(id);topActive(id==='navStock'&&v5Tab==='purchases'?'purchases':TOP_MAP[id]||'')}}
-{const prevTab=v5SetTab;v5SetTab=function(tab){prevTab(tab);if(!$('s4').classList.contains('hidden'))topActive(tab==='purchases'?'purchases':'stock')}}
+{const prevTab=v5SetTab;v5SetTab=function(tab){prevTab(tab);$('s4').classList.toggle('rvn-buy',tab==='purchases');const h=document.querySelector('#s4 .bx-greet h1');if(h)h.textContent=tab==='purchases'?'Deine Einkäufe':'Dein Bestand';if(!$('s4').classList.contains('hidden'))topActive(tab==='purchases'?'purchases':'stock')}}
 const TOP_GO={
+ home:()=>showHome(),
  studio:()=>{showStep(step>=0&&step<=3?step:0)},
  stock:()=>{showStep(4);if(v5Tab!=='all')v5SetTab('all');topActive('stock')},
  purchases:()=>{showStep(4);v5SetTab('purchases');topActive('purchases')},
  sales:()=>showFinance(),chat:()=>showChat(),settings:()=>showSettings()};
 document.querySelectorAll('#rvTop [data-nav]').forEach(b=>b.onclick=()=>{TOP_GO[b.dataset.nav]&&TOP_GO[b.dataset.nav]();window.scrollTo(0,0)});
+$('rvnSub').addEventListener('click',e=>{const b=e.target.closest('[data-sub]');if(!b)return;const k=b.dataset.sub;
+ if(b.closest('[data-group="bao"]')){rvnSetBaoTab(k);document.dispatchEvent(new CustomEvent('rvo:bao-tab',{detail:{tab:k}}));return}
+ TOP_GO[k]&&TOP_GO[k]();window.scrollTo(0,0)});
+$('rvnSub').addEventListener('keydown',e=>{if(!/^Arrow(Left|Right)$/.test(e.key))return;const l=[...e.target.closest('.rvn-seg').querySelectorAll('[data-sub]')],i=l.indexOf(e.target);if(i<0)return;const n=l[(i+(e.key==='ArrowRight'?1:l.length-1))%l.length];n.focus();n.click()});
+addEventListener('resize',()=>{const s=document.querySelector('#rvnSub .rvn-seg:not([hidden])');s&&rvnInk(s)});
 $('rvTopHome').onclick=()=>{showHome();window.scrollTo(0,0)};
 // ===================== Startseite V27 =====================
 // Lebende Teile der alten Startseite (Globus, KI-Kugel, KI-Eingabe) in die neue Startseite umziehen.
@@ -1419,7 +1436,7 @@ $('rvTopHome').onclick=()=>{showHome();window.scrollTo(0,0)};
  mv('#v11Root .v15-globe-wrap','hmGlobe');mv('#v11Root .v15-bot-frame','hmOrb');mv('#homeAiFeed','hmFeedSlot');mv('#v16AiState','hmAiStateSlot');
  const entry=$('hmEntry'),old=document.querySelector('#v11Root .rv-crafted-chat');if(old&&entry){['v16Mic','homeAiInput','homeAiSend'].forEach(id=>{const e=$(id);if(e)entry.append(e)});old.remove()}}
 const HM_QUICK=[['photo','<path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>','Artikel fotografieren'],['new','<path d="M12 5v14M5 12h14"/>','Neuen Artikel anlegen'],['purchases','<path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9.5" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>','Einkauf erfassen'],['sell','<path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/>','Artikel verkaufen'],['scan','<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8"/>','Barcode scannen'],['stats','<path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/>','Statistiken anzeigen']];
-const HM_PROMPTS=[['Artikel bewerten','Bewerte meinen aktuellen Bestand'],['Verkaufstext','Erstelle einen Verkaufstext für meinen neuesten Artikel'],['Preisempfehlung','Welche Preise soll ich anpassen?'],['Lager optimieren','Wie kann ich mein Lager optimieren?'],['Ideen & Strategien','Gib mir Ideen und Strategien für mein Reselling-Business']];
+const HM_PROMPTS=[['Was ist heute wichtig?','Was sollte ich als Nächstes erledigen?'],['Längste Lagerdauer','Welche Artikel liegen am längsten im Bestand?'],['Gewinn diesen Monat','Wie viel Gewinn habe ich diesen Monat gemacht?'],['Beste Marge','Welche Produkte bringen die beste Marge?'],['Neue Ware?','Lohnt es sich, aktuell neue Ware einzukaufen?']];
 const hmName=a=>[a.brand,a.model].filter(Boolean).join(' ')||[a.brand,a.category].filter(Boolean).join(' ')||a.sku||'Artikel';
 const hmImg=a=>rvThumb(a)?'<img src="'+sxEsc(rvThumb(a))+'" alt="" loading="lazy">':'<span class="ph">RV</span>';
 function hmWhen(t){const d=new Date(t),now=new Date(),day=Math.round((new Date(now.getFullYear(),now.getMonth(),now.getDate())-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/DAY),hm=d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});return day===0?'Heute, '+hm:day===1?'Gestern, '+hm:day<7?d.toLocaleDateString('de-DE',{weekday:'long'}):d.toLocaleDateString('de-DE')}
@@ -1505,6 +1522,9 @@ document.querySelectorAll('#hmRoot [data-hm-go]').forEach(b=>b.onclick=()=>hmGo(
 // ===================== Snipes V30 (Vinted-Funde mit Gewinnbewertung) =====================
 // Abgefragt wird ausschließlich vom eigenen Gerät über ein Userscript (deine Sitzung, nur lesend, ohne Tarnung).
 // Bei Sperre (403/429) pausiert die Abfrage und wird länger, sie versucht nichts zu umgehen.
+// V35: Snipes ist vorerst deaktiviert und aus der Oberfläche entfernt. Daten (rv_snipe_v1) und Code bleiben erhalten.
+// Ohne SN_ENABLED startet keine automatische Vinted-Abfrage und kein Verbindungsversuch zum Userscript.
+const SN_ENABLED=false;
 const SN_KEY='rv_snipe_v1',SN_DEF={minProfit:15,minMargin:40,inShip:3.9,sellFee:5,interval:75,domain:'de',auto:true,notify:true};
 const SN_DOMAINS=['de','at','fr','nl','pl','it','es','co.uk'];
 let SN={searches:[],hits:[],seen:{},cfg:{...SN_DEF}},snTab='snipes',snBridge=false,snSeq=0,snBusy=false,snTimer=0,snBack=0,snBlockedUntil=0;
@@ -1591,7 +1611,7 @@ function snAlert(h){try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch
 function snLog(t){const el=$('snLog');if(el)el.textContent=t}
 function snState(){const el=$('snState');if(!el)return;const act=SN.searches.some(s=>s.active);
  const st=Date.now()<snBlockedUntil?'wait':(SN.cfg.auto&&snBridge&&act?'on':'off');el.dataset.s=st;el.textContent=st==='on'?'Läuft':st==='wait'?'Pausiert':'Aus'}
-function snSchedule(ms){clearTimeout(snTimer);if(!SN.cfg.auto)return;const base=Math.max(45,SN.cfg.interval)*1000;snTimer=setTimeout(snTick,ms??base*(0.8+Math.random()*0.5))}
+function snSchedule(ms){clearTimeout(snTimer);if(!SN_ENABLED||!SN.cfg.auto)return;const base=Math.max(45,SN.cfg.interval)*1000;snTimer=setTimeout(snTick,ms??base*(0.8+Math.random()*0.5))}
 async function snTick(){if(document.hidden||Date.now()<snBlockedUntil){snSchedule(Date.now()<snBlockedUntil?snBlockedUntil-Date.now()+1000:undefined);return}await snRunAll()}
 async function snRunAll(manual){
  if(snBusy)return;const act=SN.searches.filter(s=>s.active);
@@ -1664,7 +1684,7 @@ function showSniper(){closeStockDetail&&closeStockDetail();hidePrimaryViews();$(
 {const prev=hidePrimaryViews;hidePrimaryViews=function(){prev();$('sniper')&&$('sniper').classList.add('hidden')}}
 {const prev=showStep;showStep=function(n){$('sniper')&&$('sniper').classList.add('hidden');return prev.apply(this,arguments)}}
 TOP_GO.snipe=showSniper;
-snLoad();snBind();snRender();snRenderLink();setTimeout(snPing,700);snSchedule(8000);
+snLoad();snBind();snRender();snRenderLink();if(SN_ENABLED){setTimeout(snPing,700);snSchedule(8000)}
 // ===================== V31.3: RVO-Titelbild getrennt von den Fotos =====================
 // Einmalig: alte Titelbilder (erstes Foto mit cover:true) in article.rvCover verschieben. Originalfotos bleiben unverändert.
 (async()=>{try{
@@ -1774,4 +1794,23 @@ async function pfOpen(pi,k0){
  sync();
 }
 window.RVFrames={draw:pfDraw,frame:pfFrame,open:pfOpen};
+// ===================== V35: Brücke für Bao / RVO Intelligence (public/rvo-intel.js) =====================
+// app.js ist gekapselt. Die neuen Module erreichen nur diese ausdrücklich freigegebenen Funktionen und Haken.
+// Daten werden weiterhin ausschließlich über die bestehenden Funktionen gelesen und geschrieben (IndexedDB, Sync, Chargen).
+const RVO_HOOKS={runHomeAi:null,afterSync:[],afterShowChat:[],afterRenderHome:[]};
+{const prev=runHomeAi;runHomeAi=function(raw,opts){return RVO_HOOKS.runHomeAi?RVO_HOOKS.runHomeAi(raw,opts||{},prev):prev(raw,opts)}}
+{const prev=rvSync;rvSync=async function(){const r=await prev.apply(this,arguments);for(const f of RVO_HOOKS.afterSync){try{await f()}catch(e){console.warn(e)}}return r}}
+{const prev=showChat;showChat=function(){const r=prev.apply(this,arguments);for(const f of RVO_HOOKS.afterShowChat){try{f()}catch(e){console.warn(e)}}return r}}
+{const prev=renderHome;renderHome=async function(){const r=await prev.apply(this,arguments);for(const f of RVO_HOOKS.afterRenderHome){try{f()}catch(e){console.warn(e)}}return r}}
+window.RVO=Object.freeze({
+ hooks:RVO_HOOKS,version:RV_VERSION,snipesEnabled:SN_ENABLED,
+ allArticles:()=>allArticles(),store:(mode,fn)=>store(mode,fn),age:a=>v5Age(a),missing:a=>v6Missing(a),settings:()=>stAll(),removeNeeded:a=>stockRemoveNeeded(a),
+ batches:()=>v7Batches(),setBatches:b=>v7SetBatches(b),
+ message:(role,text,opts)=>homeMessage(role,text,opts),aiState:(s,m)=>rvAiState(s,m),aiPassword:()=>rvAiPassword(),aiEndpoint:()=>getAiEndpoint(),aiProvider:()=>getAiProvider(),
+ chatHistory:()=>chHistory,chatDropLastUser:()=>{const i=chHistory.map(m=>m.role).lastIndexOf('user');if(i>=0)chHistory.splice(i,1);chSave();const f=$('homeAiFeed'),l=f&&[...f.querySelectorAll('.home-msg.user')].pop();if(l)l.remove();chRender()},
+ chatContextId:()=>chCtxId,isBusy:()=>homeAiBusy,setBusy:v=>{homeAiBusy=!!v},
+ cloudConnected:()=>Boolean(rvCloudPassword),api:(path,opts)=>rvAPI(path,opts),scheduleSync:()=>rvScheduleSync(),
+ go:k=>{TOP_GO[k]&&TOP_GO[k]()},showChat:()=>showChat(),renderLibrary:()=>renderLibrary(),stockFilter:k=>v6ShowFilter(k),setBaoTab:t=>rvnSetBaoTab(t),
+ toast:t=>sxToast(t),copy:(t,b)=>sxCopy(t,b),esc:v=>sxEsc(v)
+});
 })();

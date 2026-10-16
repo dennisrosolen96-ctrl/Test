@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="/snipe.css">
 <link rel="stylesheet" href="/noir.css">
 <link rel="stylesheet" href="/bao.css">
+<link rel="stylesheet" href="/rvo.css">
 <link rel="preload" href="/fonts/command-sans-regular.otf" as="font" type="font/otf" crossorigin>
 <link rel="preload" href="/fonts/command-sans-bold.otf" as="font" type="font/otf" crossorigin>
 </head>
@@ -85,60 +86,32 @@
 <i></i>
 </button>
 </div>
-<div class="rvt-tiles" role="navigation" aria-label="Hauptmenü">
+<div class="rvt-tiles rvn-main" role="navigation" aria-label="Hauptmenü">
+<button type="button" class="rvt-tile" data-nav="home" aria-label="Home">
+<span class="ic">
+<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10.5 9-7.5 9 7.5"/><path d="M5.5 8.6V21h13V8.6"/><path d="M10 21v-6h4v6"/></svg>
+</span>
+<span class="lb">Home</span>
+</button>
+<button type="button" class="rvt-tile" data-nav="stock" aria-label="Bestand, Einkäufe und Verkäufe">
+<span class="ic">
+<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>
+</span>
+<span class="lb">Bestand</span>
+<span class="bd" id="v11-badge-sales" hidden>0</span>
+</button>
 <button type="button" class="rvt-tile" data-nav="studio" aria-label="Studio">
 <span class="ic">
-<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
-<path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/>
-<circle cx="12" cy="13" r="3.5"/>
-</svg>
+<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
 </span>
 <span class="lb">Studio</span>
 </button>
-<button type="button" class="rvt-tile" data-nav="stock" aria-label="Bestand">
+<button type="button" class="rvt-tile rvn-bao" data-nav="chat" aria-label="Bao – KI-Assistent">
 <span class="ic">
-<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
-<path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/>
-<path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>
-</svg>
+<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg>
 </span>
-<span class="lb">Bestand</span>
-</button>
-<button type="button" class="rvt-tile" data-nav="purchases" aria-label="Einkäufe">
-<span class="ic">
-<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
-<path d="M3 4h2.5l2 11h10.5l2-8H7"/>
-<circle cx="9.5" cy="19" r="1.5"/>
-<circle cx="17" cy="19" r="1.5"/>
-</svg>
-</span>
-<span class="lb">Einkäufe</span>
-</button>
-<button type="button" class="rvt-tile" data-nav="snipe" aria-label="Snipes">
-<span class="ic">
-<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
-<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
-</svg>
-</span>
-<span class="lb">Snipes</span>
-</button>
-<button type="button" class="rvt-tile" data-nav="sales" aria-label="Verkauf">
-<span class="ic">
-<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
-<path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/>
-</svg>
-</span>
-<span class="lb">Verkauf</span>
-<span class="bd" id="v11-badge-sales" hidden>0</span>
-</button>
-<button type="button" class="rvt-tile" data-nav="chat" aria-label="KI-Chat">
-<span class="ic">
-<svg class="v11-ico" viewBox="0 0 24 24" aria-hidden="true">
-<path d="M4 5h16v11H9l-5 4V5Z"/>
-<path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01"/>
-</svg>
-</span>
-<span class="lb">KI-Chat</span>
+<span class="lb">Bao</span>
+<span class="bd" id="rvoBadgeBao" hidden>0</span>
 </button>
 <button type="button" class="rvt-tile" data-nav="settings" aria-label="Einstellungen">
 <span class="ic">
@@ -150,10 +123,38 @@
 <span class="lb">Einstel&shy;lungen</span>
 </button>
 </div>
+<nav class="rvn-sub" id="rvnSub" aria-label="Unterbereiche" hidden>
+<div class="rvn-seg" data-group="stock" role="tablist" aria-label="Warenwirtschaft">
+<button type="button" role="tab" data-sub="stock"><b>Bestand</b><small id="rvnStockN"></small></button>
+<button type="button" role="tab" data-sub="purchases"><b>Einkäufe</b><small id="rvnBuyN"></small></button>
+<button type="button" role="tab" data-sub="sales"><b>Verkäufe</b><small id="rvnSaleN"></small></button>
+<i class="rvn-ink" aria-hidden="true"></i>
+</div>
+<div class="rvn-seg" data-group="bao" role="tablist" aria-label="Bao">
+<button type="button" role="tab" data-sub="talk"><b>Gespräch</b></button>
+<button type="button" role="tab" data-sub="tasks"><b>Aufgaben</b><small id="rvnTaskN"></small></button>
+<button type="button" role="tab" data-sub="inbox"><b>Eingang</b><small id="rvnInboxN"></small></button>
+<button type="button" role="tab" data-sub="approve"><b>Freigaben</b><small id="rvnApproveN"></small></button>
+<i class="rvn-ink" aria-hidden="true"></i>
+</div>
+</nav>
 </header>
 <main class="wrap">
 <section id="home" class="home lux-home">
 <div class="sx hm" id="hmRoot">
+<section class="sx-panel hm-ai" aria-label="Bao – dein Briefing">
+<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Bao · Dein Briefing</h2><span class="sx-sub">RVO Intelligence aus deinen echten Daten</span></div><span id="hmAiStateSlot"></span><button type="button" class="hm-more" data-hm-go="chat">Mit Bao sprechen<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+<div class="hm-ai-body">
+<div class="hm-orb" id="hmOrb"></div>
+<div class="hm-ai-main">
+<div id="hmBrief" class="rvo-brief-box" aria-live="polite"></div>
+<div class="hm-bubble"><b id="hmAiHello">Hallo! 👋</b> Frag mich etwas.<span>Zum Beispiel: „Was sollte ich als Nächstes erledigen?“ oder „Welche Artikel liegen am längsten?“</span></div>
+<div id="hmFeedSlot"></div>
+<div class="sx-chips hm-prompts" id="hmPrompts"></div>
+<div class="hm-entry" id="hmEntry"></div>
+</div>
+</div>
+</section>
 <section class="sx-panel hm-over" aria-label="Verkaufs-Übersicht">
 <div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/></svg></span><div class="sx-tt"><h2 class="sx-title">Verkaufs-Übersicht</h2><span class="sx-sub">Live-Daten deines Business</span></div>
 <div class="sx-seg" id="hmPeriod" role="group" aria-label="Zeitraum"><button type="button" data-p="today">Heute</button><button type="button" data-p="7">7 Tage</button><button type="button" data-p="30">30 Tage</button><button type="button" data-p="all">Alle</button></div></div>
@@ -193,18 +194,7 @@
 <div class="hm-legend" id="hmLegend"></div>
 </div>
 </section>
-<section class="sx-panel hm-ai" aria-label="KI-Assistent">
-<div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><div class="sx-tt"><h2 class="sx-title">KI-Assistent</h2><span class="sx-sub">Dein Partner für Preise, Texte und Strategien</span></div><span id="hmAiStateSlot"></span><button type="button" class="hm-more" data-hm-go="chat">Chat öffnen<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
-<div class="hm-ai-body">
-<div class="hm-orb" id="hmOrb"></div>
-<div class="hm-ai-main">
-<div class="hm-bubble"><b id="hmAiHello">Hallo! 👋</b> Wie kann ich dir heute helfen?<span>Frag nach Preisen, Texten, Marktchancen oder deinem nächsten Schritt.</span></div>
-<div id="hmFeedSlot"></div>
-<div class="sx-chips hm-prompts" id="hmPrompts"></div>
-<div class="hm-entry" id="hmEntry"></div>
-</div>
-</div>
-</section>
+
 <div class="hm-two">
 <section class="sx-panel" aria-label="Aktive Aufgaben">
 <div class="sx-ph"><span class="sx-hx"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/></svg></span><div class="sx-tt"><h2 class="sx-title">Aktive Aufgaben</h2><span class="sx-sub">Deine nächsten To-dos</span></div></div>
@@ -851,7 +841,7 @@
 <button type="button" class="bx-tab v5-tab" data-v5-tab="work"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1.5 1.5L7.5 5M3.5 12l1.5 1.5L7.5 11M3.5 18l1.5 1.5 2.5-2.5"/></svg></span><span class="lb">Arbeitsmodus</span></button>
 <button type="button" class="bx-tab v5-tab" data-v5-tab="analytics"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/></svg></span><span class="lb">Analyse</span></button>
 <button type="button" class="bx-tab v5-tab" data-v5-tab="brands"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M3 12V4h8l9 9-8 8-9-9Z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><span class="lb">Marken</span></button>
-<button type="button" class="bx-tab v5-tab" data-v5-tab="purchases"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9.5" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg></span><span class="lb">Einkäufe</span></button>
+<button type="button" class="bx-tab v5-tab rvn-moved" data-v5-tab="purchases" hidden><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9.5" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg></span><span class="lb">Einkäufe</span></button>
 <button type="button" class="bx-tab v5-tab" data-v5-tab="tasks"><span class="ic"><svg class="bx-ico" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span><span class="lb">Erinnerungen</span></button>
 </nav>
 <section id="v5Analysis" class="bx-panel bx-overview" aria-label="Bestands-Übersicht">
@@ -1123,7 +1113,7 @@
 <section id="finance" class="wrap hidden sx in">
 <div class="sx-top">
 <span class="sx-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M5 20v-5M10 20V11M15 20V6M20 20V3"/></svg></span>
-<div class="sx-greet"><h1>Insights</h1><p id="inSubtitle">Zahlen, Trends und Empfehlungen</p></div>
+<div class="sx-greet"><h1>Verkäufe</h1><p id="inSubtitle">Umsatz, Gewinn, Plattformen und Verlauf</p></div>
 <div class="sx-seg in-period" id="inPeriod" role="group" aria-label="Zeitraum"><button type="button" data-p="7">7 Tage</button><button type="button" data-p="30">30 Tage</button><button type="button" data-p="90">90 Tage</button><button type="button" data-p="365">12 Monate</button><button type="button" data-p="all">Alle</button></div>
 </div>
 <section class="sx-panel" aria-label="Überblick">
@@ -1179,7 +1169,7 @@
 <div id="ccChat" class="ch-root">
 <div class="sx-top">
 <div class="ch-avatar" id="ccChatAvatar" aria-hidden="true"></div>
-<div class="sx-greet"><h1>KI-Assistent</h1><p id="chSub">Dein Partner für Bestand, Preise und Texte</p></div>
+<div class="sx-greet"><h1>Bao</h1><p id="chSub">RVO Intelligence · dein Unternehmensassistent</p></div>
 <span class="ch-state" id="ccChatState" data-state="setup" role="status">Einrichten</span>
 <button type="button" class="sx-pill" id="chatClear"><span class="sx-pill-orb" aria-hidden="true"><svg class="sx-ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span class="sx-pill-tx"><b>Neuer Chat</b><small>Verlauf leeren</small></span></button>
 </div>
@@ -1449,6 +1439,7 @@
 <script src="/fx.js" defer></script>
 <script src="/quotes.js" defer></script>
 <script src="/bao.js" defer></script>
+<script src="/rvo-intel.js" defer></script>
 <script src="/demo.js" defer></script>
 <script src="/anim.js" defer></script>
 </body>

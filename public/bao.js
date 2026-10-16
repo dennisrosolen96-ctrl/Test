@@ -200,7 +200,7 @@
   /* ---------- Pose berechnen und anwenden ---------- */
   function pose(B, now) {
     var P = { x: 0, y: 0, rot: 0, sx: 1, sy: 1, flip: 1, hy: 0, tHead: B.idleHead, tTurn: 0, tLookX: 0, tLookY: 0, blink: 0, armL: -16, armR: 16, earL: 0, earR: 0, mouth: B.head ? 0 : .3, happy: 0, blush: .3, prop: 0, think: 0, spark: 0, heart: 0, brow: 0 };
-    var t = now / 1000, br = Math.sin(t * Math.PI * 2 / 3.4);
+    var t = reduce() ? 0 : now / 1000, br = Math.sin(t * Math.PI * 2 / 3.4); // bei „Bewegung aus“ feste Zeit = Standbild je Zustand
     P.sy += .014 * br; P.sx -= .006 * br; P.hy += 1.1 * br; P.armL += 2 * br; P.armR -= 2 * br; P.earL += Math.sin(t * 1.3) * 1.5; P.earR -= Math.sin(t * 1.1 + 1) * 1.5;
     var m = B.mode;
     if (m === 'listen') { P.tLookY = .55; P.tHead = 4; P.hy += 2; P.tTurn = -.1; P.brow = .3; }
@@ -387,6 +387,7 @@
     if (doc.querySelector('#stockSheet:not(.hidden), .ch-picker:not([hidden]), dialog[open], .sx-modal:not([hidden])')) return false;
     var studio = [0, 1, 2, 3].some(function (i) { var s = doc.getElementById('s' + i); return s && !s.classList.contains('hidden'); });
     if (studio) return false;
+    if (event === 'force') return true; // ausdrücklich angefordert (z. B. Test oder späterer Hinweis), nur Einstellungen/Bewegung/Belegung zählen
     var L = cameoLog(), today = new Date().toISOString().slice(0, 10), now = Date.now();
     if (L.day !== today) { L.day = today; L.n = 0; }
     if ((L.n || 0) >= (event ? 8 : 4)) return false;

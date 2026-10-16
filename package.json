@@ -1,13 +1,14 @@
 {
-  "name": "rv-studio-v28",
-  "version": "31.3.0",
+  "name": "rvo-studio",
+  "version": "35.0.0",
   "private": true,
-  "description": "RV Studio V17 \u2014 bestehende Cloudflare-App mit animiertem Reference Command Center",
+  "description": "RVO Studio V35 – Unternehmensportal mit Bao (RVO Intelligence)",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node tests/backend-contract.mjs && node tests/chat-and-sync.mjs && node tests/dashboard.mjs",
+    "test": "node tests/backend-contract.mjs && node tests/chat-and-sync.mjs && node tests/dashboard.mjs && node tests/bao-backend.mjs",
     "test:browser": "node tests/browser.mjs",
-    "test:fotostudio": "node tests/fotostudio-browser.mjs"
+    "test:fotostudio": "node tests/fotostudio-browser.mjs",
+    "test:v35": "node tests/v35-browser.mjs"
   },
   "engines": {
     "node": ">=20"

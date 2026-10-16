@@ -1,0 +1,23 @@
+{
+  "passed": 17,
+  "failed": 0,
+  "results": [
+    "Start ohne Skriptfehler, Version V35",
+    "Hauptmenü: genau fünf Bereiche, kein Snipes, Bao mit eigenem Kopf",
+    "Snipes: keine automatische Vinted-Abfrage, kein Userscript-Ping",
+    "Home: Bao-Briefing oben mit echten Zahlen, Beispielartikel ausgeschlossen",
+    "Bestand-Gruppe: Bestand | Einkäufe | Verkäufe wechseln, Hauptkachel bleibt aktiv",
+    "Bao-Bereich: Gespräch, Aufgaben, Eingang, Freigaben",
+    "Lokale Antwort ohne KI-Kosten: längste Lagerdauer aus echten Daten",
+    "Bao denkt während der echten Anfrage, spricht danach; Vorschlag landet unter Freigaben",
+    "Freigabe legt Aufgabe an, Erledigen löst Erfolgsmoment aus, Protokoll und Kosten sichtbar",
+    "Aufgabe selbst anlegen (mit Datum), Ablehnen protokolliert",
+    "Eingang: Foto wird verkleinert gesendet, Kassenbon erkannt, Einkauf erst nach Freigabe angelegt",
+    "Erfolgsmoment bei echtem Verkauf (Statuswechsel auf Verkauft)",
+    "Älterer Server ohne /api/bao: Rückfall auf bisherigen KI-Chat ohne doppelte Nachricht",
+    "Bao-Rig: Antippen löst Reaktion aus, Bewegung aus = Standbild",
+    "Auftritte: begrenzt, ohne Klickfläche",
+    "Keine Skriptfehler im gesamten Ablauf",
+    "Desktop 1440 × 900: Startseite, Bao folgt der Maus"
+  ]
+}
