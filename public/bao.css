@@ -47,16 +47,6 @@
 @keyframes bao-say { 0%, 15% { opacity:0; transform:translateY(6px) scale(.9); } 22%, 80% { opacity:1; transform:none; } 100% { opacity:0; } }
 html.rv-reduce .bao-cameo, html.rv-reduce .bao-bill { display:none; }
 
-/* V36: 3D-Figur. Canvas liegt exakt über der Vektor-Figur; deren Körper wird ausgeblendet, Effekte bleiben sichtbar. */
-.b3 > .bao .b-root, .b3 > .bao .b-shadow { display:none; }
-.bao3d { display:block; pointer-events:none; }
-.pd-stage .pd-hold.b3 .bao3d, .bao-cameo-hold.b3 .bao3d { position:absolute; inset:0; width:100%; height:100%; }
-#hmOrb .pd-home.b3 .bao3d { position:absolute; left:50%; bottom:2px; width:86%; height:94%; transform:translateX(-50%); }
-#hmOrb .pd-home.b3 .bao, .pd-stage .pd-hold.b3 .bao, .bao-cameo .b3 .bao { filter:none; }
-.pd-hold.b3 > .bao, #hmOrb .pd-home.b3 > .bao, .bao-cameo-hold.b3 > .bao { position:absolute; inset:0; }
-img.bao-head3 { width:100%; height:100%; object-fit:contain; display:block; transform:scale(1.18); }
-.rvt-tile .ic.pd-tile img.bao-head3 { width:34px; height:34px; }
-
 /* ---------- V36: Bao-Bühne auf der KI-Seite – freistehend mit Lichtkegel, Halo und Bodenlicht, keine Karte ---------- */
 .pd-stage.bao-hero { position:relative; display:flex; flex-direction:column; align-items:center; height:auto; margin:4px 0 16px; padding:6px 0 4px; overflow:visible;
   background:none !important; box-shadow:none !important; border-radius:0; }

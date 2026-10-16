@@ -166,23 +166,9 @@
       new IntersectionObserver(function (en) { B.visible = en[0].isIntersecting; if (B.visible) wake(); }, { rootMargin: '40px' }).observe(host);
     }
     all.push(B);
-    if (!opt.head) upgrade3d(B);
     render(B, performance.now(), true);
     wake();
     return B;
-  }
-  /* V36: echte 3D-Figur (bao3d.js / three.js). Die Vektor-Figur bleibt als Rückfall und für Effekte (Denkblasen, Funkeln, Herz). */
-  function upgrade3d(B) {
-    if (!window.RVBao3D) return;
-    RVBao3D.load(function (ok) {
-      if (!ok || B.g3 || !B.svg.isConnected) return;
-      try {
-        var c = doc.createElement('canvas'); c.className = 'bao3d'; c.setAttribute('aria-hidden', 'true');
-        B.host.insertBefore(c, B.svg); B.g3 = RVBao3D.Scene(c, {}); B.host.classList.add('b3');
-        if (window.ResizeObserver) new ResizeObserver(function () { if (B.g3) { B.g3.resize(); render(B, performance.now(), true); } }).observe(c);
-        render(B, performance.now(), true); wake();
-      } catch (e) { console.warn('Bao 3D nicht verfügbar', e); B.host.classList.remove('b3'); }
-    });
   }
   var REACT = ['wave', 'jump', 'spin', 'laugh', 'clap', 'love', 'cheer', 'curious'], lastCannon = 0;
   function react(B) {
@@ -261,7 +247,6 @@
       E.bubbles.setAttribute('opacity', f(C.think)); E.spark.setAttribute('opacity', f(P.spark)); E.heart.setAttribute('opacity', f(P.heart));
       E.heart.setAttribute('transform', 'translate(0 ' + f(-P.heart * 14) + ')');
     }
-    if (B.g3) { B.g3.apply(P, C); B.g3.draw(); }
   }
 
   /* ---------- Gemeinsamer Takt ---------- */
@@ -271,7 +256,7 @@
   function tick(now) {
     raf = 0; if (doc.hidden) return;
     var red = reduce(), any = false; frame++;
-    all = all.filter(function (B) { var on = B.svg.isConnected || B.keep; if (!on && B.g3) { B.g3.dispose(); B.g3 = null; } return on; });
+    all = all.filter(function (B) { return B.svg.isConnected || B.keep; });
     all.forEach(function (B) {
       if (B.head) { if (B.dirty) { render(B, now, true); B.dirty = false; } return; }
       if (!active(B)) return;
@@ -473,14 +458,6 @@
     [['#ccChatAvatar', 'pd-mini'], ['#v11AiPill .dot', 'pd-mini pd-dot'], ['#navChat', 'pd-mini pd-nav'], ['.rvt-tile[data-nav="chat"] .ic', 'pd-mini pd-tile']].forEach(function (q) {
       var h = doc.querySelector(q[0]); if (!h || h.querySelector('.bao')) return;
       h.replaceChildren(); q[1].split(' ').forEach(function (c) { h.classList.add(c); }); Bao(h, { head: true, noTap: true });
-    });
-    if (window.RVBao3D) RVBao3D.load(function (ok) {
-      if (!ok) return;
-      try {
-        var url = RVBao3D.headImage(256);
-        doc.documentElement.style.setProperty('--pd-head', 'url("' + url + '")');
-        Array.prototype.forEach.call(doc.querySelectorAll('.pd-mini'), function (h) { if (h.querySelector('img.bao-head3')) return; var im = doc.createElement('img'); im.className = 'bao-head3'; im.alt = ''; im.src = url; h.replaceChildren(im); });
-      } catch (e) { console.warn('Bao-Kopfbild', e); }
     });
     var pill = doc.querySelector('#v11AiPill > span'); if (pill && /KI-Assistent|KI-Panda/.test(pill.textContent)) pill.innerHTML = NAME + ' ist bereit.<br><small>RVO Intelligence</small>';
   }

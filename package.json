@@ -1,8 +1,8 @@
 {
   "name": "rvo-studio",
-  "version": "36.0.0",
+  "version": "37.0.0",
   "private": true,
-  "description": "RVO Studio V36 – Unternehmensportal mit Bao (3D) und RVO Intelligence",
+  "description": "RVO Studio V37 – Unternehmensportal mit Bao (2D) und RVO Intelligence",
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node tests/backend-contract.mjs && node tests/chat-and-sync.mjs && node tests/dashboard.mjs && node tests/bao-backend.mjs",

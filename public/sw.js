@@ -1,5 +1,5 @@
-const CACHE='rv-studio-v36';
-const FILES=['/','/index.html','/app.css','/dashboard.css','/fx.css','/ref.css','/theme.css','/bestand.css','/studio.css','/settings.css','/insights.css','/chat.css','/topnav.css','/home.css','/snipe.css','/pages.css','/perf.css','/anim.css','/noir.css','/app.js','/dashboard.js','/fx.js','/quotes.js','/bao.js','/bao3d.js','/rvo-intel.js','/bao.css','/rvo.css','/vendor/three-r160.min.js','/demo.js','/cutout.js','/ai-cutout.js','/ai-worker.js','/anim.js',
+const CACHE='rv-studio-v37';
+const FILES=['/','/index.html','/app.css','/dashboard.css','/fx.css','/ref.css','/theme.css','/bestand.css','/studio.css','/settings.css','/insights.css','/chat.css','/topnav.css','/home.css','/snipe.css','/pages.css','/perf.css','/anim.css','/noir.css','/app.js','/dashboard.js','/fx.js','/quotes.js','/bao.js','/rvo-intel.js','/bao.css','/rvo.css','/demo.js','/cutout.js','/ai-cutout.js','/ai-worker.js','/anim.js',
   '/vendor/jszip.min.js','/fonts/command-sans-regular.otf','/fonts/command-sans-bold.otf',
   '/rv-logo.jpg','/rv-ai-mascot.png','/rv-robot-premium.png','/rv-white.png',
   '/rv-mark-cropped.png','/rv-studio-script.png','/icons/icon-192.png','/icons/icon-512.png',

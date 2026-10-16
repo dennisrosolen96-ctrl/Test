@@ -1,7 +1,7 @@
 
 (()=>{'use strict';
 // App-Version: bei jeder Auslieferung hier und in public/sw.js (CACHE) erhöhen. Die Einstellungen zeigen sie unter „Über die App“.
-const RV_VERSION='V36',RV_VERSION_DATE='17.10.2026';window.RV_VERSION=RV_VERSION;
+const RV_VERSION='V37',RV_VERSION_DATE='17.10.2026';window.RV_VERSION=RV_VERSION;
 const $=id=>document.getElementById(id);const platforms=['ebay','vinted','instagram'];let step=0,activePlatform='ebay',article=null,editorIndex=-1,editorRatio='1',db;
 const defaults=()=>({brightness:100,contrast:100,saturation:100,blur:0,sepia:0,grayscale:0,hue:0,warmth:0,sharpness:0,zoom:1,ox:.5,oy:.5});
 const presets={Original:{},'Vintage Clean':{contrast:106,saturation:90,warmth:8},Studio:{brightness:108,contrast:108,saturation:102},Warm:{warmth:30,saturation:106},Cool:{warmth:-25,saturation:95},Retro:{sepia:35,contrast:92,saturation:80},'Film 90s':{contrast:115,saturation:75,sepia:18},'Soft Portrait':{brightness:105,contrast:92,blur:.5},'Schwarzweiß':{grayscale:100,contrast:115},'High Contrast':{contrast:145,saturation:108},'Pastell':{brightness:110,contrast:85,saturation:78},'Muted':{saturation:55,contrast:105},'Golden Hour':{warmth:40,brightness:107},'Kalt & Klar':{warmth:-20,contrast:120},'Faded':{contrast:78,brightness:108},'Dramatic':{contrast:140,brightness:92}};

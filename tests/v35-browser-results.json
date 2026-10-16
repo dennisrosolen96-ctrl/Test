@@ -1,5 +1,5 @@
 {
-  "passed": 18,
+  "passed": 17,
   "failed": 0,
   "results": [
     "Start ohne Skriptfehler, Version V35",
@@ -18,7 +18,6 @@
     "Bao-Rig: Antippen löst Reaktion aus, Bewegung aus = Standbild",
     "Auftritte: begrenzt, ohne Klickfläche",
     "Keine Skriptfehler im gesamten Ablauf",
-    "Bao in 3D: WebGL-Figur auf Startseite, Köpfe als 3D-Bild, ohne Fehler",
     "Desktop 1440 × 900: Startseite, Bao folgt der Maus"
   ]
 }

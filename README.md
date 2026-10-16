@@ -1,4 +1,6 @@
-# RVO Studio V36 — Unternehmensportal mit Bao
+# RVO Studio V37 — Unternehmensportal mit Bao
+
+Neu in V37 (Details: [UEBERGABE-V37.md](UEBERGABE-V37.md)): 3D-Bao wieder entfernt, der 2D-Bao bleibt; das V36-Design bleibt erhalten.
 
 Neu in V36 (Details: [UEBERGABE-V36.md](UEBERGABE-V36.md)): Bao als echte 3D-Figur (WebGL, three.js lokal), Menü mit fünf großen Kacheln, gestaltetes Bereichsmenü, Briefing im RV-Design, Bao-Bühne auf der KI-Seite, farbige Statusanzeige im Bestand, abgesichertes Laden der Stylesheets.
 
