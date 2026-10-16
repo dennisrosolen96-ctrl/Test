@@ -26,3 +26,11 @@
 - Wer früher „Auf dem Gerät“ gewählt hatte (intern `device`), bekam in V31 den einfachen Freisteller statt der KI, weil `device` jetzt „Einfach“ bedeutet. Alte Wahl wird einmalig auf „Automatisch“ umgestellt; eine danach bewusst gewählte Einstellung „Einfach“ bleibt erhalten.
 - Läuft die KI nicht, erscheint jetzt sofort ein Hinweis „Ohne KI freigestellt: …“ mit Grund.
 - Abzeichen am Titelbild: „KI freigestellt“, „Photoroom“, „Einfach freigestellt“ oder „Original“.
+
+## V31.2 — KI läuft jetzt zuverlässig auf dem Handy
+- **Fehler auf dem S25:** `Too many storage buffers in shader. Current: 11, Max is 10`. Chrome auf Android erlaubt nur 10 GPU-Speicherpuffer pro Rechenschritt; BiRefNet enthält Split-Knoten mit bis zu 33 Ausgängen und Concat-Knoten mit bis zu 1024 Eingängen.
+- **Untersucht:** BiRefNet umgebaut (59 Splits → Slices, 4 Concats gestuft, pixelgleich zum Original geprüft). Pufferfehler damit behoben, aber im Browser danach Speicherabsturz (`memory access out of bounds` bzw. `table index is out of bounds`) mit und ohne Worker. Auf der CPU `std::bad_alloc`. → Für den Browser nicht zuverlässig, daher entfernt.
+- **Neu: ISNet general-use** (Apache-2.0, aus dem DIS-Projekt): reines Faltungsnetz, höchstens 5 Puffer pro Schritt. Getestet im Browser über WebGPU mit 10-Puffer-Limit und auf der CPU – beide identisches Ergebnis (Prüfsumme 0,6249), kein Absturz. Gute Ausschnitte bei einzelnen Kleidungsstücken (Jacke, Hemd auf Bügel, Tasche, Sneaker); schwächer bei vielen Teilen auf einem Bild.
+- **Ablauf:** ISNet über WebGPU (Sekunden) → sonst ISNet auf der CPU (langsamer, ca. 20–60 s, aber zuverlässig). Stufen, die auf einem Gerät dauerhaft scheitern, merkt sich die App (`rv_ai_bad`, `RVAI.reset()` setzt zurück).
+- **Eigenes Hosting:** Modell in 5 Teilen (je ≤ 19 MB) unter `public/ai-model/` mit `manifest.json` (Größe + SHA-256). Einmalig ~90 MB, danach im Gerät (Cache `rv-ai-model`). ONNX Runtime Web 1.30.0 von jsDelivr. Kein Hugging Face mehr nötig. Der Service Worker speichert `/ai-model/` nicht doppelt.
+- **Bedienung:** „Einfach“ (alter Algorithmus) ist nicht mehr wählbar. Klappt die KI nicht, wird das Originalfoto im Titelbild-Format verwendet und ein Hinweis mit Grund angezeigt.

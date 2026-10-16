@@ -1,4 +1,4 @@
-const CACHE='rv-studio-v31-2';
+const CACHE='rv-studio-v31-3';
 const FILES=['/','/index.html','/app.css','/dashboard.css','/fx.css','/ref.css','/theme.css','/bestand.css','/studio.css','/settings.css','/insights.css','/chat.css','/topnav.css','/home.css','/snipe.css','/pages.css','/perf.css','/anim.css','/app.js','/dashboard.js','/fx.js','/demo.js','/cutout.js','/ai-cutout.js','/ai-worker.js','/anim.js',
   '/vendor/jszip.min.js','/fonts/command-sans-regular.otf','/fonts/command-sans-bold.otf',
   '/rv-logo.jpg','/rv-ai-mascot.png','/rv-robot-premium.png','/rv-white.png',
@@ -13,7 +13,7 @@ self.addEventListener('activate',event=>event.waitUntil(
 ));
 self.addEventListener('fetch',event=>{
   const url=new URL(event.request.url);
-  if(event.request.method!=='GET'||url.origin!==self.location.origin||url.pathname.startsWith('/api/'))return;
+  if(event.request.method!=='GET'||url.origin!==self.location.origin||url.pathname.startsWith('/api/')||url.pathname.startsWith('/ai-model/'))return;
   event.respondWith(fetch(event.request).then(response=>{
     if(response.ok){const copy=response.clone();event.waitUntil(caches.open(CACHE).then(cache=>cache.put(event.request,copy)))}
     return response;

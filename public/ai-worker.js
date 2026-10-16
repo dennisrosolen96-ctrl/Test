@@ -1,53 +1,101 @@
 /* RV Studio – KI-Freisteller (läuft im Hintergrund-Thread, kostenlos, ohne Upload).
-   Modell: BiRefNet_lite (MIT-Lizenz, auch geschäftlich nutzbar) über transformers.js.
-   Läuft nur mit WebGPU (S25 Ultra & Co.). Wird beim ersten Mal einmalig geladen (~115 MB, ohne Half-Precision-Unterstützung ~224 MB) und danach vom Browser zwischengespeichert. */
-const LIB = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/dist/transformers.min.js';
-const MODEL = 'onnx-community/BiRefNet_lite-ONNX';
-let T = null, model = null, proc = null, device = '';
+   Modell: ISNet general-use (Apache-2.0), reines Faltungsnetz – läuft über WebGPU und notfalls auf der CPU.
+   Gewichte 16 Bit gespeichert, Rechnung 32 Bit; in Teilen unter /ai-model/ (einmalig ~90 MB, danach im Gerät).
+   Getestet: BiRefNet_lite schneidet minimal feiner, stürzt im Browser aber ab (zu viele GPU-Puffer bzw. Speicher)
+   und ist deshalb nicht dabei. Reihenfolge: ISNet (GPU) → ISNet (CPU). Was scheitert, merkt sich die App. */
+const ORT = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ort.webgpu.min.mjs';
+const BASE = '/ai-model/';
+let ort = null, man = null, active = null;   // active = { key, ep, session, spec }
 
-let f16 = false;
 async function hasGpu() {
-  try {
-    if (!self.navigator.gpu) return false;
-    const a = await self.navigator.gpu.requestAdapter();
-    if (!a) return false;
-    f16 = a.features.has('shader-f16');
-    return true;
-  } catch (e) { return false; }
+  try { return !!self.navigator.gpu && !!(await self.navigator.gpu.requestAdapter()); } catch (e) { return false; }
 }
-async function load(report) {
-  if (model) return;
-  if (!T) T = await import(LIB);
-  const local = /[?&]local=1/.test(self.location.search);   // Selbst gehostetes Modell unter /models/ (zum Testen oder Offline-Betrieb)
-  T.env.allowLocalModels = local; T.env.allowRemoteModels = !local; if (local) T.env.localModelPath = '/models/';
-  const files = {};
-  const cb = function (p) {
-    if (!p || p.status !== 'progress' || !p.total || p.total < 5e6) return;
-    files[p.file] = { l: p.loaded, t: p.total };
-    let l = 0, t = 0; for (const k in files) { l += files[k].l; t += files[k].t; }
-    report(t ? l / t : 0, t);
-  };
-  // Das Modell hat eine feste Eingabegröße von 1024 px und braucht auf der CPU zu viel Speicher: nur mit WebGPU.
-  if (!(await hasGpu())) throw new Error('Dieses Gerät bietet kein WebGPU');
-  try { model = await T.AutoModel.from_pretrained(MODEL, { device: 'webgpu', dtype: f16 ? 'fp16' : 'fp32', progress_callback: cb }); device = 'webgpu'; }
-  catch (e) { model = null; throw e; }
-  proc = await T.AutoProcessor.from_pretrained(MODEL);
+async function sha256(buf) {
+  const h = new Uint8Array(await crypto.subtle.digest('SHA-256', buf));
+  return Array.from(h, b => b.toString(16).padStart(2, '0')).join('');
 }
-async function infer(blob) {
-  const img = await T.RawImage.fromBlob(blob);
-  const inp = await proc(img);
-  const out = await model({ input_image: inp.pixel_values });
-  const t = out.output_image || out[Object.keys(out)[0]];
-  const m = await T.RawImage.fromTensor(t[0].sigmoid().mul(255).to('uint8')).resize(img.width, img.height);
-  return { w: img.width, h: img.height, mask: m.data };
+async function manifest() {
+  if (!man) man = await (await fetch(BASE + 'manifest.json', { cache: 'no-cache' })).json();
+  return man;
 }
-self.onmessage = async function (e) {
-  const d = e.data, id = d.id;
-  try {
-    await load(function (f, total) { self.postMessage({ id: id, progress: f, total: total }); });
-    const r = await infer(d.blob);
-    self.postMessage({ id: id, ok: true, w: r.w, h: r.h, mask: r.mask, device: device }, [r.mask.buffer]);
-  } catch (err) {
-    self.postMessage({ id: id, ok: false, error: String(err && err.message || err) });
+
+/* Modell aus dem Gerätespeicher holen oder einmalig in Teilen laden (mit Fortschritt und Prüfsumme). */
+async function modelBytes(spec, report) {
+  const key = BASE + spec.version + '.onnx', cache = await caches.open('rv-ai-model');
+  const hit = await cache.match(key);
+  if (hit) { const b = await hit.arrayBuffer(); if (b.byteLength === spec.size) return b; }
+  const all = new Uint8Array(spec.size);
+  let off = 0;
+  for (const part of spec.parts) {
+    const res = await fetch(BASE + part);
+    if (!res.ok || !res.body) throw new Error('Modellteil ' + part + ' nicht ladbar (' + res.status + ')');
+    const rd = res.body.getReader();
+    for (;;) {
+      const { done, value } = await rd.read();
+      if (done) break;
+      if (off + value.length > all.length) throw new Error('Modell größer als erwartet');
+      all.set(value, off); off += value.length;
+      report(off / spec.size, spec.size);
+    }
   }
+  if (off !== spec.size) throw new Error('Modell unvollständig geladen');
+  if (spec.sha256 && (await sha256(all.buffer)) !== spec.sha256) throw new Error('Modell beschädigt – bitte erneut versuchen');
+  try { await cache.put(key, new Response(all.buffer, { headers: { 'Content-Type': 'application/octet-stream' } })); } catch (e) {}
+  return all.buffer;
+}
+
+async function open(key, ep, report) {
+  if (active && active.key === key && active.ep === ep) return active;
+  if (active) { try { await active.session.release(); } catch (e) {} active = null; }
+  if (!ort) { ort = await import(ORT); ort.env.wasm.numThreads = 1; ort.env.logLevel = 'error'; }
+  const spec = (await manifest()).models[key];
+  const bytes = await modelBytes(spec, report);
+  report(1, 0);
+  const session = await ort.InferenceSession.create(new Uint8Array(bytes), { executionProviders: [ep], graphOptimizationLevel: 'all' });
+  active = { key, ep, session, spec };
+  return active;
+}
+
+async function infer(a, blob) {
+  const S = (await manifest()).input || 1024, M = a.spec.mean, SD = a.spec.std;
+  const bmp = await createImageBitmap(blob, { resizeWidth: S, resizeHeight: S, resizeQuality: 'high' });
+  const c = new OffscreenCanvas(S, S), ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(bmp, 0, 0); bmp.close && bmp.close();
+  const px = ctx.getImageData(0, 0, S, S).data, n = S * S, data = new Float32Array(3 * n);
+  for (let i = 0, j = 0; i < n; i++, j += 4) {
+    data[i] = (px[j] / 255 - M[0]) / SD[0];
+    data[n + i] = (px[j + 1] / 255 - M[1]) / SD[1];
+    data[2 * n + i] = (px[j + 2] / 255 - M[2]) / SD[2];
+  }
+  const out = await a.session.run({ [a.session.inputNames[0]]: new ort.Tensor('float32', data, [1, 3, S, S]) });
+  const o = out[a.session.outputNames[0]].data, mask = new Uint8Array(n);
+  if (a.spec.post === 'minmax') {
+    let mi = Infinity, ma = -Infinity;
+    for (let i = 0; i < n; i++) { const v = o[i]; if (v < mi) mi = v; if (v > ma) ma = v; }
+    const r = ma - mi || 1;
+    for (let i = 0; i < n; i++) mask[i] = Math.round((o[i] - mi) / r * 255);
+  } else {
+    for (let i = 0; i < n; i++) mask[i] = Math.round(255 / (1 + Math.exp(-o[i])));
+  }
+  return { mask, size: S };
+}
+
+self.onmessage = async function (e) {
+  const d = e.data, id = d.id, bad = d.bad || {};
+  const gpu = await hasGpu();
+  const plan = (gpu ? [['isnet', 'webgpu'], ['isnet', 'wasm']] : [['isnet', 'wasm']])
+    .filter(([k, ep]) => !bad[k + ':' + ep]);
+  const failed = [];
+  for (const [key, ep] of plan) {
+    try {
+      const a = await open(key, ep, (f, total) => self.postMessage({ id, progress: f, total, model: key }));
+      const r = await infer(a, d.blob);
+      self.postMessage({ id, ok: true, size: r.size, mask: r.mask, model: key, ep, failed }, [r.mask.buffer]);
+      return;
+    } catch (err) {
+      failed.push({ step: key + ':' + ep, error: String(err && err.message || err).slice(0, 300) });
+      if (active && active.key === key && active.ep === ep) { try { await active.session.release(); } catch (x) {} active = null; }
+    }
+  }
+  self.postMessage({ id, ok: false, failed, error: failed.length ? failed[failed.length - 1].error : 'Kein KI-Modell verfügbar' });
 };

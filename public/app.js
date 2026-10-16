@@ -792,7 +792,7 @@ const sxGet=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catc
 const sxSet=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
 const sxIcon=d=>'<svg class="sx-ico" viewBox="0 0 24 24" aria-hidden="true">'+d+'</svg>';
 // V31.1: Früher hieß der einfache Freisteller „Auf dem Gerät“ (device). Alte Wahl einmalig auf Automatisch (= KI) umstellen.
-if(sxGet('rv_engine_v31','')!=='1'){if(sxGet('rv_cutout_engine','auto')==='device')sxSet('rv_cutout_engine','auto');sxSet('rv_engine_v31','1')}
+if(sxGet('rv_cutout_engine','auto')==='device')sxSet('rv_cutout_engine','auto');  // „Einfach“ gibt es nicht mehr zur Auswahl
 let sxCoverBusy=false,sxCoverMsg='',sxServerCutout=null,sxCutCache=null,sxAiCache=null;
 const sxClone=c=>{const n=document.createElement('canvas');n.width=c.width;n.height=c.height;n.getContext('2d').drawImage(c,0,0);return n};
 const sxSources=()=>article.photos.filter(p=>!p.cover);
@@ -860,18 +860,21 @@ async function sxMakeCover(opts={}){
   const order=engine==='ai'?['ai']:engine==='server'?['server']:(engine==='device'||engine==='original')?[]:(window.RVAI&&RVAI.supported()?['ai','server']:['server']);
   for(const k of order){
    try{
-    if(k==='ai'){if(!window.RVAI||!RVAI.supported())throw Error('dieser Browser bietet kein WebGPU');let last=0;
-     if(sxAiCache&&sxAiCache.src===srcs[si].src)cutCanvas=sxClone(sxAiCache.c);else{cutCanvas=await RVAI.cut(srcs[si].src,{onProgress:(f)=>{const pc=Math.round(f*100);if(pc-last>=2||pc===100){last=pc;sxCoverMsg=pc<100?'KI-Modell wird einmalig geladen … '+pc+' %':'KI schneidet aus …';sxRenderCoverViews()}}});sxAiCache={src:srcs[si].src,c:sxClone(cutCanvas)}}}
+    if(k==='ai'){if(!window.RVAI||!RVAI.supported())throw Error('dieser Browser unterstützt den KI-Freisteller nicht');let last=0;
+     if(sxAiCache&&sxAiCache.src===srcs[si].src)cutCanvas=sxClone(sxAiCache.c);else{cutCanvas=await RVAI.cut(srcs[si].src,{onProgress:(f,t,m)=>{const pc=Math.round(f*100);if(pc-last>=2||pc===100||pc<last){last=pc;sxCoverMsg=pc<100?'KI-Modell wird einmalig geladen … '+pc+' %':'KI schneidet aus …';sxRenderCoverViews()}}});sxAiCache={src:srcs[si].src,c:sxClone(cutCanvas)}}}
     else if(engine==='server'||(rvAiPassword()&&sxServerCutout!==false))cutoutPng=await sxServerCut(srcs[si].src);
     if(cutCanvas||cutoutPng)break;
    }catch(e){if(order.length===1||k==='ai')note=(k==='ai'?'KI auf dem Gerät: ':'Photoroom: ')+e.message+'. Anderer Freisteller verwendet.'}
   }
-  const r=await RVCutout.makeCover(srcs[si].src,{engine:engine==='original'?'original':'cutout',bg,style,tolerance:tol,cutoutPng,cutCanvas});
+  // Ohne KI-Ergebnis lieber das saubere Originalfoto als ein zerfranster Ausschnitt.
+  const useOriginal=engine==='original'||(!cutCanvas&&!cutoutPng);
+  if(useOriginal&&engine!=='original'&&!note)note='KI-Freisteller auf diesem Gerät nicht verfügbar.';
+  const r=await RVCutout.makeCover(srcs[si].src,{engine:useOriginal?'original':'cutout',bg,style,tolerance:tol,cutoutPng,cutCanvas});
   const cover={src:r.src,edit:defaults(),ratio:'0.8',cover:true};
   if(sxCover())article.photos[0]=cover;else article.photos.unshift(cover);
   const warning=r.warning||note;
   article.coverSettings={bg,style,source:si,tolerance:tol,engine:r.engine,warning,autoTolerance:r.tolerance||null,at:new Date().toISOString()};
-  if(r.engine!=='ai'&&engine!=='device'&&engine!=='original'&&(note||r.warning))sxToast('Ohne KI freigestellt: '+(note||r.warning).slice(0,90));
+  if(r.engine!=='ai'&&engine!=='original'&&(note||r.warning))sxToast('KI nicht verfügbar – Originalfoto verwendet: '+(note||r.warning).slice(0,80));
   sxCoverMsg=warning||({ai:'Mit KI auf dem Gerät freigestellt – ohne Upload.',server:'Mit Photoroom freigestellt.',device:'Einfach freigestellt (ohne KI).',original:'Originalfoto im Titelbild-Format zugeschnitten.'}[r.engine]||'');
  }catch(e){sxCoverMsg='Titelbild konnte nicht erstellt werden: '+e.message}
  finally{sxCoverBusy=false;renderPhotos()}
@@ -889,10 +892,10 @@ function sxRenderCoverViews(){
  const sw=$('sxSwatches');sw.replaceChildren();for(const [key,[a,b,name]] of Object.entries(RVCutout.BACKDROPS)){const btn=document.createElement('button');btn.type='button';btn.title=name;btn.setAttribute('aria-label','Hintergrund '+name);btn.style.background='linear-gradient(180deg,'+a+','+b+')';btn.classList.toggle('on',key===bg);btn.onclick=()=>{sxSet('rv_cover_bg',key);article.coverSettings={...(article.coverSettings||{}),bg:key};if(sxCover())sxMakeCover({bg:key});else sxRenderCoverViews()};sw.append(btn)}
  const src=$('sxSources');src.replaceChildren();sxSources().forEach((p,i)=>{const btn=document.createElement('button');btn.type='button';btn.setAttribute('aria-label','Foto '+(i+1)+' als Ausgangsfoto');btn.classList.toggle('on',i===(s.source||0));btn.innerHTML='<img src="'+sxEsc(p.src)+'" alt="">';btn.onclick=()=>sxMakeCover({source:i});src.append(btn)});
  $('sxEngine').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.engine===engine));
- $('sxTolWrap').style.display=engine==='device'?'':'none';
+ $('sxTolWrap').style.display='none';
  $('sxTol').value=s.tolerance||0;$('sxTolVal').textContent=s.tolerance?String(s.tolerance):('Automatisch'+(s.autoTolerance?' ('+s.autoTolerance+')':''));
  $('sxAutoCover').checked=sxGet('rv_cover_auto','1')==='1';
- $('sxCoverStatus').textContent=sxCoverMsg||(engine==='server'?'Nutzt Photoroom oder remove.bg über deinen Server (Secret PHOTOROOM_API_KEY oder REMOVE_BG_API_KEY).':engine==='ai'?'KI auf dem Gerät: kostenlos, ohne Upload. Beim ersten Mal wird das Modell einmalig geladen (ca. 115 MB, danach gespeichert).':engine==='auto'?'Automatisch: KI auf dem Gerät – bei Bedarf Photoroom oder der einfache Freisteller.':'');
+ $('sxCoverStatus').textContent=sxCoverMsg||(engine==='server'?'Nutzt Photoroom oder remove.bg über deinen Server (Secret PHOTOROOM_API_KEY oder REMOVE_BG_API_KEY).':engine==='ai'?'KI auf dem Gerät: kostenlos, ohne Upload. Beim ersten Mal wird das Modell einmalig geladen (ca. 90 MB, danach gespeichert).':engine==='auto'?'Automatisch: KI auf dem Gerät – bei Bedarf Photoroom oder der einfache Freisteller.':'');
  $('sxCoverMake').disabled=sxCoverBusy||!sxSources().length;$('sxCoverRemove').disabled=!sxCover();$('sxCoverRedo').disabled=sxCoverBusy||!sxSources().length;
  sxRenderPreview();
 }
