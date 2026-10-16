@@ -1,0 +1,30 @@
+{
+  "passed": 6,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Bao: geschützt und Eingaben geprüft",
+      "result": "passed"
+    },
+    {
+      "name": "Bao: Werkzeuge rechnen auf echten Snapshot-Daten, Aufgaben nur als Vorschlag, Kosten werden erfasst",
+      "result": "passed"
+    },
+    {
+      "name": "Bao: Snapshot-Daten werden gekürzt, höchstens 3 Vorschläge, letzte Runde ohne Werkzeuge",
+      "result": "passed"
+    },
+    {
+      "name": "Budget: über der Monatsgrenze wird serverseitig gesperrt (429), auch für den alten KI-Chat",
+      "result": "passed"
+    },
+    {
+      "name": "Eingang: Bild, PDF und Text mit strukturierter Ausgabe; Dokumentinhalt als Daten; Typen geprüft",
+      "result": "passed"
+    },
+    {
+      "name": "Aufgaben-Sync: eigene app_meta-Zeile mit Revisionen, Konflikt liefert Serverstand",
+      "result": "passed"
+    }
+  ]
+}
